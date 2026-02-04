@@ -11,7 +11,7 @@ interface LevelFilterProps {
 const levels = [
   { id: "iniciante" as Level, label: "Iniciante"},
   { id: "intermediario" as Level, label: "Intermediário"},
-  { id: "experiente" as Level, label: "Avançado"},
+  { id: "experiente" as Level, label: "Experiente"},
 ];
 
 export function LevelFilter({ selectedLevel, onLevelChange }: LevelFilterProps) {
