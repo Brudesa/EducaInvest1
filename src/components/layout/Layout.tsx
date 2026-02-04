@@ -13,8 +13,8 @@ export function Layout({ children }: LayoutProps) {
       </main>
       <footer className="bg-card border-t border-border py-8 mt-auto">
         <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
-          <p>© 2024 EducaInvest. Educação financeira para todos. 🇧🇷</p>
-          <p className="mt-2">Feito com 💙 para ajudar você a dominar seu dinheiro.</p>
+          <p>© 2026 EducaInvest. Educação financeira para todos. 🇧🇷</p>
+          <p className="mt-2">Feito com coração para ajudar você a dominar seu dinheiro.</p>
         </div>
       </footer>
     </div>
