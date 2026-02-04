@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 type Level = "iniciante" | "intermediario" | "experiente";
@@ -16,13 +15,7 @@ const levels = [
 
 export function LevelFilter({ selectedLevel, onLevelChange }: LevelFilterProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-      className="flex flex-wrap gap-2 mb-8"
-    >
-      <Button
+          <Button
         variant={selectedLevel === null ? "default" : "outline"}
         onClick={() => onLevelChange(null)}
         className="rounded-full"
