@@ -37,7 +37,7 @@ export function Header() {
               <Coins className="w-6 h-6 text-primary-foreground" />
             </motion.div>
             <span className="font-display font-bold text-xl text-foreground">
-              Edu<span className="text-gradient-hero">Finanças</span>
+              Educa<span className="text-gradient-hero">Invest</span>
             </span>
           </Link>
 
