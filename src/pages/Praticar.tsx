@@ -137,7 +137,7 @@ export default function Arcade() {
                 {/* Content */}
                 <div className="p-6">
                   <div className="flex items-start justify-between gap-2 mb-3">
-                    <h3 className="font-display text-xl font-bold text-white leading-tight">{game.title}</h3>
+                    <h2 className="font-display text-xl font-bold text-white leading-tight">{game.title}</h2>
                     {!game.available && (
                       <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide bg-slate-800 text-muted-foreground px-2 py-1 rounded-md border border-white/5 flex items-center gap-1">
                         <Lock className="w-3 h-3" />
