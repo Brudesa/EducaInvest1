@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Volume2, PauseCircle, BookOpen, Lightbulb, Sparkles } from "lucide-react";
+import { ChevronDown, Volume2, PauseCircle, BookOpen, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Termo } from "@/lib/termosData";
 import { Level } from "./LevelFilter";
@@ -18,8 +18,9 @@ const levelLabels: Record<Level, { label: string; color: string; bg: string }> =
 export function TermCard({ term }: TermCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [activeTab, setActiveTab] = useState<'exemplo' | 'tecnico'>('exemplo'); // Padrão: Exemplo (mais fácil)
-  
+  // Mantive 'exemplo' como padrão para não assustar o iniciante, mas você pode mudar para 'tecnico' se preferir
+  const [activeTab, setActiveTab] = useState<'exemplo' | 'tecnico'>('exemplo'); 
+   
   const levelInfo = levelLabels[term.nivelId] || levelLabels['iniciante'];
 
   const handlePlayAudio = (e: React.MouseEvent) => {
@@ -62,7 +63,7 @@ export function TermCard({ term }: TermCardProps) {
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full p-4 flex items-center gap-4 cursor-pointer relative"
       >
-        {/* Ícone Sigla - Menor e mais discreto */}
+        {/* Ícone Sigla */}
         <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
           isExpanded ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground/70"
         }`}>
@@ -85,7 +86,7 @@ export function TermCard({ term }: TermCardProps) {
 
         {/* Controles da Direita */}
         <div className="flex items-center gap-2">
-          {/* Botão de Áudio (Visível sempre, mas discreto) */}
+          {/* Botão de Áudio */}
            <Button
             variant="ghost"
             size="icon"
@@ -124,19 +125,9 @@ export function TermCard({ term }: TermCardProps) {
                 </p>
               </div>
 
-              {/* 2. Seletor de Abas (Simples e Leve) */}
+              {/* 2. Seletor de Abas (INVERTIDO: Técnico na Esquerda) */}
               <div className="bg-background/50 p-1 rounded-lg flex gap-1 border border-border/50">
-                <button
-                  onClick={() => setActiveTab('exemplo')}
-                  className={`flex-1 flex items-center justify-center gap-2 py-1.5 text-xs font-medium rounded-md transition-all ${
-                    activeTab === 'exemplo' 
-                      ? "bg-primary/10 text-primary shadow-sm" 
-                      : "text-muted-foreground hover:bg-background hover:text-foreground"
-                  }`}
-                >
-                  <Lightbulb className="w-3.5 h-3.5" />
-                  Na Prática
-                </button>
+                {/* Botão TÉCNICO (Agora o primeiro) */}
                 <button
                   onClick={() => setActiveTab('tecnico')}
                   className={`flex-1 flex items-center justify-center gap-2 py-1.5 text-xs font-medium rounded-md transition-all ${
@@ -148,35 +139,50 @@ export function TermCard({ term }: TermCardProps) {
                   <BookOpen className="w-3.5 h-3.5" />
                   Técnico
                 </button>
+
+                {/* Botão NA PRÁTICA (Agora o segundo) */}
+                <button
+                  onClick={() => setActiveTab('exemplo')}
+                  className={`flex-1 flex items-center justify-center gap-2 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    activeTab === 'exemplo' 
+                      ? "bg-primary/10 text-primary shadow-sm" 
+                      : "text-muted-foreground hover:bg-background hover:text-foreground"
+                  }`}
+                >
+                  <Lightbulb className="w-3.5 h-3.5" />
+                  Na Prática
+                </button>
               </div>
 
               {/* 3. Conteúdo da Aba Ativa */}
               <div className="min-h-[80px]">
                 <AnimatePresence mode="wait">
-                  {activeTab === 'exemplo' ? (
-                    <motion.div
-                      key="exemplo"
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 10 }}
-                      transition={{ duration: 0.2 }}
-                      className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-3"
-                    >
-                      <p className="text-sm text-foreground/90 leading-relaxed">
-                        {term.exemplo || "Exemplo não disponível."}
-                      </p>
-                    </motion.div>
-                  ) : (
+                  {activeTab === 'tecnico' ? (
+                    // BLOCO TÉCNICO
                     <motion.div
                       key="tecnico"
-                      initial={{ opacity: 0, x: 10 }}
+                      initial={{ opacity: 0, x: -10 }} // Vem da esquerda
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
+                      exit={{ opacity: 0, x: 10 }}
                       transition={{ duration: 0.2 }}
                       className="bg-slate-500/5 border border-border/50 rounded-lg p-3"
                     >
                       <p className="text-sm text-muted-foreground italic leading-relaxed">
                         "{term.explicacaoCompleta || "Definição não disponível."}"
+                      </p>
+                    </motion.div>
+                  ) : (
+                    // BLOCO EXEMPLO
+                    <motion.div
+                      key="exemplo"
+                      initial={{ opacity: 0, x: 10 }} // Vem da direita
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-3"
+                    >
+                      <p className="text-sm text-foreground/90 leading-relaxed">
+                        {term.exemplo || "Exemplo não disponível."}
                       </p>
                     </motion.div>
                   )}
