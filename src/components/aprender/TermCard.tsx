@@ -10,16 +10,16 @@ interface TermCardProps {
 }
 
 const levelLabels: Record<Level, { label: string; color: string; bg: string }> = {
-  iniciante: { label: "Iniciante", color: "text-emerald-400", bg: "bg-emerald-400/10" },
-  intermediario: { label: "Intermediário", color: "text-amber-400", bg: "bg-amber-400/10" },
-  experiente: { label: "Experiente", color: "text-rose-400", bg: "bg-rose-400/10" },
+  iniciante: { label: "Iniciante", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+  intermediario: { label: "Intermediário", color: "text-amber-500", bg: "bg-amber-500/10" },
+  experiente: { label: "Experiente", color: "text-rose-500", bg: "bg-rose-500/10" },
 };
 
 export function TermCard({ term }: TermCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [activeTab, setActiveTab] = useState<'exemplo' | 'tecnico'>('exemplo'); // Padrão: Exemplo (mais fácil)
   
-  // Proteção caso o dado não venha (evita quebrar a tela)
   const levelInfo = levelLabels[term.nivelId] || levelLabels['iniciante'];
 
   const handlePlayAudio = (e: React.MouseEvent) => {
@@ -30,7 +30,6 @@ export function TermCard({ term }: TermCardProps) {
       return;
     }
     
-    // Fallback: lê o texto se não tiver áudio
     const textToRead = term.explicacaoSimplificada || "Texto indisponível";
     
     if (term.audioUrl) {
@@ -50,60 +49,63 @@ export function TermCard({ term }: TermCardProps) {
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={`group rounded-xl border transition-all duration-300 overflow-hidden ${
         isExpanded 
           ? "bg-card border-primary/50 shadow-lg ring-1 ring-primary/20" 
-          : "bg-card border-border hover:border-primary/40 hover:shadow-md"
+          : "bg-card border-border/60 hover:border-primary/40 hover:shadow-md"
       }`}
     >
-      {/* --- HEADER (Clicável) --- */}
+      {/* --- HEADER COMPACTO --- */}
       <div
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-5 flex items-start gap-4 cursor-pointer relative"
+        className="w-full p-4 flex items-center gap-4 cursor-pointer relative"
       >
-        {/* Ícone Sigla */}
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-          isExpanded ? "bg-primary text-primary-foreground" : "bg-secondary text-primary"
+        {/* Ícone Sigla - Menor e mais discreto */}
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+          isExpanded ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground/70"
         }`}>
-          <span className="text-xl font-bold">{term.sigla.charAt(0)}</span>
+          <span className="text-lg font-bold">{term.sigla.charAt(0)}</span>
         </div>
 
         {/* Info Principal */}
-        <div className="flex-1 min-w-0 pt-1">
-          <div className="flex items-center gap-2 flex-wrap mb-1.5">
-            <h3 className="font-display font-bold text-lg text-foreground leading-none">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-bold text-base text-foreground leading-none">
               {term.sigla}
             </h3>
-            {/* Badges */}
-            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-transparent ${levelInfo.bg} ${levelInfo.color}`}>
+            {/* Badge Nível */}
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wide border border-transparent ${levelInfo.bg} ${levelInfo.color}`}>
               {levelInfo.label}
             </span>
           </div>
-          <p className="text-sm text-muted-foreground truncate font-medium">{term.nome}</p>
-          
-          {/* Prévia do texto (Só aparece se estiver FECHADO) */}
-          {!isExpanded && (
-            <p className="text-xs text-muted-foreground/60 mt-2 line-clamp-1">
-              {term.explicacaoSimplificada}
-            </p>
-          )}
+          <p className="text-sm text-muted-foreground truncate">{term.nome}</p>
         </div>
 
-        {/* Seta */}
-        <div className="flex flex-col items-end gap-2">
-           <motion.div
+        {/* Controles da Direita */}
+        <div className="flex items-center gap-2">
+          {/* Botão de Áudio (Visível sempre, mas discreto) */}
+           <Button
+            variant="ghost"
+            size="icon"
+            onClick={handlePlayAudio}
+            className={`h-8 w-8 rounded-full ${isSpeaking ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            {isSpeaking ? <PauseCircle className="w-4 h-4 animate-pulse" /> : <Volume2 className="w-4 h-4" />}
+          </Button>
+
+          <motion.div
             animate={{ rotate: isExpanded ? 180 : 0 }}
             transition={{ duration: 0.2 }}
-            className="text-muted-foreground group-hover:text-primary transition-colors"
+            className="text-muted-foreground/50"
           >
             <ChevronDown className="w-5 h-5" />
           </motion.div>
         </div>
       </div>
 
-      {/* --- CONTEÚDO EXPANDIDO (Grid Layout) --- */}
+      {/* --- CONTEÚDO EXPANDIDO (COM ABAS) --- */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -111,58 +113,76 @@ export function TermCard({ term }: TermCardProps) {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden bg-background/50 border-t border-border/50"
+            className="overflow-hidden border-t border-border/40 bg-muted/30"
           >
-            <div className="px-5 pb-6 pt-4 space-y-6">
+            <div className="p-4 space-y-4">
               
-              {/* 1. O Chamarisco (Explicação Simplificada) */}
-              <div className="relative">
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-4 h-4 text-sky-400" />
-                  <span className="text-xs font-bold text-sky-400 uppercase tracking-wider">Resumo</span>
-                </div>
-                <p className="text-base text-foreground font-medium leading-relaxed">
-                  {term.explicacaoSimplificada || "Conteúdo simplificado indisponível."}
+              {/* 1. O Resumo (Sempre no topo) */}
+              <div className="relative pl-3 border-l-2 border-primary">
+                <p className="text-sm text-foreground leading-relaxed">
+                  {term.explicacaoSimplificada}
                 </p>
-                
-                 {/* Botão de Áudio - Agora com cor viva (Sky-400/Blue) */}
-                 <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handlePlayAudio}
-                  className="mt-3 h-8 px-3 text-xs text-sky-400 hover:text-sky-300 hover:bg-sky-400/10 -ml-2 transition-colors font-semibold"
+              </div>
+
+              {/* 2. Seletor de Abas (Simples e Leve) */}
+              <div className="bg-background/50 p-1 rounded-lg flex gap-1 border border-border/50">
+                <button
+                  onClick={() => setActiveTab('exemplo')}
+                  className={`flex-1 flex items-center justify-center gap-2 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    activeTab === 'exemplo' 
+                      ? "bg-primary/10 text-primary shadow-sm" 
+                      : "text-muted-foreground hover:bg-background hover:text-foreground"
+                  }`}
                 >
-                  {isSpeaking ? <PauseCircle className="w-4 h-4 mr-2 animate-pulse" /> : <Volume2 className="w-4 h-4 mr-2" />}
-                  {isSpeaking ? "Parar áudio" : "Ouvir explicação"}
-                </Button>
+                  <Lightbulb className="w-3.5 h-3.5" />
+                  Na Prática
+                </button>
+                <button
+                  onClick={() => setActiveTab('tecnico')}
+                  className={`flex-1 flex items-center justify-center gap-2 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    activeTab === 'tecnico' 
+                      ? "bg-primary/10 text-primary shadow-sm" 
+                      : "text-muted-foreground hover:bg-background hover:text-foreground"
+                  }`}
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  Técnico
+                </button>
               </div>
 
-              {/* 2. GRID: Técnica vs Prática */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                {/* Coluna Esquerda: Técnica (Fundo sutil) */}
-                <div className="bg-secondary/20 p-4 rounded-xl border border-border/50">
-                  <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border/10">
-                    <BookOpen className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-xs font-bold text-muted-foreground uppercase">Definição Técnica</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground italic leading-relaxed">
-                    "{term.explicacaoCompleta || "Definição técnica indisponível."}"
-                  </p>
-                </div>
-
-                {/* Coluna Direita: Exemplo (Destaque Azulado Sutil) */}
-                <div className="bg-blue-500/5 p-4 rounded-xl border border-blue-500/20">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Lightbulb className="w-4 h-4 text-amber-400 fill-amber-400/20" />
-                    <span className="text-xs font-bold text-blue-400 uppercase">Na Prática</span>
-                  </div>
-                  <p className="text-sm text-foreground/90 leading-relaxed">
-                    {term.exemplo || "Exemplo prático indisponível."}
-                  </p>
-                </div>
-
+              {/* 3. Conteúdo da Aba Ativa */}
+              <div className="min-h-[80px]">
+                <AnimatePresence mode="wait">
+                  {activeTab === 'exemplo' ? (
+                    <motion.div
+                      key="exemplo"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 10 }}
+                      transition={{ duration: 0.2 }}
+                      className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-3"
+                    >
+                      <p className="text-sm text-foreground/90 leading-relaxed">
+                        {term.exemplo || "Exemplo não disponível."}
+                      </p>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="tecnico"
+                      initial={{ opacity: 0, x: 10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="bg-slate-500/5 border border-border/50 rounded-lg p-3"
+                    >
+                      <p className="text-sm text-muted-foreground italic leading-relaxed">
+                        "{term.explicacaoCompleta || "Definição não disponível."}"
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
+
             </div>
           </motion.div>
         )}
