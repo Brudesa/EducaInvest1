@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { 
   BookOpen, 
   ChevronRight, 
+  ChevronLeft, // <--- 1. Importando o ícone
   Layers, 
   PlayCircle, 
   CheckCircle2, 
@@ -28,20 +29,23 @@ export default function Aprender() {
     { titulo: "Módulo 3: Jogo Avançado", aulas: aulas.filter(a => a.nivel === "avancado") }
   ];
 
+  // Função para avançar
   const handleNext = () => {
     if (currentAulaId < aulas.length) setCurrentAulaId(prev => prev + 1);
   };
 
-  // Estilos da Scrollbar Personalizada (Dark & Slim)
+  // 2. Função para voltar
+  const handlePrev = () => {
+    if (currentAulaId > 1) setCurrentAulaId(prev => prev - 1);
+  };
+
   const scrollbarClass = "overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-700/50 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-600 transition-colors";
 
   return (
     <Layout>
-      {/* Container Principal Travado */}
       <div className="flex flex-col lg:flex-row h-[calc(100vh-80px)] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 overflow-hidden">
         
-        {/* --- COLUNA 1: MENU LATERAL (SIDEBAR) --- */}
-        {/* MUDANÇA: Reduzi de w-96 para w-72 (288px) e apliquei a scrollbar fina */}
+        {/* --- COLUNA 1: MENU LATERAL --- */}
         <aside className={cn(
           "w-full lg:w-72 bg-slate-900/50 backdrop-blur-md border-r border-white/10 shrink-0 z-20",
           scrollbarClass
@@ -94,11 +98,9 @@ export default function Aprender() {
         </aside>
 
         {/* --- COLUNA 2: CONTEÚDO DA AULA --- */}
-        {/* MUDANÇA: Apliquei a scrollbar fina aqui também */}
         <main className={cn("flex-1 h-full relative scroll-smooth bg-slate-950/30", scrollbarClass)}>
           <div className="p-6 md:p-10 max-w-5xl mx-auto space-y-8 pb-32">
               
-              {/* Cabeçalho da Aula */}
               <motion.div
                 key={`header-${currentAula.id}`}
                 initial={{ opacity: 0, y: 10 }}
@@ -115,10 +117,8 @@ export default function Aprender() {
                  </h1>
               </motion.div>
 
-              {/* O Player */}
               <PodcastCard aula={currentAula} />
 
-              {/* Divisor Visual */}
               <div className="flex items-center gap-4 py-2">
                 <div className="h-px bg-white/10 flex-1" />
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
@@ -128,7 +128,6 @@ export default function Aprender() {
                 <div className="h-px bg-white/10 flex-1" />
               </div>
 
-              {/* Grid de Termos */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {termosDaAula.length > 0 ? (
                   termosDaAula.map((term, index) => (
@@ -148,8 +147,22 @@ export default function Aprender() {
                 )}
               </div>
 
-              {/* Navegação Inferior */}
-              <div className="pt-10 border-t border-white/10 flex justify-end">
+              {/* 3. NAVEGAÇÃO DUPLA (ANTERIOR / PRÓXIMA) */}
+              <div className="pt-10 border-t border-white/10 flex justify-between items-center">
+                
+                {/* Botão Anterior */}
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  onClick={handlePrev}
+                  disabled={currentAulaId === 1}
+                  className="text-muted-foreground hover:text-white hover:bg-white/5 rounded-full px-6"
+                >
+                  <ChevronLeft className="w-4 h-4 mr-2" />
+                  Aula Anterior
+                </Button>
+
+                {/* Botão Próxima */}
                 <Button 
                     size="lg"
                     onClick={handleNext} 
