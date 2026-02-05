@@ -52,4 +52,43 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          >
+            <Link to="/aprender">
+              <Button size="lg" className="bg-gradient-hero text-primary-foreground shadow-glow w-full sm:w-64 h-14 text-lg font-bold rounded-full">
+                Começar a Aprender
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+            <Link to="/simular">
+              <Button size="lg" variant="outline" className="w-full sm:w-64 h-14 text-lg border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/10 rounded-full transition-all">
+                Ver Simuladores
+              </Button>
+            </Link>
+          </motion.div>
+
+          {/* Trust indicators - Espaçamento e cores ajustadas */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="flex flex-wrap justify-center gap-8 mt-16 text-sm font-medium text-muted-foreground/80"
+          >
+            <div className="flex items-center gap-2 hover:text-accent transition-colors">
+              <Heart className="w-4 h-4 text-accent" />
+              <span>100% Gratuito</span>
+            </div>
+            <div className="flex items-center gap-2 hover:text-primary transition-colors">
+              <Shield className="w-4 h-4 text-primary" />
+              <span>Sem Vendas</span>
+            </div>
+            <div className="flex items-center gap-2 hover:text-success transition-colors">
+              <TrendingUp className="w-4 h-4 text-success" />
+              <span>No seu ritmo</span>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
