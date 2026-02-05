@@ -1,6 +1,19 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Volume2, PauseCircle, BookOpen, Lightbulb, Rocket } from "lucide-react";
+import { 
+  ChevronDown, 
+  Volume2, 
+  PauseCircle, 
+  BookOpen, 
+  Lightbulb, 
+  Rocket,
+  // Novos ícones para o sistema dinâmico
+  TrendingUp,   // Indicadores
+  ShieldCheck,  // Renda Fixa
+  BarChart3,    // Renda Variável
+  Percent,      // Taxas
+  Zap           // Conceitos
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Termo } from "@/lib/termosData";
 import { Level } from "./LevelFilter";
@@ -13,6 +26,26 @@ const levelLabels: Record<Level, { label: string; color: string; bg: string }> =
   iniciante: { label: "Iniciante", color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
   intermediario: { label: "Intermediário", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/30" },
   avancado: { label: "Avançado", color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-100 dark:bg-rose-900/30" },
+};
+
+// --- FUNÇÃO PARA RENDERIZAR ÍCONE POR CATEGORIA ---
+const getCategoryIcon = (category: string) => {
+  const iconClass = "w-5 h-5 transition-transform duration-300 group-hover:scale-110";
+  
+  switch (category) {
+    case 'indicadores':
+      return <TrendingUp className={iconClass} />;
+    case 'renda_fixa':
+      return <ShieldCheck className={iconClass} />;
+    case 'renda_variavel':
+      return <BarChart3 className={iconClass} />;
+    case 'taxas':
+      return <Percent className={iconClass} />;
+    case 'conceitos':
+      return <Zap className={iconClass} />;
+    default:
+      return <BookOpen className={iconClass} />;
+  }
 };
 
 export function TermCard({ term }: TermCardProps) {
@@ -49,31 +82,30 @@ export function TermCard({ term }: TermCardProps) {
   return (
     <motion.div
       layout
-      // Mantém o borderRadius fixo para não distorcer na animação
       style={{ borderRadius: "0.75rem" }} 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      // Removemos transition-all para evitar conflito com o Framer Motion
       className={`group border transition-colors duration-300 overflow-hidden w-full ${
         isExpanded 
           ? "bg-card border-primary/50 shadow-lg ring-1 ring-primary/20" 
           : "bg-card border-border/60 hover:border-primary/40 hover:shadow-md"
       }`}
     >
-      {/* --- HEADER ADAPTÁVEL (Melhor UX Mobile) --- */}
+      {/* --- HEADER ADAPTÁVEL --- */}
       <div
         onClick={() => setIsExpanded(!isExpanded)}
-        // items-start: Alinha ícones no topo caso o texto quebre linha (fica mais bonito)
         className="w-full p-4 flex items-start gap-3 sm:gap-4 cursor-pointer relative"
       >
-        {/* Ícone Sigla */}
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors mt-0.5 ${
-          isExpanded ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground/70"
+        {/* ÍCONE DINÂMICO (Substituiu a letra inicial) */}
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-all mt-0.5 ${
+          isExpanded 
+            ? "bg-primary text-primary-foreground shadow-md rotate-3" 
+            : "bg-secondary text-primary"
         }`}>
-          <span className="text-lg font-bold">{term.sigla.charAt(0)}</span>
+          {getCategoryIcon(term.categoria)}
         </div>
 
-        {/* Info Principal - Agora permite quebra de linha */}
+        {/* Info Principal */}
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 mb-1">
             <h3 className="font-bold text-base text-foreground leading-tight break-words">
@@ -83,7 +115,6 @@ export function TermCard({ term }: TermCardProps) {
               {levelInfo.label}
             </span>
           </div>
-          {/* line-clamp-2 permite até 2 linhas de texto antes de cortar, melhor que truncate */}
           <p className="text-sm text-muted-foreground line-clamp-2 leading-snug">
             {term.nome}
           </p>
@@ -156,7 +187,7 @@ export function TermCard({ term }: TermCardProps) {
                 </button>
               </div>
 
-              {/* Conteúdo da Aba (Altura Fixa e Scroll) */}
+              {/* Conteúdo da Aba */}
               <div className="h-[130px] overflow-y-auto overflow-x-hidden pr-1 custom-scrollbar">
                 <AnimatePresence mode="wait">
                   {activeTab === 'tecnico' ? (
