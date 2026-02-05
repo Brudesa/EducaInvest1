@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Volume2, PauseCircle, BookOpen, Lightbulb } from "lucide-react";
+import { ChevronDown, Volume2, PauseCircle, BookOpen, Lightbulb, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Termo } from "@/lib/termosData";
 import { Level } from "./LevelFilter";
@@ -10,9 +10,9 @@ interface TermCardProps {
 }
 
 const levelLabels: Record<Level, { label: string; color: string; bg: string }> = {
-  iniciante: { label: "Iniciante", color: "text-green-700", bg: "bg-green-100" },
-  intermediario: { label: "Intermediário", color: "text-yellow-700", bg: "bg-yellow-100" },
-  experiente: { label: "Experiente", color: "text-red-700", bg: "bg-red-100" },
+  iniciante: { label: "Iniciante", color: "text-emerald-700", bg: "bg-emerald-100" },
+  intermediario: { label: "Intermediário", color: "text-amber-700", bg: "bg-amber-100" },
+  experiente: { label: "Experiente", color: "text-rose-700", bg: "bg-rose-100" },
 };
 
 export function TermCard({ term }: TermCardProps) {
@@ -21,24 +21,23 @@ export function TermCard({ term }: TermCardProps) {
   
   const levelInfo = levelLabels[term.nivelId];
 
-  // Função para tocar o áudio
   const handlePlayAudio = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Impede que o card feche ao clicar no botão
-
+    e.stopPropagation();
     if (isSpeaking) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
       return;
     }
-
-    // Se tiver MP3 usa ele, senão usa a voz do navegador
+    // Fallback inteligente: se não tiver audioUrl, lê o texto simplificado
+    const textToRead = term.explicacaoSimplificada || "Texto não disponível para leitura.";
+    
     if (term.audioUrl) {
       const audio = new Audio(term.audioUrl);
       audio.onended = () => setIsSpeaking(false);
       audio.play();
       setIsSpeaking(true);
     } else {
-      const utterance = new SpeechSynthesisUtterance(term.explicacaoSimplificada);
+      const utterance = new SpeechSynthesisUtterance(textToRead);
       utterance.lang = "pt-BR";
       utterance.onend = () => setIsSpeaking(false);
       window.speechSynthesis.speak(utterance);
@@ -51,100 +50,117 @@ export function TermCard({ term }: TermCardProps) {
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`bg-card rounded-xl border shadow-sm transition-all duration-300 ${
-        isExpanded ? "border-primary/50 shadow-md" : "border-border hover:border-primary/30"
+      className={`bg-card rounded-xl border transition-all duration-300 overflow-hidden ${
+        isExpanded 
+          ? "border-primary/40 shadow-lg ring-1 ring-primary/10" 
+          : "border-border hover:border-primary/30 hover:shadow-md"
       }`}
     >
-      {/* --- Header (Sempre Visível) --- */}
+      {/* --- HEADER (Clicável) --- */}
       <div
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-4 flex items-center gap-4 cursor-pointer"
+        className="w-full p-5 flex items-start gap-4 cursor-pointer relative group"
       >
-        {/* Ícone com a inicial */}
-        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-          <span className="text-2xl font-bold text-primary">{term.sigla.charAt(0)}</span>
+        {/* Ícone Sigla */}
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+          isExpanded ? "bg-primary text-primary-foreground shadow-md" : "bg-primary/10 text-primary"
+        }`}>
+          <span className="text-xl font-bold">{term.sigla.charAt(0)}</span>
         </div>
 
-        {/* Textos Principais */}
-        <div className="flex-1 min-w-0 text-left">
-          <div className="flex items-center gap-2 flex-wrap mb-1">
+        {/* Info Principal */}
+        <div className="flex-1 min-w-0 pt-1">
+          <div className="flex items-center gap-2 flex-wrap mb-1.5">
             <h3 className="font-display font-bold text-lg text-foreground leading-none">
               {term.sigla}
             </h3>
-            {/* Tag de Nível */}
-            <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider ${levelInfo.bg} ${levelInfo.color}`}>
+            {/* Badges */}
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${levelInfo.bg} ${levelInfo.color}`}>
               {levelInfo.label}
             </span>
-            {/* Tag de Categoria */}
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 text-slate-600 uppercase tracking-wider">
-              {term.categoria.replace('_', ' ')}
-            </span>
           </div>
-          <p className="text-sm text-muted-foreground truncate">{term.nome}</p>
+          <p className="text-sm text-muted-foreground truncate font-medium">{term.nome}</p>
+          
+          {/* Prévia do texto (Só aparece se estiver FECHADO) */}
+          {!isExpanded && (
+            <p className="text-xs text-muted-foreground/70 mt-2 line-clamp-1">
+              {term.explicacaoSimplificada}
+            </p>
+          )}
         </div>
 
-        {/* Botão de Áudio Rápido (Header) */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className={`shrink-0 rounded-full ${isSpeaking ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-primary"}`}
-          onClick={handlePlayAudio}
-        >
-          {isSpeaking ? <PauseCircle className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-        </Button>
-
-        {/* Seta Expandir */}
-        <motion.div
-          animate={{ rotate: isExpanded ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <ChevronDown className="w-5 h-5 text-muted-foreground" />
-        </motion.div>
+        {/* Controles Direita */}
+        <div className="flex flex-col items-end gap-2">
+           <motion.div
+            animate={{ rotate: isExpanded ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+            className="text-muted-foreground group-hover:text-primary transition-colors"
+          >
+            <ChevronDown className="w-5 h-5" />
+          </motion.div>
+        </div>
       </div>
 
-      {/* --- Conteúdo Expandido --- */}
+      {/* --- CONTEÚDO EXPANDIDO (Grid Layout) --- */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden bg-slate-50/50 dark:bg-slate-900/50"
           >
-            <div className="px-5 pb-5 pt-0 border-t border-border/50">
-              <div className="pt-4 space-y-5">
+            <div className="px-5 pb-6 pt-2 border-t border-border/40 space-y-6">
+              
+              {/* 1. O Chamarisco (Explicação Simplificada) */}
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-bold text-primary uppercase tracking-wider">Resumo</span>
+                </div>
+                <p className="text-base text-foreground font-medium leading-relaxed">
+                  {term.explicacaoSimplificada || "Conteúdo simplificado indisponível."}
+                </p>
+                 {/* Botão de Áudio agora fica aqui, logo abaixo do resumo */}
+                 <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handlePlayAudio}
+                  className="mt-3 h-8 px-3 text-xs text-muted-foreground hover:text-primary hover:bg-primary/10 -ml-2"
+                >
+                  {isSpeaking ? <PauseCircle className="w-3.5 h-3.5 mr-2 animate-pulse" /> : <Volume2 className="w-3.5 h-3.5 mr-2" />}
+                  {isSpeaking ? "Parar áudio" : "Ouvir resumo"}
+                </Button>
+              </div>
+
+              {/* 2. GRID: Técnica vs Prática (Lado a Lado no Desktop) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
-                {/* 1. Explicação Simplificada */}
-                <div>
-                  <p className="text-foreground text-base leading-relaxed font-medium">
-                    {term.explicacaoSimplificada}
+                {/* Coluna Esquerda: Técnica */}
+                <div className="bg-white dark:bg-card p-4 rounded-xl border border-border/60 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border/40">
+                    <BookOpen className="w-4 h-4 text-slate-500" />
+                    <span className="text-xs font-bold text-slate-500 uppercase">Definição Técnica</span>
+                  </div>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 italic leading-relaxed">
+                    "{term.explicacaoCompleta || "Definição técnica indisponível."}"
                   </p>
                 </div>
 
-                {/* 2. Definição Técnica */}
-                <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase mb-1">
-                    <BookOpen className="w-3 h-3" />
-                    Definição Técnica
+                {/* Coluna Direita: Exemplo (Com cor de fundo para destaque) */}
+                <div className="bg-blue-50/80 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/30">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Lightbulb className="w-4 h-4 text-amber-500 fill-amber-500" />
+                    <span className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase">Na Prática</span>
                   </div>
-                  <p className="text-sm text-slate-600 italic">
-                    "{term.explicacaoCompleta}"
-                  </p>
-                </div>
-
-                {/* 3. Exemplo Prático */}
-                <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-100">
-                  <div className="flex items-center gap-2 text-sm font-bold text-blue-700 mb-2">
-                    <Lightbulb className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                    Na Prática
-                  </div>
-                  <p className="text-sm text-slate-700 leading-relaxed">
-                    {term.exemplo}
+                  <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {term.exemplo || "Exemplo prático indisponível."}
                   </p>
                 </div>
 
               </div>
+
             </div>
           </motion.div>
         )}
