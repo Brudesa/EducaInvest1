@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
-export type Level = "iniciante" | "intermediario" | "experiente";
+export type Level = "iniciante" | "intermediario" | "avancado";
 
 interface LevelFilterProps {
   selectedLevel: Level | null;
