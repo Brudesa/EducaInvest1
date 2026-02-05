@@ -8,6 +8,7 @@ export interface Termo {
   explicacaoCompleta: string;
   explicacaoSimplificada: string;
   exemplo: string;
+  dicaComoComecar?: string; // Novo campo opcional
   nivelId: Level;
   categoria: Category;
   audioUrl?: string;
@@ -24,7 +25,7 @@ export const listaCompletaTermos: Termo[] = [
     sigla: "SELIC",
     nome: "Taxa Básica de Juros",
     explicacaoCompleta: "É a taxa básica de juros da economia brasileira, definida pelo Banco Central a cada 45 dias. Ela serve de referência para todas as outras taxas de juros do mercado.",
-    explicacaoSimplificada: "É a 'Taxa Mãe'. Ela manda no dinheiro do país. Se ela sobe, os investimentos de Renda Fixa rendem mais, mas pegar empréstimo fica mais caro.",
+    explicacaoSimplificada: "É a 'Taxa Mãe'. Ela comanda o dinheiro do país. Se ela sobe, os investimentos de Renda Fixa rendem mais, mas pegar empréstimo fica mais caro.",
     exemplo: "Imagine que a Selic é o 'preço do aluguel do dinheiro'. Se o aluguel sobe, quem tem imóvel (dinheiro) ganha mais, e quem precisa alugar (pegar empréstimo) paga mais.",
     nivelId: "iniciante",
     categoria: "indicadores"
@@ -45,7 +46,7 @@ export const listaCompletaTermos: Termo[] = [
     nome: "Índice Nacional de Preços ao Consumidor Amplo",
     explicacaoCompleta: "É o índice oficial de inflação do Brasil. Ele mede a variação média dos preços de uma cesta de produtos e serviços consumidos pelas famílias.",
     explicacaoSimplificada: "É o vilão invisível que faz o seu dinheiro valer menos. Se seu investimento render MENOS que o IPCA, você perdeu poder de compra.",
-    exemplo: "Se hoje você enche o carrinho com R$ 100 e a inflação for 10%, ano que vem precisará de R$ 110 para as mesmas coisas. Dinheiro parado perde valor.",
+    exemplo: "Se hoje você enche o carrinho com R$ 100,00 e a inflação for 10%, ano que vem precisará de R$ 110,00 para as mesmas coisas. Dinheiro parado perde valor.",
     nivelId: "iniciante",
     categoria: "indicadores"
   },
@@ -58,6 +59,7 @@ export const listaCompletaTermos: Termo[] = [
     explicacaoCompleta: "Título de renda fixa privado emitido por bancos para captar recursos. Em troca, o banco devolve o valor corrigido por uma taxa de juros.",
     explicacaoSimplificada: "Você vira o banqueiro. Em vez de pedir dinheiro emprestado, VOCÊ empresta para o banco. Ele usa seu dinheiro e te devolve com juros.",
     exemplo: "Igual quando você empresta dinheiro para um amigo e combina: 'Me devolve mês que vem com 10 reais a mais?'. Só que o amigo é o Banco.",
+    dicaComoComecar: "Procure no app do seu banco por 'Investimentos > Renda Fixa > CDB'. Prefira os que pagam acima de 100% do CDI.",
     nivelId: "iniciante",
     categoria: "renda_fixa"
   },
@@ -68,6 +70,7 @@ export const listaCompletaTermos: Termo[] = [
     explicacaoCompleta: "Título emitido pelo Governo Federal cuja rentabilidade acompanha a variação da taxa Selic. Possui liquidez diária e o menor risco de crédito.",
     explicacaoSimplificada: "O investimento mais seguro do Brasil. Você empresta dinheiro pro Governo. Ideal para Reserva de Emergência.",
     exemplo: "É o 'cofre forte' do país. Melhor que a Poupança, rende todo dia útil e você pode sacar quando quiser.",
+    dicaComoComecar: "Você pode investir a partir de aprox. R$ 150,00 direto pelo site do Tesouro Direto ou pela corretora do seu banco.",
     nivelId: "iniciante",
     categoria: "renda_fixa"
   },
@@ -89,7 +92,7 @@ export const listaCompletaTermos: Termo[] = [
     nome: "Imposto sobre Operações Financeiras",
     explicacaoCompleta: "Tributo federal que incide sobre operações de crédito e seguros. Nos investimentos, incide sobre resgates inferiores a 30 dias.",
     explicacaoSimplificada: "O imposto dos apressadinhos. Ele só existe se você colocar o dinheiro hoje e tirar em menos de um mês.",
-    exemplo: "Colocou R$ 1.000 hoje e tirou amanhã? O governo morde quase todo o seu lucro. Deixou 30 dias? O imposto zera.",
+    exemplo: "Colocou R$ 1.000,00 hoje e tirou amanhã? O governo morde quase todo o seu lucro. Deixou 30 dias? O imposto zera.",
     nivelId: "iniciante",
     categoria: "taxas"
   },
@@ -101,7 +104,8 @@ export const listaCompletaTermos: Termo[] = [
     nome: "Reserva de Emergência",
     explicacaoCompleta: "Montante financeiro acumulado para cobrir despesas imprevistas, equivalente a 6 a 12 meses do custo de vida.",
     explicacaoSimplificada: "O colchão de segurança. Dinheiro para quando o carro quebra ou você perde o emprego. Não é para ganhar dinheiro, é para não se endividar.",
-    exemplo: "Se você gasta R$ 2.000 por mês, sua reserva deve ser de pelo menos R$ 12.000 num lugar seguro que saca na hora.",
+    exemplo: "Se você gasta R$ 2.000,00 por mês, sua reserva deve ser de pelo menos R$ 12.000,00 em um lugar seguro, que é possível sacar a qualquer momento.",
+    dicaComoComecar: "Comece guardando R$ 50,00 por mês no Tesouro Selic ou em um CDB de Liquidez Diária. O importante é criar o hábito.",
     nivelId: "iniciante",
     categoria: "conceitos"
   },
@@ -121,7 +125,7 @@ export const listaCompletaTermos: Termo[] = [
     nome: "Capitalização Composta",
     explicacaoCompleta: "Regime de juros onde os juros de cada período são somados ao capital para o cálculo de novos juros nos períodos seguintes.",
     explicacaoSimplificada: "Juros sobre juros. A bola de neve do bem. Você ganha dinheiro sobre o dinheiro investido E sobre o lucro que já teve.",
-    exemplo: "Mês 1: Ganhou R$ 10. Mês 2: Você ganha juros sobre o seu dinheiro original + juros sobre os R$ 10 que ganhou. No longo prazo, explode.",
+    exemplo: "Mês 1: Ganhou R$ 10,00. Mês 2: Você ganha juros sobre o seu dinheiro original + juros sobre os R$ 10,00 que ganhou. No longo prazo, explode.",
     nivelId: "iniciante",
     categoria: "conceitos"
   },
@@ -167,6 +171,7 @@ export const listaCompletaTermos: Termo[] = [
     explicacaoCompleta: "Fundos de investimento destinados à aplicação em empreendimentos imobiliários. Distribuem rendimentos mensais isentos de IR.",
     explicacaoSimplificada: "Como ser dono de shopping sem ter dor de cabeça. Você compra 'pedacinhos' (cotas) e recebe aluguel na conta todo mês.",
     exemplo: "Com R$ 10,00 você compra uma cota de um fundo dono de 10 prédios. Todo mês, uma parte do aluguel desses prédios cai na sua conta.",
+    dicaComoComecar: "Abra conta numa corretora e procure pelo ticker (código) do fundo, ex: MXRF11.",
     nivelId: "intermediario",
     categoria: "renda_variavel"
   },
@@ -271,7 +276,7 @@ export const listaCompletaTermos: Termo[] = [
     nome: "Operar Alavancado",
     explicacaoCompleta: "Estratégia de usar capital de terceiros (corretora) para tentar aumentar o retorno de um investimento.",
     explicacaoSimplificada: "Investir 'fiado'. Você usa mais dinheiro do que tem para tentar ganhar mais. Se der certo, lucro turbinado. Se der errado, dívida.",
-    exemplo: "Você tem R$ 1.000, mas opera como se tivesse R$ 10.000. Se a ação subir 1%, você ganha 10%. Se cair 1%, você perde 10%.",
+    exemplo: "Você tem R$ 1.000,00, mas opera como se tivesse R$ 10.000,00. Se a ação subir 1%, você ganha 10%. Se cair 1%, você perde 10%.",
     nivelId: "experiente",
     categoria: "conceitos"
   },
@@ -291,7 +296,7 @@ export const listaCompletaTermos: Termo[] = [
     nome: "Operações Intradiárias",
     explicacaoCompleta: "Estratégia de compra e venda do mesmo ativo no mesmo dia, buscando lucrar com oscilações de curto prazo.",
     explicacaoSimplificada: "Comprar de manhã e vender à tarde. É a modalidade mais arriscada. Exige tela ligada o dia todo e sangue frio.",
-    exemplo: "É comprar um carro de manhã por R$ 20.000 achando que vai vender por R$ 20.200 antes do almoço. Lucro pequeno, repetido várias vezes.",
+    exemplo: "É comprar um carro de manhã por R$ 20.000,00 achando que vai vender por R$ 20.200,00 antes do almoço. Lucro pequeno, repetido várias vezes.",
     nivelId: "experiente",
     categoria: "conceitos"
   },
