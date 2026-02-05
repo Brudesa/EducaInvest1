@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
-// Definindo os tipos de categoria que teremos
 export type Category = "todos" | "indicadores" | "renda_fixa" | "renda_variavel" | "taxas" | "conceitos";
 
 interface CategoryFilterProps {
@@ -23,18 +22,18 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
     <motion.div 
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
-      className="flex flex-wrap gap-2 mb-8 pb-4 border-b border-gray-100"
+      className="flex flex-wrap gap-2 mb-8 pb-4 border-b border-border/40"
     >
       {categories.map((cat) => (
         <Button
           key={cat.id}
-          variant={selectedCategory === cat.id ? "secondary" : "ghost"}
+          variant={selectedCategory === cat.id ? "secondary" : "outline"}
           size="sm"
           onClick={() => onCategoryChange(cat.id as Category)}
-          className={`rounded-md text-sm transition-all ${
+          className={`rounded-md text-xs transition-all h-8 ${
             selectedCategory === cat.id 
-              ? "bg-slate-200 text-slate-900 font-medium" 
-              : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+              ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md" 
+              : "bg-secondary/50 text-muted-foreground border-border/50 hover:bg-secondary hover:text-foreground"
           }`}
         >
           {cat.label}
