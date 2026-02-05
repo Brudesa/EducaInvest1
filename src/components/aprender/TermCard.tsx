@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Volume2, PauseCircle, BookOpen, Lightbulb } from "lucide-react";
+import { ChevronDown, Volume2, PauseCircle, BookOpen, Lightbulb, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Termo } from "@/lib/termosData";
 import { Level } from "./LevelFilter";
@@ -18,9 +18,8 @@ const levelLabels: Record<Level, { label: string; color: string; bg: string }> =
 export function TermCard({ term }: TermCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  // Mantive 'exemplo' como padrão para não assustar o iniciante, mas você pode mudar para 'tecnico' se preferir
-  const [activeTab, setActiveTab] = useState<'exemplo' | 'tecnico'>('exemplo'); 
-   
+  const [activeTab, setActiveTab] = useState<'exemplo' | 'tecnico'>('exemplo');
+  
   const levelInfo = levelLabels[term.nivelId] || levelLabels['iniciante'];
 
   const handlePlayAudio = (e: React.MouseEvent) => {
@@ -63,20 +62,17 @@ export function TermCard({ term }: TermCardProps) {
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full p-4 flex items-center gap-4 cursor-pointer relative"
       >
-        {/* Ícone Sigla */}
         <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
           isExpanded ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground/70"
         }`}>
           <span className="text-lg font-bold">{term.sigla.charAt(0)}</span>
         </div>
 
-        {/* Info Principal */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="font-bold text-base text-foreground leading-none">
               {term.sigla}
             </h3>
-            {/* Badge Nível */}
             <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wide border border-transparent ${levelInfo.bg} ${levelInfo.color}`}>
               {levelInfo.label}
             </span>
@@ -84,9 +80,7 @@ export function TermCard({ term }: TermCardProps) {
           <p className="text-sm text-muted-foreground truncate">{term.nome}</p>
         </div>
 
-        {/* Controles da Direita */}
         <div className="flex items-center gap-2">
-          {/* Botão de Áudio */}
            <Button
             variant="ghost"
             size="icon"
@@ -106,7 +100,7 @@ export function TermCard({ term }: TermCardProps) {
         </div>
       </div>
 
-      {/* --- CONTEÚDO EXPANDIDO (COM ABAS) --- */}
+      {/* --- CONTEÚDO EXPANDIDO --- */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -118,16 +112,15 @@ export function TermCard({ term }: TermCardProps) {
           >
             <div className="p-4 space-y-4">
               
-              {/* 1. O Resumo (Sempre no topo) */}
+              {/* Resumo */}
               <div className="relative pl-3 border-l-2 border-primary">
                 <p className="text-sm text-foreground leading-relaxed">
                   {term.explicacaoSimplificada}
                 </p>
               </div>
 
-              {/* 2. Seletor de Abas (INVERTIDO: Técnico na Esquerda) */}
+              {/* Seletor de Abas */}
               <div className="bg-background/50 p-1 rounded-lg flex gap-1 border border-border/50">
-                {/* Botão TÉCNICO (Agora o primeiro) */}
                 <button
                   onClick={() => setActiveTab('tecnico')}
                   className={`flex-1 flex items-center justify-center gap-2 py-1.5 text-xs font-medium rounded-md transition-all ${
@@ -140,7 +133,6 @@ export function TermCard({ term }: TermCardProps) {
                   Técnico
                 </button>
 
-                {/* Botão NA PRÁTICA (Agora o segundo) */}
                 <button
                   onClick={() => setActiveTab('exemplo')}
                   className={`flex-1 flex items-center justify-center gap-2 py-1.5 text-xs font-medium rounded-md transition-all ${
@@ -154,32 +146,30 @@ export function TermCard({ term }: TermCardProps) {
                 </button>
               </div>
 
-              {/* 3. Conteúdo da Aba Ativa */}
-              <div className="min-h-[80px]">
+              {/* Conteúdo da Aba (COM ALTURA FIXA AGORA - h-[110px]) */}
+              <div className="h-[110px] overflow-y-auto pr-1 custom-scrollbar">
                 <AnimatePresence mode="wait">
                   {activeTab === 'tecnico' ? (
-                    // BLOCO TÉCNICO
                     <motion.div
                       key="tecnico"
-                      initial={{ opacity: 0, x: -10 }} // Vem da esquerda
+                      initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 10 }}
                       transition={{ duration: 0.2 }}
-                      className="bg-slate-500/5 border border-border/50 rounded-lg p-3"
+                      className="bg-slate-500/5 border border-border/50 rounded-lg p-3 h-full"
                     >
                       <p className="text-sm text-muted-foreground italic leading-relaxed">
                         "{term.explicacaoCompleta || "Definição não disponível."}"
                       </p>
                     </motion.div>
                   ) : (
-                    // BLOCO EXEMPLO
                     <motion.div
                       key="exemplo"
-                      initial={{ opacity: 0, x: 10 }} // Vem da direita
+                      initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -10 }}
                       transition={{ duration: 0.2 }}
-                      className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-3"
+                      className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-3 h-full"
                     >
                       <p className="text-sm text-foreground/90 leading-relaxed">
                         {term.exemplo || "Exemplo não disponível."}
@@ -188,6 +178,27 @@ export function TermCard({ term }: TermCardProps) {
                   )}
                 </AnimatePresence>
               </div>
+
+              {/* DICA EXTRA: Como Começar (Só aparece se o termo tiver essa dica) */}
+              {term.dicaComoComecar && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 flex gap-3 items-start"
+                >
+                  <div className="bg-emerald-500/20 p-1.5 rounded-full shrink-0 mt-0.5">
+                    <Rocket className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase mb-1">
+                      Como Começar
+                    </h4>
+                    <p className="text-xs text-emerald-900 dark:text-emerald-100 leading-relaxed">
+                      {term.dicaComoComecar}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
 
             </div>
           </motion.div>
