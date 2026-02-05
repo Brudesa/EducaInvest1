@@ -4,7 +4,8 @@ import { Category } from "../components/aprender/CategoryFilter";
 // --- TIPAGEM DA AULA ---
 export interface Aula {
   id: number;
-  titulo: string;
+  titulo: string;         // Título Curto (Menu Lateral)
+  tituloCompleto: string; // Título Longo (Cabeçalho da Aula)
   nivel: Level;
   duracao: string;
   descricao: string;
@@ -23,7 +24,7 @@ export interface Termo {
   nivelId: Level;
   categoria: Category;
   audioUrl?: string;
-  aulaAssociadaId?: number; // Vincula o card a uma aula específica
+  aulaAssociadaId?: number;
 }
 
 // =================================================================
@@ -34,77 +35,113 @@ export const aulas: Aula[] = [
   {
     id: 1,
     titulo: "Quando e como começar?",
+    tituloCompleto: "O Primeiro Passo: Organizando a Casa",
     nivel: "iniciante",
     duracao: "5 min",
     descricao: "Organização financeira possível com a regra 50-30-20. Não é sobre sobrar dinheiro, é sobre entender a realidade.",
     transcricaoCompleta: `
-      <h2>Conceito</h2>
-      <p>A construção da casa. Não dá para colocar o telhado (investir) sem ter o chão (organização).</p>
+      <div class="space-y-6">
+        <div class="bg-primary/10 border-l-4 border-primary p-4 rounded-r-lg">
+          <span class="text-primary font-bold uppercase text-xs tracking-wider block mb-1">💡 Conceito Chave</span>
+          <p class="text-white/90 italic text-sm m-0">A construção da casa. Não dá para colocar o telhado (investir) sem ter o chão (organização).</p>
+        </div>
 
-      <h2>Abertura</h2>
-      <p>Muita gente quer começar a investir comprando ações ou criptomoedas. Isso é como querer colocar o telhado de uma casa antes de fazer o alicerce. Vai cair. O começo não é sobre rentabilidade, é sobre Organização.</p>
-      
-      <h2>Desenvolvimento</h2>
-      <p>A maioria de nós não aprendeu a lidar com dinheiro. A gente recebe, paga boleto e reza para sobrar. Para quebrar esse ciclo, precisamos de um mapa.</p>
-      <p>Uma ferramenta simples é a <strong>Regra 50-30-20</strong>. Imagine seu salário como uma pizza fatiada em três partes:</p>
-      <ul>
-        <li><strong>A metade da pizza (50%) é para sobrevivência:</strong> aluguel, comida, luz.</li>
-        <li><strong>Uma fatia menor (30%) é para viver:</strong> lazer, um presente, um jantar. Cortar isso é insustentável.</li>
-        <li><strong>A última fatia (20%) é para o seu "Eu do Futuro".</strong></li>
-      </ul>
-      <p>"Mas não sobra nada!". A realidade do brasileiro é dura. Se não der para guardar 20%, guarde 5%. O objetivo inicial não é ficar rico, é criar o hábito.</p>
-      <p>Esse dinheiro guardado vai formar sua <strong>Reserva de Emergência</strong>. Pense nela como um "colete salva-vidas". Você não usa o colete para nadar mais rápido, você usa para não se afogar se o barco virar (desemprego, doença). Esse dinheiro precisa ter <strong>liquidez</strong>: tem que estar na mão na hora que o problema acontece.</p>
-      
-      <h2>Fechamento</h2>
-      <p>Primeiro você organiza a casa e veste o colete salva-vidas. Só depois você pensa em navegar em alto mar. Um passo de cada vez.</p>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Abertura</h3>
+          <p class="text-muted-foreground leading-relaxed">Muita gente quer começar a investir comprando ações ou criptomoedas. Isso é como querer colocar o telhado de uma casa antes de fazer o alicerce. Vai cair. O começo não é sobre rentabilidade, é sobre <strong>Organização</strong>.</p>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Desenvolvimento</h3>
+          <p class="text-muted-foreground leading-relaxed mb-4">A maioria de nós não aprendeu a lidar com dinheiro. A gente recebe, paga boleto e reza para sobrar. Para quebrar esse ciclo, precisamos de um mapa.</p>
+          <p class="text-muted-foreground leading-relaxed mb-4">Uma ferramenta simples é a <strong class="text-white">Regra 50-30-20</strong>. Imagine seu salário como uma pizza fatiada em três partes:</p>
+          <ul class="list-disc pl-5 space-y-2 text-muted-foreground marker:text-primary">
+            <li><strong class="text-white">50% (Sobrevivência):</strong> Aluguel, comida, luz. O básico para viver.</li>
+            <li><strong class="text-white">30% (Estilo de Vida):</strong> Lazer, um presente, um jantar. Cortar isso é insustentável no longo prazo.</li>
+            <li><strong class="text-white">20% (Eu do Futuro):</strong> Dinheiro para seus objetivos e aposentadoria.</li>
+          </ul>
+          <p class="text-muted-foreground leading-relaxed mt-4"><em>"Mas não sobra nada!"</em>. A realidade do brasileiro é dura. Se não der para guardar 20%, guarde 5%. O objetivo inicial não é ficar rico, é criar o hábito.</p>
+          <p class="text-muted-foreground leading-relaxed">Esse dinheiro guardado vai formar sua <strong>Reserva de Emergência</strong>. Pense nela como um "colete salva-vidas". Você não usa o colete para nadar mais rápido, você usa para não se afogar se o barco virar (desemprego, doença). Esse dinheiro precisa ter <strong>liquidez</strong>: tem que estar na mão na hora que o problema acontece.</p>
+        </div>
+        
+        <div class="pt-4 border-t border-white/10">
+          <h3 class="text-lg font-bold text-white mb-2">Fechamento</h3>
+          <p class="text-muted-foreground">Primeiro você organiza a casa e veste o colete salva-vidas. Só depois você pensa em navegar em alto mar. Um passo de cada vez.</p>
+        </div>
+      </div>
     `
   },
   {
     id: 2,
     titulo: "Guardar ou Investir?",
+    tituloCompleto: "Poupar vs Investir: A Diferença Vital",
     nivel: "iniciante",
     duracao: "5 min",
     descricao: "A despensa vs. A horta. Entenda a diferença entre segurança (poupança) e multiplicação (juros compostos).",
     transcricaoCompleta: `
-      <h2>Conceito</h2>
-      <p>A despensa vs. A horta. (Segurança vs. Multiplicação).</p>
+      <div class="space-y-6">
+        <div class="bg-primary/10 border-l-4 border-primary p-4 rounded-r-lg">
+          <span class="text-primary font-bold uppercase text-xs tracking-wider block mb-1">💡 Conceito Chave</span>
+          <p class="text-white/90 italic text-sm m-0">A despensa vs. A horta. (Segurança vs. Multiplicação).</p>
+        </div>
 
-      <h2>Abertura</h2>
-      <p>Você tem dinheiro parado na conta corrente ou na Poupança? Parabéns, você é um poupador. Mas você ainda não é um investidor. E existe uma traça invisível comendo esse dinheiro guardado: a Inflação.</p>
-      
-      <h2>Desenvolvimento</h2>
-      <p>Guardar dinheiro é como estocar comida na despensa. É seguro, está ali quando você precisa. Mas se ficar muito tempo, estraga. No mundo financeiro, quem estraga seu dinheiro é o <strong>IPCA (a inflação)</strong>. R$ 100 hoje compram muito menos do que compravam há 10 anos.</p>
-      <p>A Poupança hoje funciona como essa despensa antiga. O rendimento dela é tão baixo que, muitas vezes, apenas empata com a inflação. Você acha que tem o mesmo dinheiro, mas ele vale menos.</p>
-      <p>Investir é diferente. É pegar a semente e plantar. Você corre riscos? Sim, pode não chover (risco de mercado). Mas é a única forma de a semente virar árvore.</p>
-      <p>É aqui que entra a mágica dos <strong>Juros Compostos</strong>. Eles são o "super adubo" da sua horta. Funciona assim: sua árvore dá frutos. Em vez de comer tudo, você planta esses frutos. Agora você tem duas árvores. Depois quatro, depois oito. É o famoso "juros sobre juros". É a única força capaz de transformar pouco dinheiro em muito patrimônio no longo prazo.</p>
-      
-      <h2>Fechamento</h2>
-      <p>Não jogue todo seu dinheiro na horta (risco), nem deixe tudo na despensa (perda de valor). Dinheiro de curto prazo a gente guarda. Dinheiro de longo prazo a gente investe.</p>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Abertura</h3>
+          <p class="text-muted-foreground leading-relaxed">Você tem dinheiro parado na conta corrente ou na Poupança? Parabéns, você é um poupador. Mas você ainda não é um investidor. E existe uma traça invisível comendo esse dinheiro guardado: a <strong>Inflação</strong>.</p>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Desenvolvimento</h3>
+          <p class="text-muted-foreground leading-relaxed mb-4">Guardar dinheiro é como estocar comida na despensa. É seguro, está ali quando você precisa. Mas se ficar muito tempo, estraga. No mundo financeiro, quem estraga seu dinheiro é o <strong>IPCA (a inflação)</strong>. R$ 100 hoje compram muito menos do que compravam há 10 anos.</p>
+          <p class="text-muted-foreground leading-relaxed mb-4">A Poupança hoje funciona como essa despensa antiga. O rendimento dela é tão baixo que, muitas vezes, apenas empata com a inflação. Você acha que tem o mesmo dinheiro, mas ele vale menos.</p>
+          <div class="bg-white/5 p-4 rounded-lg my-4">
+            <p class="text-white font-medium mb-2">🌱 A Metáfora da Horta</p>
+            <p class="text-muted-foreground text-sm">Investir é pegar a semente e plantar. Você corre riscos? Sim, pode não chover (risco de mercado). Mas é a única forma de a semente virar árvore.</p>
+          </div>
+          <p class="text-muted-foreground leading-relaxed">É aqui que entra a mágica dos <strong>Juros Compostos</strong>. Eles são o "super adubo" da sua horta. Funciona assim: sua árvore dá frutos. Em vez de comer tudo, você planta esses frutos. Agora você tem duas árvores. Depois quatro, depois oito. É o famoso "juros sobre juros". É a única força capaz de transformar pouco dinheiro em muito patrimônio no longo prazo.</p>
+        </div>
+        
+        <div class="pt-4 border-t border-white/10">
+          <h3 class="text-lg font-bold text-white mb-2">Fechamento</h3>
+          <p class="text-muted-foreground">Não jogue todo seu dinheiro na horta (risco), nem deixe tudo na despensa (perda de valor). Dinheiro de curto prazo a gente guarda. Dinheiro de longo prazo a gente investe.</p>
+        </div>
+      </div>
     `
   },
   {
     id: 3,
     titulo: "Tesouro e Renda Fixa",
+    tituloCompleto: "Renda Fixa: Segurança e seus Riscos",
     nivel: "iniciante",
     duracao: "6 min",
     descricao: "O contrato de empréstimo e as letras miúdas. Tesouro, CDB e os riscos invisíveis.",
     transcricaoCompleta: `
-      <h2>Conceito</h2>
-      <p>O contrato de empréstimo e as letras miúdas.</p>
+      <div class="space-y-6">
+        <div class="bg-primary/10 border-l-4 border-primary p-4 rounded-r-lg">
+          <span class="text-primary font-bold uppercase text-xs tracking-wider block mb-1">💡 Conceito Chave</span>
+          <p class="text-white/90 italic text-sm m-0">O contrato de empréstimo e as letras miúdas.</p>
+        </div>
 
-      <h2>Abertura</h2>
-      <p>Quando você investe em Renda Fixa, você muda de lado no balcão. Você deixa de ser quem pede dinheiro emprestado e passa a ser o banqueiro: você é quem empresta. Mas para quem você está emprestando?</p>
-      
-      <h2>Desenvolvimento</h2>
-      <p>Se você empresta para o governo brasileiro, isso se chama <strong>Tesouro Direto</strong>. Se empresta para um banco, chama-se <strong>CDB</strong>. O quanto eles te pagam de juros depende da <strong>Selic</strong> (a taxa mãe da economia) ou do <strong>CDI</strong>. Se a economia vai mal e os juros sobem, você ganha mais.</p>
-      <p>"Então é risco zero?" Não. Existem pegadinhas:</p>
-      <ul>
-        <li><strong>A Impaciência:</strong> Existe um imposto chamado <strong>IOF</strong>. Ele é uma multa para quem investe e saca em menos de 30 dias. Se você for ansioso, o governo fica com seu lucro.</li>
-        <li><strong>O Tempo:</strong> Alguns títulos (como LCI e LCA) são "trancados". Você empresta o dinheiro e o banco só devolve daqui a 2 anos. Se você precisar do dinheiro para uma emergência amanhã, você não consegue sacar.</li>
-      </ul>
-      
-      <h2>Fechamento</h2>
-      <p>Renda Fixa é segura, mas exige planejamento. Dinheiro que você pode precisar a qualquer momento tem que ficar no Tesouro Selic ou CDB com Liquidez Diária. Para o resto, você pode travar o dinheiro para ganhar mais.</p>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Abertura</h3>
+          <p class="text-muted-foreground leading-relaxed">Quando você investe em Renda Fixa, você muda de lado no balcão. Você deixa de ser quem pede dinheiro emprestado e passa a ser o banqueiro: você é quem empresta. Mas para quem você está emprestando?</p>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Desenvolvimento</h3>
+          <p class="text-muted-foreground leading-relaxed mb-4">Se você empresta para o governo brasileiro, isso se chama <strong>Tesouro Direto</strong>. Se empresta para um banco, chama-se <strong>CDB</strong>. O quanto eles te pagam de juros depende da <strong>Selic</strong> (a taxa mãe da economia) ou do <strong>CDI</strong>. Se a economia vai mal e os juros sobem, você ganha mais.</p>
+          <p class="text-muted-foreground leading-relaxed mb-2">"Então é risco zero?" Não. Existem pegadinhas:</p>
+          <ul class="list-disc pl-5 space-y-3 text-muted-foreground marker:text-amber-500">
+            <li><strong class="text-white">A Impaciência (IOF):</strong> Existe um imposto que é uma multa para quem investe e saca em menos de 30 dias. Se você for ansioso, o governo fica com seu lucro.</li>
+            <li><strong class="text-white">O Tempo (Liquidez):</strong> Alguns títulos (como LCI e LCA) são "trancados". Você empresta o dinheiro e o banco só devolve daqui a 2 anos. Se você precisar do dinheiro para uma emergência amanhã, você não consegue sacar.</li>
+          </ul>
+        </div>
+        
+        <div class="pt-4 border-t border-white/10">
+          <h3 class="text-lg font-bold text-white mb-2">Fechamento</h3>
+          <p class="text-muted-foreground">Renda Fixa é segura, mas exige planejamento. Dinheiro que você pode precisar a qualquer momento tem que ficar no Tesouro Selic ou CDB com Liquidez Diária. Para o resto, você pode travar o dinheiro para ganhar mais.</p>
+        </div>
+      </div>
     `
   },
 
@@ -112,46 +149,74 @@ export const aulas: Aula[] = [
   {
     id: 4,
     titulo: "O que é a Bolsa?",
+    tituloCompleto: "Desmistificando a Bolsa de Valores",
     nivel: "intermediario",
     duracao: "5 min",
     descricao: "O Supermercado de Empresas. Preço vs Valor e como funciona o mercado.",
     transcricaoCompleta: `
-      <h2>Conceito</h2>
-      <p>O Supermercado de Empresas (Preço vs. Valor).</p>
+      <div class="space-y-6">
+        <div class="bg-amber-500/10 border-l-4 border-amber-500 p-4 rounded-r-lg">
+          <span class="text-amber-500 font-bold uppercase text-xs tracking-wider block mb-1">💡 Conceito Chave</span>
+          <p class="text-white/90 italic text-sm m-0">O Supermercado de Empresas (Preço vs. Valor).</p>
+        </div>
 
-      <h2>Abertura</h2>
-      <p>Esqueça a imagem de homens gritando com telefones na mão. A Bolsa de Valores hoje é silenciosa, digital e funciona exatamente como um supermercado ou uma feira livre.</p>
-      
-      <h2>Desenvolvimento</h2>
-      <p>A Bolsa (B3) é o lugar onde as empresas vão para vender pedacinhos delas mesmas. Elas fazem isso para captar dinheiro e construir fábricas ou lojas. Nós, investidores, compramos esses pedacinhos esperando que a empresa cresça.</p>
-      <p>A diferença para um supermercado comum é que, na Bolsa, os preços das etiquetas mudam a cada segundo. Se sai uma notícia ruim, o preço cai. Se sai uma notícia boa, o preço sobe.</p>
-      <p>Às vezes, o mercado entra em pânico coletivo. Todo mundo quer vender ao mesmo tempo. Para evitar um desastre, existe o <strong>Circuit Breaker</strong>. É como um disjuntor de segurança: se a bolsa cair 10%, ela "desliga" por 30 minutos para todo mundo beber uma água e acalmar os ânimos.</p>
-      
-      <h2>Fechamento</h2>
-      <p>A Bolsa é volátil. Ela chacoalha. Mas no longo prazo, ela segue o lucro das empresas. Se as empresas lucram, a bolsa sobe. Não se assuste com o barulho do curto prazo.</p>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Abertura</h3>
+          <p class="text-muted-foreground leading-relaxed">Esqueça a imagem de homens gritando com telefones na mão. A Bolsa de Valores hoje é silenciosa, digital e funciona exatamente como um supermercado ou uma feira livre.</p>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Desenvolvimento</h3>
+          <p class="text-muted-foreground leading-relaxed mb-4">A Bolsa (B3) é o lugar onde as empresas vão para vender pedacinhos delas mesmas. Elas fazem isso para captar dinheiro e construir fábricas ou lojas. Nós, investidores, compramos esses pedacinhos esperando que a empresa cresça.</p>
+          <p class="text-muted-foreground leading-relaxed mb-4">A diferença para um supermercado comum é que, na Bolsa, os preços das etiquetas mudam a cada segundo. Se sai uma notícia ruim, o preço cai. Se sai uma notícia boa, o preço sobe.</p>
+          <div class="bg-white/5 border border-white/10 p-4 rounded-lg">
+            <strong class="text-white block mb-1">🚨 O Circuit Breaker</strong>
+            <p class="text-muted-foreground text-sm m-0">Às vezes, o mercado entra em pânico coletivo. Para evitar um desastre, existe o Circuit Breaker. É como um disjuntor de segurança: se a bolsa cair 10%, ela "desliga" por 30 minutos para todo mundo beber uma água e acalmar os ânimos.</p>
+          </div>
+        </div>
+        
+        <div class="pt-4 border-t border-white/10">
+          <h3 class="text-lg font-bold text-white mb-2">Fechamento</h3>
+          <p class="text-muted-foreground">A Bolsa é volátil. Ela chacoalha. Mas no longo prazo, ela segue o lucro das empresas. Se as empresas lucram, a bolsa sobe. Não se assuste com o barulho do curto prazo.</p>
+        </div>
+      </div>
     `
   },
   {
     id: 5,
     titulo: "Sócio ou Apostador?",
+    tituloCompleto: "Mentalidade de Sócio: Como Ganhar no Longo Prazo",
     nivel: "intermediario",
     duracao: "5 min",
     descricao: "Ações, ETFs e Fundos. Como virar dono de grandes negócios.",
     transcricaoCompleta: `
-      <h2>Abertura</h2>
-      <p>Imagine que seu amigo te convida para ser sócio de uma padaria. Você colocaria seu dinheiro lá sem saber se o pão é bom, se a padaria dá lucro ou se tem dívidas? Provavelmente não. Então por que você faz isso na Bolsa?</p>
-      
-      <h2>Desenvolvimento</h2>
-      <p>Comprar uma <strong>Ação</strong> é virar sócio. É ter um CNPJ na carteira. Existem várias formas de fazer isso:</p>
-      <ul>
-        <li>Você pode escolher a dedo as melhores empresas (Stock Picking).</li>
-        <li>Você pode comprar um pacote fechado com as maiores empresas do Brasil através de um <strong>ETF</strong> (como o BOVA11). É como comprar uma cesta de frutas pronta em vez de escolher uva por uva.</li>
-        <li>Ou você pode ser sócio de grandes imóveis, como shoppings e escritórios, através dos <strong>FIIs (Fundos Imobiliários)</strong>, recebendo aluguel todo mês.</li>
-      </ul>
-      <p>O grande erro é tratar a ação como um bilhete de loteria. Quem compra achando que vai "estourar" amanhã, geralmente quebra. Quem compra pensando "quero ser dono dessa empresa pelos próximos 10 anos", geralmente enriquece.</p>
-      
-      <h2>Fechamento</h2>
-      <p>Antes de comprar uma ação, pergunte-se: "Se a Bolsa fechasse hoje e só reabrisse daqui a 5 anos, eu ficaria feliz em continuar dono dessa empresa?". Se a resposta for sim, você é um investidor.</p>
+      <div class="space-y-6">
+        <div class="bg-amber-500/10 border-l-4 border-amber-500 p-4 rounded-r-lg">
+          <span class="text-amber-500 font-bold uppercase text-xs tracking-wider block mb-1">💡 Conceito Chave</span>
+          <p class="text-white/90 italic text-sm m-0">Comprar ação é comprar CNPJ, não bilhete de loteria.</p>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Abertura</h3>
+          <p class="text-muted-foreground leading-relaxed">Imagine que seu amigo te convida para ser sócio de uma padaria. Você colocaria seu dinheiro lá sem saber se o pão é bom, se a padaria dá lucro ou se tem dívidas? Provavelmente não. Então por que você faz isso na Bolsa?</p>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Desenvolvimento</h3>
+          <p class="text-muted-foreground leading-relaxed mb-4">Comprar uma <strong>Ação</strong> é virar sócio. É ter um CNPJ na carteira. Existem várias formas de fazer isso:</p>
+          <ul class="list-disc pl-5 space-y-2 text-muted-foreground marker:text-amber-500">
+            <li><strong>Stock Picking:</strong> Você escolhe a dedo as melhores empresas (ex: Petrobras, Itaú).</li>
+            <li><strong>ETFs (A Cesta):</strong> Você compra um pacote fechado com as maiores empresas do Brasil (como o BOVA11). É como comprar uma cesta de frutas pronta em vez de escolher uva por uva.</li>
+            <li><strong>FIIs (Imóveis):</strong> Você vira sócio de shoppings e escritórios, recebendo aluguel todo mês.</li>
+          </ul>
+          <p class="text-muted-foreground leading-relaxed mt-4">O grande erro é tratar a ação como um bilhete de loteria. Quem compra achando que vai "estourar" amanhã, geralmente quebra. Quem compra pensando "quero ser dono dessa empresa pelos próximos 10 anos", geralmente enriquece.</p>
+        </div>
+        
+        <div class="pt-4 border-t border-white/10">
+          <h3 class="text-lg font-bold text-white mb-2">Fechamento</h3>
+          <p class="text-muted-foreground">Antes de comprar uma ação, pergunte-se: <em>"Se a Bolsa fechasse hoje e só reabrisse daqui a 5 anos, eu ficaria feliz em continuar dono dessa empresa?"</em>. Se a resposta for sim, você é um investidor.</p>
+        </div>
+      </div>
     `
   },
 
@@ -159,47 +224,83 @@ export const aulas: Aula[] = [
   {
     id: 6,
     titulo: "O Preço da Rapidez",
+    tituloCompleto: "Trader vs Investidor: O Custo da Velocidade",
     nivel: "avancado",
     duracao: "7 min",
     descricao: "Trader vs Investidor. Volatilidade, Alavancagem e os perigos do curto prazo.",
     transcricaoCompleta: `
-      <h2>Conceito</h2>
-      <p>A diferença entre dirigir seguro na estrada (Investidor) e correr na Fórmula 1 (Trader).</p>
+      <div class="space-y-6">
+        <div class="bg-rose-500/10 border-l-4 border-rose-500 p-4 rounded-r-lg">
+          <span class="text-rose-500 font-bold uppercase text-xs tracking-wider block mb-1">💡 Conceito Chave</span>
+          <p class="text-white/90 italic text-sm m-0">A diferença entre dirigir seguro na estrada (Investidor) e correr na Fórmula 1 (Trader).</p>
+        </div>
 
-      <h2>Abertura</h2>
-      <p>O mercado financeiro tem dois modos de operar: o modo "Maratona", onde você constrói patrimônio devagar por anos, e o modo "Corrida de 100 metros", onde a promessa é ganhar o salário do mês em um único dia. Hoje vamos falar sobre esse segundo modo, e por que a maioria das pessoas derrapa na primeira curva.</p>
-      
-      <h2>Desenvolvimento</h2>
-      <p>A modalidade mais famosa de curto prazo é o <strong>Day Trade</strong>. É comprar e vender a mesma coisa no mesmo dia. O Day Trader não quer ser sócio da empresa; ele não se importa se a empresa é boa ou ruim. Ele só quer aproveitar o movimento do preço.</p>
-      <p>E para ganhar dinheiro rápido, o trader precisa que o preço se mexa muito. O nome disso é <strong>Volatilidade</strong>. Para o investidor comum, volatilidade dá medo. Para o trader, é o oxigênio. Se o gráfico fica parado, ele não lucra.</p>
-      <p>O problema é: oscilações de centavos não deixam ninguém rico. É aí que entra a ferramenta mais perigosa do mercado: a <strong>Alavancagem</strong>. A corretora permite que você opere com dinheiro que não tem. É como se você tivesse 100 reais, mas a corretora deixasse você apostar como se tivesse 10 mil. Se o preço subir 1%, você ganha muito. Mas se cair 1%, você perde tudo o que tinha e ainda fica devendo. A alavancagem multiplica o lucro, mas também multiplica o tombo.</p>
-      <p>Enquanto a pessoa física usa essas ferramentas para apostar, os grandes bancos usam ferramentas parecidas, chamadas <strong>Derivativos</strong>, para fazer o oposto: proteção. Eles usam uma estratégia chamada <strong>Hedge</strong>. É como fazer um seguro do carro. Você não faz o seguro torcendo para bater o carro. Você faz para que, se bater, o prejuízo seja controlado.</p>
-      
-      <h2>Fechamento</h2>
-      <p>O erro do iniciante é usar ferramentas de profissionais (derivativos e alavancagem) com mentalidade de amador. Se você busca emoção, vá a um parque de diversões. Investimento sério costuma ser entediante, mas é o que funciona.</p>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Abertura</h3>
+          <p class="text-muted-foreground leading-relaxed">O mercado financeiro tem dois modos de operar: o modo "Maratona", onde você constrói patrimônio devagar por anos, e o modo "Corrida de 100 metros", onde a promessa é ganhar o salário do mês em um único dia. Hoje vamos falar sobre esse segundo modo, e por que a maioria das pessoas derrapa na primeira curva.</p>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Desenvolvimento</h3>
+          <p class="text-muted-foreground leading-relaxed mb-4">A modalidade mais famosa de curto prazo é o <strong>Day Trade</strong>. É comprar e vender a mesma coisa no mesmo dia. O Day Trader não quer ser sócio da empresa; ele não se importa se a empresa é boa ou ruim. Ele só quer aproveitar o movimento do preço.</p>
+          <p class="text-muted-foreground leading-relaxed mb-4">E para ganhar dinheiro rápido, o trader precisa que o preço se mexa muito. O nome disso é <strong>Volatilidade</strong>. Para o investidor comum, volatilidade dá medo. Para o trader, é o oxigênio.</p>
+          <div class="bg-rose-900/20 border border-rose-500/20 p-4 rounded-lg my-4">
+            <strong class="text-rose-400 block mb-1">⚠️ Perigo: Alavancagem</strong>
+            <p class="text-muted-foreground text-sm m-0">A corretora permite que você opere com dinheiro que não tem. É como se você tivesse 100 reais, mas a corretora deixasse você apostar como se tivesse 10 mil. Se o preço subir 1%, você ganha muito. Mas se cair 1%, você perde tudo o que tinha e ainda fica devendo.</p>
+          </div>
+          <p class="text-muted-foreground leading-relaxed">Enquanto a pessoa física usa essas ferramentas para apostar, os grandes bancos usam ferramentas parecidas, chamadas <strong>Derivativos</strong>, para fazer o oposto: proteção (Hedge).</p>
+        </div>
+        
+        <div class="pt-4 border-t border-white/10">
+          <h3 class="text-lg font-bold text-white mb-2">Fechamento</h3>
+          <p class="text-muted-foreground">O erro do iniciante é usar ferramentas de profissionais com mentalidade de amador. Se você busca emoção, vá a um parque de diversões. Investimento sério costuma ser entediante, mas é o que funciona.</p>
+        </div>
+      </div>
     `
   },
   {
     id: 7,
     titulo: "As Letras Miúdas",
+    tituloCompleto: "Custos Invisíveis: Taxas que Comem seu Lucro",
     nivel: "avancado",
     duracao: "6 min",
     descricao: "Taxas e Custos. Taxa de Adm, Performance e Spread. Onde seu lucro desaparece.",
     transcricaoCompleta: `
-      <h2>Conceito</h2>
-      <p>A jornada do seu dinheiro e os "pedágios" que ele paga no caminho.</p>
+      <div class="space-y-6">
+        <div class="bg-rose-500/10 border-l-4 border-rose-500 p-4 rounded-r-lg">
+          <span class="text-rose-500 font-bold uppercase text-xs tracking-wider block mb-1">💡 Conceito Chave</span>
+          <p class="text-white/90 italic text-sm m-0">A jornada do seu dinheiro e os "pedágios" que ele paga no caminho.</p>
+        </div>
 
-      <h2>Abertura</h2>
-      <p>Imagine que você fez um investimento e ele rendeu 10%. Você comemora. Mas quando o dinheiro cai na conta, só chegaram 7%. Onde foi parar o resto? O mercado financeiro é cheio de "sócios invisíveis" que mordem seu lucro sem você ver.</p>
-      
-      <h2>Desenvolvimento</h2>
-      <p>Vamos acompanhar a jornada do seu dinheiro para encontrar esses furos no balde.</p>
-      <p>O primeiro custo aparece na hora que você clica em "Comprar". Se você compra ações, paga os <strong>Emolumentos</strong>. É como um pedágio da Bolsa (B3). É barato, centavos, mas se você opera muito (como no Day Trade), vira uma fortuna. Além disso, existe o <strong>Spread</strong>. Já notou que na casa de câmbio o dólar para comprar é R$ 5,50 e para vender é R$ 5,00? Essa diferença é o Spread. Em investimentos com pouca liquidez, você já entra perdendo essa diferença logo na largada.</p>
-      <p>Depois que o dinheiro está investido, vem o custo de manutenção. Se você investe via Fundos, existe um gestor trabalhando lá. O salário dele sai da <strong>Taxa de Administração</strong>. Ela é cobrada todo ano, sobre todo o seu dinheiro, ganhando ou perdendo. É um aluguel que você paga para alguém cuidar do seu dinheiro. Se esse gestor for muito bom e superar a meta combinada, ele cobra um prêmio extra: a <strong>Taxa de Performance</strong>. Essa é a única taxa que a gente paga "feliz", porque significa que o fundo rendeu muito bem.</p>
-      <p>E por último, o governo. Em alguns fundos, o governo não espera você sacar para cobrar imposto. A cada 6 meses, ele vai lá e pega um pedacinho das suas cotas. O nome desse mecanismo é <strong>Come-Cotas</strong>. É uma antecipação do Imposto de Renda que freia o efeito dos juros compostos.</p>
-      
-      <h2>Fechamento</h2>
-      <p>Investir não é só escolher o que rende mais. É escolher o que custa menos. Um fundo com taxas altas precisa ser excepcionalmente bom só para empatar com um investimento simples e barato. Fique de olho nas letras miúdas.</p>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Abertura</h3>
+          <p class="text-muted-foreground leading-relaxed">Imagine que você fez um investimento e ele rendeu 10%. Você comemora. Mas quando o dinheiro cai na conta, só chegaram 7%. Onde foi parar o resto? O mercado financeiro é cheio de "sócios invisíveis" que mordem seu lucro sem você ver.</p>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Desenvolvimento</h3>
+          <p class="text-muted-foreground leading-relaxed mb-4">Vamos acompanhar a jornada do seu dinheiro para encontrar esses furos no balde.</p>
+          <ul class="space-y-4">
+             <li class="bg-white/5 p-3 rounded-lg">
+                <strong class="text-white block">1. A Compra (Emolumentos e Spread)</strong>
+                <span class="text-sm text-muted-foreground">É o pedágio da Bolsa. Centavos que viram fortunas se você opera muito. E o Spread é a diferença entre preço de compra e venda.</span>
+             </li>
+             <li class="bg-white/5 p-3 rounded-lg">
+                <strong class="text-white block">2. A Manutenção (Taxa de Adm)</strong>
+                <span class="text-sm text-muted-foreground">O salário do gestor do fundo. É cobrado todo ano sobre TODO o seu dinheiro, ganhando ou perdendo.</span>
+             </li>
+             <li class="bg-white/5 p-3 rounded-lg">
+                <strong class="text-white block">3. O Sócio Leão (Come-Cotas)</strong>
+                <span class="text-sm text-muted-foreground">Em alguns fundos, o governo não espera você sacar. A cada 6 meses, ele vai lá e pega um pedacinho das suas cotas.</span>
+             </li>
+          </ul>
+        </div>
+        
+        <div class="pt-4 border-t border-white/10">
+          <h3 class="text-lg font-bold text-white mb-2">Fechamento</h3>
+          <p class="text-muted-foreground">Investir não é só escolher o que rende mais. É escolher o que custa menos. Um fundo com taxas altas precisa ser excepcionalmente bom só para empatar com um investimento simples e barato. Fique de olho nas letras miúdas.</p>
+        </div>
+      </div>
     `
   }
 ];
