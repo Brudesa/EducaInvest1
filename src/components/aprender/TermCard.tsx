@@ -21,7 +21,6 @@ interface TermCardProps {
   term: Termo;
 }
 
-// Ajustei as cores das badges para ficarem mais vibrantes no fundo escuro
 const levelLabels: Record<Level, { label: string; color: string; bg: string }> = {
   iniciante: { label: "Iniciante", color: "text-emerald-400", bg: "bg-emerald-400/10 border border-emerald-400/20" },
   intermediario: { label: "Intermediário", color: "text-amber-400", bg: "bg-amber-400/10 border border-amber-400/20" },
@@ -78,8 +77,6 @@ export function TermCard({ term }: TermCardProps) {
       style={{ borderRadius: "0.75rem" }} 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      // --- AQUI ESTÁ A MÁGICA DO ESTILO DA HOME ---
-      // Mudamos de 'bg-card' para um estilo 'glassmorphism' escuro com borda azulada
       className={`group border transition-all duration-300 overflow-hidden w-full backdrop-blur-md ${
         isExpanded 
           ? "bg-slate-900/60 border-primary/50 shadow-[0_0_20px_rgba(var(--primary-rgb),0.15)]" 
@@ -90,7 +87,6 @@ export function TermCard({ term }: TermCardProps) {
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full p-4 flex items-start gap-3 sm:gap-4 cursor-pointer relative z-10"
       >
-        {/* Ícone com brilho da cor primária */}
         <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-all mt-0.5 border ${
           isExpanded 
             ? "bg-primary/20 border-primary/30 text-primary shadow-[0_0_10px_rgba(var(--primary-rgb),0.2)] rotate-3" 
@@ -108,7 +104,10 @@ export function TermCard({ term }: TermCardProps) {
               {levelInfo.label}
             </span>
           </div>
-          <p className="text-sm text-muted-foreground line-clamp-2 leading-snug">
+          
+          {/* CORREÇÃO AQUI: Adicionado 'h-10' para forçar altura de 2 linhas */}
+          {/* Isso garante que cards com nomes curtos tenham o mesmo tamanho dos longos */}
+          <p className="text-sm text-muted-foreground line-clamp-2 leading-snug h-10">
             {term.nome}
           </p>
         </div>
@@ -118,7 +117,6 @@ export function TermCard({ term }: TermCardProps) {
             variant="ghost"
             size="icon"
             onClick={handlePlayAudio}
-            // Botão de áudio mais integrado ao tema escuro
             className={`h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary ${isSpeaking ? "text-primary bg-primary/10 shadow-[0_0_10px_rgba(var(--primary-rgb),0.2)]" : "text-muted-foreground"}`}
           >
             {isSpeaking ? <PauseCircle className="w-4 h-4 animate-pulse" /> : <Volume2 className="w-4 h-4" />}
@@ -141,7 +139,6 @@ export function TermCard({ term }: TermCardProps) {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            // Fundo da área expandida mais escuro para contraste
             className="overflow-hidden border-t border-white/5 bg-[#0B1120]/50 relative z-0"
           >
             <div className="p-4 space-y-4">
@@ -151,7 +148,6 @@ export function TermCard({ term }: TermCardProps) {
                 </p>
               </div>
 
-              {/* Seletor de Abas com estilo Glass */}
               <div className="bg-slate-900/50 border border-white/5 p-1 rounded-lg flex gap-1">
                 <button
                   onClick={() => setActiveTab('tecnico')}
@@ -187,7 +183,6 @@ export function TermCard({ term }: TermCardProps) {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 10 }}
                       transition={{ duration: 0.2 }}
-                      // Caixas de texto internas com fundo mais escuro e bordas sutis
                       className="bg-slate-900/40 border border-white/5 rounded-lg p-3 min-h-full"
                     >
                       <p className="text-sm text-muted-foreground italic leading-normal">
@@ -201,7 +196,6 @@ export function TermCard({ term }: TermCardProps) {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -10 }}
                       transition={{ duration: 0.2 }}
-                      // Usei um tom azulado sutil para o exemplo em vez de amarelo, para combinar mais
                       className="bg-primary/5 border border-primary/10 rounded-lg p-3 min-h-full"
                     >
                       <p className="text-sm text-foreground/90 leading-normal">
@@ -216,7 +210,6 @@ export function TermCard({ term }: TermCardProps) {
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  // Dica com estilo neon vibrante
                   className="mt-2 bg-primary/5 border border-primary/20 rounded-lg p-3 flex gap-3 items-start shadow-[0_0_15px_rgba(var(--primary-rgb),0.05)]"
                 >
                   <div className="bg-primary/10 p-1.5 rounded-full shrink-0 mt-0.5 border border-primary/20">
@@ -226,16 +219,3 @@ export function TermCard({ term }: TermCardProps) {
                     <h4 className="text-xs font-bold text-primary uppercase mb-1">
                       Como Começar
                     </h4>
-                    <p className="text-xs text-foreground/80 leading-normal">
-                      {term.dicaComoComecar}
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
