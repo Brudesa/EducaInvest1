@@ -10,9 +10,9 @@ interface TermCardProps {
 }
 
 const levelLabels: Record<Level, { label: string; color: string; bg: string }> = {
-  iniciante: { label: "Iniciante", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-  intermediario: { label: "Intermediário", color: "text-amber-500", bg: "bg-amber-500/10" },
-  experiente: { label: "Experiente", color: "text-rose-500", bg: "bg-rose-500/10" },
+  iniciante: { label: "Iniciante", color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
+  intermediario: { label: "Intermediário", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/30" },
+  experiente: { label: "Experiente", color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-100 dark:bg-rose-900/30" },
 };
 
 export function TermCard({ term }: TermCardProps) {
@@ -114,7 +114,8 @@ export function TermCard({ term }: TermCardProps) {
               
               {/* Resumo */}
               <div className="relative pl-3 border-l-2 border-primary">
-                <p className="text-sm text-foreground leading-relaxed">
+                {/* AJUSTE DE TIPOGRAFIA: Removido leading-relaxed para o texto ficar mais compacto de forma saudável */}
+                <p className="text-sm text-foreground leading-normal">
                   {term.explicacaoSimplificada}
                 </p>
               </div>
@@ -146,8 +147,9 @@ export function TermCard({ term }: TermCardProps) {
                 </button>
               </div>
 
-              {/* Conteúdo da Aba (COM ALTURA FIXA AGORA - h-[110px]) */}
-              <div className="h-[110px] overflow-y-auto pr-1 custom-scrollbar">
+              {/* Conteúdo da Aba (AJUSTE DE ALTURA E TIPOGRAFIA) */}
+              {/* Aumentei de h-[110px] para h-[130px] para caber mais texto confortavelmente */}
+              <div className="h-[130px] overflow-y-auto pr-1 custom-scrollbar">
                 <AnimatePresence mode="wait">
                   {activeTab === 'tecnico' ? (
                     <motion.div
@@ -156,9 +158,10 @@ export function TermCard({ term }: TermCardProps) {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 10 }}
                       transition={{ duration: 0.2 }}
-                      className="bg-slate-500/5 border border-border/50 rounded-lg p-3 h-full"
+                      className="bg-slate-500/5 border border-border/50 rounded-lg p-3 min-h-full"
                     >
-                      <p className="text-sm text-muted-foreground italic leading-relaxed">
+                      {/* Usei leading-normal em vez de relaxed */}
+                      <p className="text-sm text-muted-foreground italic leading-normal">
                         "{term.explicacaoCompleta || "Definição não disponível."}"
                       </p>
                     </motion.div>
@@ -169,9 +172,10 @@ export function TermCard({ term }: TermCardProps) {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -10 }}
                       transition={{ duration: 0.2 }}
-                      className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-3 h-full"
+                      className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-3 min-h-full"
                     >
-                      <p className="text-sm text-foreground/90 leading-relaxed">
+                       {/* Usei leading-normal em vez de relaxed */}
+                      <p className="text-sm text-foreground/90 leading-normal">
                         {term.exemplo || "Exemplo não disponível."}
                       </p>
                     </motion.div>
@@ -179,21 +183,25 @@ export function TermCard({ term }: TermCardProps) {
                 </AnimatePresence>
               </div>
 
-              {/* DICA EXTRA: Como Começar (Só aparece se o termo tiver essa dica) */}
+              {/* DICA EXTRA: Como Começar (CORRIGIDO AS CORES) */}
               {term.dicaComoComecar && (
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 flex gap-3 items-start"
+                  // Fundo sutil, borda sutil
+                  className="mt-2 bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-3 flex gap-3 items-start"
                 >
-                  <div className="bg-emerald-500/20 p-1.5 rounded-full shrink-0 mt-0.5">
-                    <Rocket className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <div className="bg-emerald-500/10 p-1.5 rounded-full shrink-0 mt-0.5">
+                    {/* Ícone com cor vibrante */}
+                    <Rocket className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-500" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase mb-1">
+                    {/* Título com cor vibrante */}
+                    <h4 className="text-xs font-bold text-emerald-700 dark:text-emerald-500 uppercase mb-1">
                       Como Começar
                     </h4>
-                    <p className="text-xs text-emerald-900 dark:text-emerald-100 leading-relaxed">
+                    {/* CORREÇÃO PRINCIPAL: Texto do corpo agora usa a cor padrão do tema (foreground) para contraste perfeito */}
+                    <p className="text-xs text-foreground/80 leading-normal">
                       {term.dicaComoComecar}
                     </p>
                   </div>
