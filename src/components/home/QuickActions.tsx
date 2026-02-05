@@ -23,7 +23,7 @@ const actions = [
   },
   {
     title: "Quero me divertir",
-    subtitle: "Jogar Arcade",
+    subtitle: "Quero Praticar",
     description: "Aprenda brincando com jogos educativos sobre investimentos.",
     icon: Gamepad2,
     path: "/arcade",
