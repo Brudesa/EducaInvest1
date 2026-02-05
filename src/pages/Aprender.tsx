@@ -112,8 +112,10 @@ export default function Aprender() {
                     <span className="w-1 h-1 rounded-full bg-white/20" />
                     <span className="text-primary">{currentAula.nivel}</span>
                  </div>
+                 
+                 {/* MUDANÇA: Usando tituloCompleto para um título mais descritivo e bonito */}
                  <h1 className="font-display text-2xl md:text-4xl font-bold text-white mb-2 leading-tight">
-                   {currentAula.titulo}
+                   {currentAula.tituloCompleto}
                  </h1>
               </motion.div>
 
@@ -128,7 +130,7 @@ export default function Aprender() {
                 <div className="h-px bg-white/10 flex-1" />
               </div>
 
-              {/* AQUI ESTÁ A CORREÇÃO: items-start adicionado */}
+              {/* Grid corrigido com items-start */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 {termosDaAula.length > 0 ? (
                   termosDaAula.map((term, index) => (
@@ -148,10 +150,9 @@ export default function Aprender() {
                 )}
               </div>
 
-              {/* 3. NAVEGAÇÃO DUPLA (ANTERIOR / PRÓXIMA) */}
+              {/* Navegação Dupla */}
               <div className="pt-10 border-t border-white/10 flex justify-between items-center">
                 
-                {/* Botão Anterior */}
                 <Button
                   variant="ghost"
                   size="lg"
@@ -163,7 +164,6 @@ export default function Aprender() {
                   Aula Anterior
                 </Button>
 
-                {/* Botão Próxima */}
                 <Button 
                     size="lg"
                     onClick={handleNext} 
