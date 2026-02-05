@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   BookOpen, 
   ChevronRight, 
   ChevronLeft,
+  ChevronDown, // Importei para o menu mobile
   Layers, 
   PlayCircle, 
   CheckCircle2, 
@@ -17,6 +18,8 @@ import { cn } from "@/lib/utils";
 
 export default function Aprender() {
   const [currentAulaId, setCurrentAulaId] = useState(1);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Estado para o menu no celular
+  
   const currentAula = aulas.find(a => a.id === currentAulaId) || aulas[0];
 
   const termosDaAula = useMemo(() => {
@@ -29,34 +32,58 @@ export default function Aprender() {
     { titulo: "Módulo 3: Jogo Avançado", aulas: aulas.filter(a => a.nivel === "avancado") }
   ];
 
-  // Função para avançar
   const handleNext = () => {
-    if (currentAulaId < aulas.length) setCurrentAulaId(prev => prev + 1);
+    if (currentAulaId < aulas.length) {
+      setCurrentAulaId(prev => prev + 1);
+      window.scrollTo(0, 0); // Garante que sobe ao topo no mobile
+    }
   };
 
-  // Função para voltar
   const handlePrev = () => {
-    if (currentAulaId > 1) setCurrentAulaId(prev => prev - 1);
+    if (currentAulaId > 1) {
+      setCurrentAulaId(prev => prev - 1);
+      window.scrollTo(0, 0);
+    }
   };
 
-  const scrollbarClass = "overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-700/50 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-600 transition-colors";
+  // Scrollbar bonita apenas para Desktop
+  const scrollbarClass = "lg:overflow-y-auto lg:[&::-webkit-scrollbar]:w-1.5 lg:[&::-webkit-scrollbar-track]:bg-transparent lg:[&::-webkit-scrollbar-thumb]:bg-slate-700/50 lg:[&::-webkit-scrollbar-thumb]:rounded-full hover:lg:[&::-webkit-scrollbar-thumb]:bg-slate-600 transition-colors";
 
   return (
     <Layout>
-      <div className="flex flex-col lg:flex-row h-[calc(100vh-80px)] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 overflow-hidden">
+      {/* LAYOUT MISTO:
+         - Mobile: min-h-screen (altura natural), flex-col (um embaixo do outro).
+         - Desktop (lg): h-[calc] (altura travada), flex-row (lado a lado), overflow-hidden (sem rolar a janela).
+      */}
+      <div className="flex flex-col lg:flex-row min-h-screen lg:h-[calc(100vh-80px)] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 lg:overflow-hidden">
         
         {/* --- COLUNA 1: MENU LATERAL --- */}
         <aside className={cn(
-          "w-full lg:w-72 bg-slate-900/50 backdrop-blur-md border-r border-white/10 shrink-0 z-20",
-          scrollbarClass
+          "w-full lg:w-72 bg-slate-900/50 backdrop-blur-md border-b lg:border-b-0 lg:border-r border-white/10 shrink-0 z-20 transition-all",
+          scrollbarClass,
+          // No mobile, se estiver fechado, ocupa pouco espaço. Se aberto, empurra o conteúdo.
+          isMobileMenuOpen ? "h-auto" : "h-auto" 
         )}>
           <div className="p-4 lg:p-6">
-            <div className="flex items-center gap-2 mb-6 text-primary sticky top-0 bg-slate-900/90 backdrop-blur-xl py-2 z-10 -mx-2 px-2 rounded-lg">
-              <BookOpen className="w-5 h-5" />
-              <h2 className="font-display font-bold text-lg text-white">Cronograma</h2>
-            </div>
+            
+            {/* Header do Menu (Clicável no Mobile) */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="w-full flex items-center justify-between lg:justify-start gap-2 mb-2 lg:mb-6 text-primary sticky top-0 bg-slate-900/90 backdrop-blur-xl py-2 z-10 -mx-2 px-2 rounded-lg lg:cursor-default"
+            >
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5" />
+                <h2 className="font-display font-bold text-lg text-white">Cronograma</h2>
+              </div>
+              {/* Ícone de seta só aparece no mobile */}
+              <ChevronDown className={cn("w-5 h-5 lg:hidden transition-transform", isMobileMenuOpen ? "rotate-180" : "")} />
+            </button>
 
-            <div className="space-y-6">
+            {/* Lista de Aulas (Escondida no Mobile se fechada, Sempre visível no Desktop) */}
+            <div className={cn(
+              "space-y-6 lg:block", 
+              isMobileMenuOpen ? "block animate-in slide-in-from-top-2 duration-200" : "hidden"
+            )}>
               {modulos.map((modulo, index) => (
                 <div key={index}>
                   <h3 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2 px-2">
@@ -70,7 +97,10 @@ export default function Aprender() {
                       return (
                         <button
                           key={aula.id}
-                          onClick={() => setCurrentAulaId(aula.id)}
+                          onClick={() => {
+                            setCurrentAulaId(aula.id);
+                            setIsMobileMenuOpen(false); // Fecha o menu ao clicar (no mobile)
+                          }}
                           className={cn(
                             "w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium transition-all flex items-center gap-3 group",
                             isActive 
@@ -98,8 +128,13 @@ export default function Aprender() {
         </aside>
 
         {/* --- COLUNA 2: CONTEÚDO DA AULA --- */}
-        <main className={cn("flex-1 h-full relative scroll-smooth bg-slate-950/30", scrollbarClass)}>
-          <div className="p-6 md:p-10 max-w-5xl mx-auto space-y-8 pb-32">
+        <main className={cn(
+          "flex-1 relative bg-slate-950/30",
+          // No Desktop: h-full e scroll interno. No Mobile: altura natural.
+          "lg:h-full lg:overflow-y-auto",
+          scrollbarClass
+        )}>
+          <div className="p-4 md:p-10 max-w-5xl mx-auto space-y-8 pb-32">
               
               <motion.div
                 key={`header-${currentAula.id}`}
@@ -113,7 +148,6 @@ export default function Aprender() {
                     <span className="text-primary">{currentAula.nivel}</span>
                  </div>
                  
-                 {/* MUDANÇA: Usando tituloCompleto para um título mais descritivo e bonito */}
                  <h1 className="font-display text-2xl md:text-4xl font-bold text-white mb-2 leading-tight">
                    {currentAula.tituloCompleto}
                  </h1>
@@ -151,14 +185,14 @@ export default function Aprender() {
               </div>
 
               {/* Navegação Dupla */}
-              <div className="pt-10 border-t border-white/10 flex justify-between items-center">
+              <div className="pt-10 border-t border-white/10 flex flex-col-reverse gap-4 md:flex-row justify-between items-center">
                 
                 <Button
                   variant="ghost"
                   size="lg"
                   onClick={handlePrev}
                   disabled={currentAulaId === 1}
-                  className="text-muted-foreground hover:text-white hover:bg-white/5 rounded-full px-6"
+                  className="text-muted-foreground hover:text-white hover:bg-white/5 rounded-full px-6 w-full md:w-auto"
                 >
                   <ChevronLeft className="w-4 h-4 mr-2" />
                   Aula Anterior
@@ -168,7 +202,7 @@ export default function Aprender() {
                     size="lg"
                     onClick={handleNext} 
                     disabled={currentAulaId === aulas.length}
-                    className="group bg-white text-slate-900 hover:bg-white/90 font-bold rounded-full px-8 py-6 text-base shadow-lg shadow-white/5 transition-all hover:scale-105"
+                    className="group bg-white text-slate-900 hover:bg-white/90 font-bold rounded-full px-8 py-6 text-base shadow-lg shadow-white/5 transition-all hover:scale-105 w-full md:w-auto"
                   >
                     {currentAulaId === aulas.length ? "Concluir Curso" : "Próxima Aula"}
                     {currentAulaId !== aulas.length && (
