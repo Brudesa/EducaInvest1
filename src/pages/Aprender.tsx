@@ -1,149 +1,116 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { BookOpen, Search, Ghost } from "lucide-react";
+import { BookOpen, ChevronLeft, ChevronRight, Layers } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { PodcastCard } from "@/components/aprender/PodcastCard";
-import { LevelFilter, Level } from "@/components/aprender/LevelFilter";
-import { CategoryFilter, Category } from "@/components/aprender/CategoryFilter";
 import { TermCard } from "@/components/aprender/TermCard";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { listaCompletaTermos } from "@/lib/termosData";
+import { aulas, listaCompletaTermos } from "@/lib/termosData"; // Importando os dados novos
 
 export default function Aprender() {
-  const [selectedLevel, setSelectedLevel] = useState<Level | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<Category>("todos");
-  const [searchQuery, setSearchQuery] = useState("");
+  // Estado para controlar qual aula está ativa (começa na 1)
+  const [currentAulaId, setCurrentAulaId] = useState(1);
 
-  const filteredTerms = useMemo(() => {
-    return listaCompletaTermos.filter((term) => {
-      const matchesLevel = selectedLevel ? term.nivelId === selectedLevel : true;
-      const matchesCategory = selectedCategory === "todos" ? true : term.categoria === selectedCategory;
-      const matchesSearch = searchQuery
-        ? term.nome.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (term.sigla?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
-        : true;
+  // Encontra os dados da aula atual baseados no ID
+  const currentAula = aulas.find(a => a.id === currentAulaId) || aulas[0];
 
-      return matchesLevel && matchesCategory && matchesSearch;
-    });
-  }, [selectedLevel, selectedCategory, searchQuery]);
+  // Filtra APENAS os termos que pertencem a essa aula
+  const termosDaAula = useMemo(() => {
+    return listaCompletaTermos.filter((term) => term.aulaAssociadaId === currentAulaId);
+  }, [currentAulaId]);
 
-  const handleLevelChange = (level: Level | null) => {
-    setSelectedLevel(level);
-    setSelectedCategory("todos");
+  // Funções de navegação
+  const handleNext = () => {
+    if (currentAulaId < aulas.length) setCurrentAulaId(prev => prev + 1);
+  };
+
+  const handlePrev = () => {
+    if (currentAulaId > 1) setCurrentAulaId(prev => prev - 1);
   };
 
   return (
     <Layout>
-      <div className="py-8 md:py-16 bg-gradient-to-b from-transparent via-primary/5 to-transparent">
+      <div className="py-8 md:py-16 bg-gradient-to-b from-transparent via-primary/5 to-transparent min-h-screen">
         <div className="container mx-auto px-4">
           
-          {/* Header Refinado */}
+          {/* Header da Trilha */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-12"
+            className="text-center mb-8"
           >
-            {/* CORREÇÃO AQUI: Removido uppercase e bold para padronizar com a Home */}
-            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 backdrop-blur-md text-primary px-4 py-2 rounded-full mb-6 shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]">
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 backdrop-blur-md text-primary px-4 py-2 rounded-full mb-6">
               <BookOpen className="w-4 h-4" />
-              <span className="text-sm font-medium">Biblioteca do Investidor</span>
+              <span className="text-sm font-medium">Trilha do Investidor</span>
             </div>
             
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-6 tracking-tight text-balance text-white drop-shadow-sm">
-              Domine o vocabulário <br className="hidden md:block" /> do mercado financeiro
+            <h1 className="font-display text-3xl md:text-5xl font-bold mb-4 tracking-tight text-white">
+              Módulo {currentAula.id}: {currentAula.titulo}
             </h1>
             
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-balance leading-relaxed">
-              Traduzimos o "economês" para você investir com total confiança. 
-              Explicações simples, exemplos práticos e aulas em áudio.
-            </p>
+            {/* Navegação entre Aulas */}
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <Button 
+                variant="outline" 
+                onClick={handlePrev} 
+                disabled={currentAulaId === 1}
+                className="rounded-full border-white/10 hover:bg-white/5"
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Anterior
+              </Button>
+              
+              <span className="text-sm text-muted-foreground font-mono">
+                {currentAulaId} / {aulas.length}
+              </span>
+
+              <Button 
+                variant="outline" 
+                onClick={handleNext} 
+                disabled={currentAulaId === aulas.length}
+                className="rounded-full border-white/10 hover:bg-white/5"
+              >
+                Próxima
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
           </motion.div>
 
-          <div className="mb-10 relative z-10">
-            <PodcastCard />
+          {/* O Card do Podcast (Destaque) */}
+          <div className="mb-12 relative z-10 max-w-4xl mx-auto">
+            <PodcastCard aula={currentAula} />
           </div>
 
-          {/* Área de Filtros e Busca */}
-          <div className="flex flex-col gap-6 mb-12 relative z-10">
-            <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4">
-              <div className="overflow-x-auto pb-2 md:pb-0 no-scrollbar">
-                <LevelFilter 
-                  selectedLevel={selectedLevel} 
-                  onLevelChange={handleLevelChange} 
-                />
-              </div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="relative w-full md:w-72"
-              >
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
-                <Input
-                  type="text"
-                  placeholder="Buscar termo (ex: Selic)..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-slate-900/40 border-white/10 backdrop-blur-md focus:border-primary/50 focus:ring-primary/20 transition-all rounded-xl text-foreground placeholder:text-muted-foreground/50"
-                />
-              </motion.div>
-            </div>
-
-            <div className="overflow-x-auto pb-2 no-scrollbar">
-              <CategoryFilter 
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-              />
-            </div>
+          {/* Divisor Visual */}
+          <div className="flex items-center gap-4 mb-8">
+            <div className="h-px bg-white/10 flex-1" />
+            <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <Layers className="w-4 h-4" />
+              Conceitos desta aula
+            </span>
+            <div className="h-px bg-white/10 flex-1" />
           </div>
 
-          {/* Grid de Cards */}
+          {/* Grid de Cards (Termos da Aula) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
-            {filteredTerms.map((term, index) => (
-              <motion.div
-                key={term.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-              >
-                <TermCard term={term} /> 
-              </motion.div>
-            ))}
+            {termosDaAula.length > 0 ? (
+              termosDaAula.map((term, index) => (
+                <motion.div
+                  key={term.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                >
+                  <TermCard term={term} /> 
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-10 text-muted-foreground/50">
+                <p>Nenhum termo técnico específico cadastrado para esta aula.</p>
+              </div>
+            )}
           </div>
 
-          {/* Estado Vazio */}
-          {filteredTerms.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-20 px-6 rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-md flex flex-col items-center justify-center shadow-lg"
-            >
-              <div className="bg-primary/10 p-5 rounded-full mb-6 border border-primary/20 shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]">
-                <Ghost className="w-10 h-10 text-primary" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">
-                Ops! Nenhum termo encontrado
-              </h3>
-              <p className="text-muted-foreground mb-8 max-w-sm text-balance">
-                Não encontramos resultados para os filtros selecionados. Tente ajustar sua busca ou mudar a categoria.
-              </p>
-              <Button 
-                variant="default"
-                size="lg"
-                className="rounded-full px-8 shadow-lg shadow-primary/20"
-                onClick={() => {
-                  setSearchQuery("");
-                  setSelectedLevel(null);
-                  setSelectedCategory("todos");
-                }}
-              >
-                Ver todos os termos
-              </Button>
-            </motion.div>
-          )}
         </div>
       </div>
     </Layout>
