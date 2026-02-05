@@ -7,12 +7,11 @@ import {
   BookOpen, 
   Lightbulb, 
   Rocket,
-  // Novos ícones para o sistema dinâmico
-  TrendingUp,   // Indicadores
-  ShieldCheck,  // Renda Fixa
-  BarChart3,    // Renda Variável
-  Percent,      // Taxas
-  Zap           // Conceitos
+  TrendingUp,
+  ShieldCheck,
+  BarChart3,
+  Percent,
+  Zap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Termo } from "@/lib/termosData";
@@ -28,23 +27,16 @@ const levelLabels: Record<Level, { label: string; color: string; bg: string }> =
   avancado: { label: "Avançado", color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-100 dark:bg-rose-900/30" },
 };
 
-// --- FUNÇÃO PARA RENDERIZAR ÍCONE POR CATEGORIA ---
 const getCategoryIcon = (category: string) => {
   const iconClass = "w-5 h-5 transition-transform duration-300 group-hover:scale-110";
   
   switch (category) {
-    case 'indicadores':
-      return <TrendingUp className={iconClass} />;
-    case 'renda_fixa':
-      return <ShieldCheck className={iconClass} />;
-    case 'renda_variavel':
-      return <BarChart3 className={iconClass} />;
-    case 'taxas':
-      return <Percent className={iconClass} />;
-    case 'conceitos':
-      return <Zap className={iconClass} />;
-    default:
-      return <BookOpen className={iconClass} />;
+    case 'indicadores': return <TrendingUp className={iconClass} />;
+    case 'renda_fixa': return <ShieldCheck className={iconClass} />;
+    case 'renda_variavel': return <BarChart3 className={iconClass} />;
+    case 'taxas': return <Percent className={iconClass} />;
+    case 'conceitos': return <Zap className={iconClass} />;
+    default: return <BookOpen className={iconClass} />;
   }
 };
 
@@ -91,12 +83,10 @@ export function TermCard({ term }: TermCardProps) {
           : "bg-card border-border/60 hover:border-primary/40 hover:shadow-md"
       }`}
     >
-      {/* --- HEADER ADAPTÁVEL --- */}
       <div
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full p-4 flex items-start gap-3 sm:gap-4 cursor-pointer relative"
       >
-        {/* ÍCONE DINÂMICO (Substituiu a letra inicial) */}
         <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-all mt-0.5 ${
           isExpanded 
             ? "bg-primary text-primary-foreground shadow-md rotate-3" 
@@ -105,13 +95,13 @@ export function TermCard({ term }: TermCardProps) {
           {getCategoryIcon(term.categoria)}
         </div>
 
-        {/* Info Principal */}
         <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2 mb-1">
-            <h3 className="font-bold text-base text-foreground leading-tight break-words">
+          {/* CORREÇÃO AQUI: flex-nowrap e truncate */}
+          <div className="flex flex-nowrap items-center gap-2 mb-1">
+            <h3 className="font-bold text-base text-foreground leading-tight truncate">
               {term.sigla}
             </h3>
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wide border border-transparent whitespace-nowrap ${levelInfo.bg} ${levelInfo.color}`}>
+            <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wide border border-transparent whitespace-nowrap ${levelInfo.bg} ${levelInfo.color}`}>
               {levelInfo.label}
             </span>
           </div>
@@ -120,7 +110,6 @@ export function TermCard({ term }: TermCardProps) {
           </p>
         </div>
 
-        {/* Controles da Direita */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
            <Button
             variant="ghost"
@@ -141,7 +130,6 @@ export function TermCard({ term }: TermCardProps) {
         </div>
       </div>
 
-      {/* --- CONTEÚDO EXPANDIDO --- */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -152,15 +140,12 @@ export function TermCard({ term }: TermCardProps) {
             className="overflow-hidden border-t border-border/40 bg-muted/30"
           >
             <div className="p-4 space-y-4">
-              
-              {/* Resumo */}
               <div className="relative pl-3 border-l-2 border-primary">
                 <p className="text-sm text-foreground leading-normal">
                   {term.explicacaoSimplificada}
                 </p>
               </div>
 
-              {/* Seletor de Abas */}
               <div className="bg-background/50 p-1 rounded-lg flex gap-1 border border-border/50">
                 <button
                   onClick={() => setActiveTab('tecnico')}
@@ -187,7 +172,6 @@ export function TermCard({ term }: TermCardProps) {
                 </button>
               </div>
 
-              {/* Conteúdo da Aba */}
               <div className="h-[130px] overflow-y-auto overflow-x-hidden pr-1 custom-scrollbar">
                 <AnimatePresence mode="wait">
                   {activeTab === 'tecnico' ? (
@@ -220,7 +204,6 @@ export function TermCard({ term }: TermCardProps) {
                 </AnimatePresence>
               </div>
 
-              {/* DICA EXTRA: Como Começar */}
               {term.dicaComoComecar && (
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
@@ -240,7 +223,6 @@ export function TermCard({ term }: TermCardProps) {
                   </div>
                 </motion.div>
               )}
-
             </div>
           </motion.div>
         )}
