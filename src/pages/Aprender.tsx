@@ -35,20 +35,20 @@ export default function Aprender() {
 
   return (
     <Layout>
-      {/* Adicionei um gradiente de fundo sutil na seção para dar profundidade */}
       <div className="py-8 md:py-16 bg-gradient-to-b from-transparent via-primary/5 to-transparent">
         <div className="container mx-auto px-4">
           
-          {/* Header Refinado com estilo Glass */}
+          {/* Header Refinado */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
+            {/* CORREÇÃO AQUI: Removido uppercase e bold para padronizar com a Home */}
             <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 backdrop-blur-md text-primary px-4 py-2 rounded-full mb-6 shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]">
               <BookOpen className="w-4 h-4" />
-              <span className="text-sm font-bold uppercase tracking-widest">Biblioteca do Investidor</span>
+              <span className="text-sm font-medium">Biblioteca do Investidor</span>
             </div>
             
             <h1 className="font-display text-4xl md:text-5xl font-bold mb-6 tracking-tight text-balance text-white drop-shadow-sm">
@@ -62,7 +62,6 @@ export default function Aprender() {
           </motion.div>
 
           <div className="mb-10 relative z-10">
-            {/* O PodcastCard já deve estar no estilo correto se você aplicou a alteração anterior */}
             <PodcastCard />
           </div>
 
@@ -83,7 +82,6 @@ export default function Aprender() {
                 className="relative w-full md:w-72"
               >
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/70" />
-                {/* Input de busca com estilo Glass */}
                 <Input
                   type="text"
                   placeholder="Buscar termo (ex: Selic)..."
@@ -116,12 +114,11 @@ export default function Aprender() {
             ))}
           </div>
 
-          {/* Estado Vazio com estilo Glass */}
+          {/* Estado Vazio */}
           {filteredTerms.length === 0 && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              // Mudança aqui para o estilo da home
               className="text-center py-20 px-6 rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-md flex flex-col items-center justify-center shadow-lg"
             >
               <div className="bg-primary/10 p-5 rounded-full mb-6 border border-primary/20 shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]">
