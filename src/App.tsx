@@ -26,6 +26,14 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           <Route path="/login" element={<Login />} />
+          <Route 
+          path="/aprender" 
+          element={
+          <AuthGuard>
+          <Aprender />
+          </AuthGuard>
+          } 
+          />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
