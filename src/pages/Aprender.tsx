@@ -1,41 +1,115 @@
-import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useMemo, useEffect } from "react";
+import { motion } from "framer-motion";
 import { 
   BookOpen, 
   ChevronRight, 
   ChevronLeft,
-  ChevronDown, // Importei para o menu mobile
+  ChevronDown,
   Layers, 
   PlayCircle, 
   CheckCircle2, 
+  Loader2 // Novo ícone de carregamento
 } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { PodcastCard } from "@/components/aprender/PodcastCard";
 import { TermCard } from "@/components/aprender/TermCard";
 import { Button } from "@/components/ui/button";
-import { aulas, listaCompletaTermos } from "@/lib/termosData";
 import { cn } from "@/lib/utils";
+
+// 1. Imports do Backend e Tipagem
+import { supabase } from "@/integrations/supabase/client"; 
+import { Aula, Termo } from "@/lib/termosData"; 
 
 export default function Aprender() {
   const [currentAulaId, setCurrentAulaId] = useState(1);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Estado para o menu no celular
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
-  const currentAula = aulas.find(a => a.id === currentAulaId) || aulas[0];
+  // 2. Novos Estados para os Dados Reais
+  const [lessons, setLessons] = useState<Aula[]>([]);
+  const [allTerms, setAllTerms] = useState<Termo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // 3. Buscando dados do Supabase ao carregar a página
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setIsLoading(true);
+
+        // A. Buscar Aulas
+        const { data: lessonsData, error: lessonsError } = await supabase
+          .from('lessons')
+          .select('*')
+          .order('order_index', { ascending: true });
+
+        if (lessonsError) throw lessonsError;
+
+        // B. Buscar Termos
+        const { data: termsData, error: termsError } = await supabase
+          .from('terms')
+          .select('*');
+
+        if (termsError) throw termsError;
+
+        // C. Mapear Aulas (Banco -> Interface)
+        const mappedLessons: Aula[] = (lessonsData || []).map((l: any) => ({
+          id: l.id,
+          titulo: l.title_short,
+          tituloCompleto: l.title_full,
+          nivel: l.level,
+          duracao: l.duration,
+          descricao: l.description,
+          transcricaoCompleta: l.transcript_html
+        }));
+
+        setLessons(mappedLessons);
+
+        // D. Mapear Termos e vincular Nível da Aula
+        const mappedTerms: Termo[] = (termsData || []).map((t: any) => {
+           // Encontra a aula pai para saber se é iniciante/avançado
+           const parentLesson = mappedLessons.find(l => l.id === t.lesson_id);
+           return {
+             id: t.id,
+             sigla: t.acronym,
+             nome: t.name,
+             explicacaoCompleta: t.explanation_full,
+             explicacaoSimplificada: t.explanation_simple,
+             exemplo: t.example,
+             dicaComoComecar: t.tip,
+             nivelId: parentLesson?.nivel || 'iniciante', 
+             categoria: t.category,
+             aulaAssociadaId: t.lesson_id
+           };
+        });
+
+        setAllTerms(mappedTerms);
+
+      } catch (error) {
+        console.error("Erro crítico ao carregar dados:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  // Lógica segura para evitar erro se o array estiver vazio durante o loading
+  const currentAula = lessons.find(a => a.id === currentAulaId) || lessons[0];
 
   const termosDaAula = useMemo(() => {
-    return listaCompletaTermos.filter((term) => term.aulaAssociadaId === currentAulaId);
-  }, [currentAulaId]);
+    return allTerms.filter((term) => term.aulaAssociadaId === currentAulaId);
+  }, [currentAulaId, allTerms]);
 
   const modulos = [
-    { titulo: "Módulo 1: O Básico Invisível", aulas: aulas.filter(a => a.nivel === "iniciante") },
-    { titulo: "Módulo 2: O Mercado", aulas: aulas.filter(a => a.nivel === "intermediario") },
-    { titulo: "Módulo 3: Jogo Avançado", aulas: aulas.filter(a => a.nivel === "avancado") }
+    { titulo: "Módulo 1: O Básico Invisível", aulas: lessons.filter(a => a.nivel === "iniciante") },
+    { titulo: "Módulo 2: O Mercado", aulas: lessons.filter(a => a.nivel === "intermediario") },
+    { titulo: "Módulo 3: Jogo Avançado", aulas: lessons.filter(a => a.nivel === "avancado") }
   ];
 
   const handleNext = () => {
-    if (currentAulaId < aulas.length) {
+    if (currentAulaId < lessons.length) {
       setCurrentAulaId(prev => prev + 1);
-      window.scrollTo(0, 0); // Garante que sobe ao topo no mobile
+      window.scrollTo(0, 0); 
     }
   };
 
@@ -46,27 +120,37 @@ export default function Aprender() {
     }
   };
 
-  // Scrollbar bonita apenas para Desktop
   const scrollbarClass = "lg:overflow-y-auto lg:[&::-webkit-scrollbar]:w-1.5 lg:[&::-webkit-scrollbar-track]:bg-transparent lg:[&::-webkit-scrollbar-thumb]:bg-slate-700/50 lg:[&::-webkit-scrollbar-thumb]:rounded-full hover:lg:[&::-webkit-scrollbar-thumb]:bg-slate-600 transition-colors";
+
+  // 4. Tela de Carregamento
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4 text-primary animate-pulse">
+            <Loader2 className="w-10 h-10 animate-spin" />
+            <p className="text-sm font-medium">Carregando conteúdo...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Se carregou mas não tem aulas (erro ou banco vazio)
+  if (!currentAula) return null;
 
   return (
     <Layout>
-      {/* LAYOUT MISTO:
-         - Mobile: min-h-screen (altura natural), flex-col (um embaixo do outro).
-         - Desktop (lg): h-[calc] (altura travada), flex-row (lado a lado), overflow-hidden (sem rolar a janela).
-      */}
       <div className="flex flex-col lg:flex-row min-h-screen lg:h-[calc(100vh-80px)] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 lg:overflow-hidden">
         
         {/* --- COLUNA 1: MENU LATERAL --- */}
         <aside className={cn(
           "w-full lg:w-72 bg-slate-900/50 backdrop-blur-md border-b lg:border-b-0 lg:border-r border-white/10 shrink-0 z-20 transition-all",
           scrollbarClass,
-          // No mobile, se estiver fechado, ocupa pouco espaço. Se aberto, empurra o conteúdo.
           isMobileMenuOpen ? "h-auto" : "h-auto" 
         )}>
           <div className="p-4 lg:p-6">
             
-            {/* Header do Menu (Clicável no Mobile) */}
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="w-full flex items-center justify-between lg:justify-start gap-2 mb-2 lg:mb-6 text-primary sticky top-0 bg-slate-900/90 backdrop-blur-xl py-2 z-10 -mx-2 px-2 rounded-lg lg:cursor-default"
@@ -75,11 +159,9 @@ export default function Aprender() {
                 <BookOpen className="w-5 h-5" />
                 <h2 className="font-display font-bold text-lg text-white">Cronograma</h2>
               </div>
-              {/* Ícone de seta só aparece no mobile */}
               <ChevronDown className={cn("w-5 h-5 lg:hidden transition-transform", isMobileMenuOpen ? "rotate-180" : "")} />
             </button>
 
-            {/* Lista de Aulas (Escondida no Mobile se fechada, Sempre visível no Desktop) */}
             <div className={cn(
               "space-y-6 lg:block", 
               isMobileMenuOpen ? "block animate-in slide-in-from-top-2 duration-200" : "hidden"
@@ -99,7 +181,7 @@ export default function Aprender() {
                           key={aula.id}
                           onClick={() => {
                             setCurrentAulaId(aula.id);
-                            setIsMobileMenuOpen(false); // Fecha o menu ao clicar (no mobile)
+                            setIsMobileMenuOpen(false); 
                           }}
                           className={cn(
                             "w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium transition-all flex items-center gap-3 group",
@@ -130,7 +212,6 @@ export default function Aprender() {
         {/* --- COLUNA 2: CONTEÚDO DA AULA --- */}
         <main className={cn(
           "flex-1 relative bg-slate-950/30",
-          // No Desktop: h-full e scroll interno. No Mobile: altura natural.
           "lg:h-full lg:overflow-y-auto",
           scrollbarClass
         )}>
@@ -143,7 +224,7 @@ export default function Aprender() {
                 transition={{ duration: 0.4 }}
               >
                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-medium text-muted-foreground mb-4 uppercase tracking-wider">
-                    <span>Aula {currentAula.id} de {aulas.length}</span>
+                    <span>Aula {currentAula.id} de {lessons.length}</span>
                     <span className="w-1 h-1 rounded-full bg-white/20" />
                     <span className="text-primary">{currentAula.nivel}</span>
                  </div>
@@ -164,7 +245,6 @@ export default function Aprender() {
                 <div className="h-px bg-white/10 flex-1" />
               </div>
 
-              {/* Grid corrigido com items-start */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 {termosDaAula.length > 0 ? (
                   termosDaAula.map((term, index) => (
@@ -184,7 +264,6 @@ export default function Aprender() {
                 )}
               </div>
 
-              {/* Navegação Dupla */}
               <div className="pt-10 border-t border-white/10 flex flex-col-reverse gap-4 md:flex-row justify-between items-center">
                 
                 <Button
@@ -201,11 +280,11 @@ export default function Aprender() {
                 <Button 
                     size="lg"
                     onClick={handleNext} 
-                    disabled={currentAulaId === aulas.length}
+                    disabled={currentAulaId === lessons.length}
                     className="group bg-white text-slate-900 hover:bg-white/90 font-bold rounded-full px-8 py-6 text-base shadow-lg shadow-white/5 transition-all hover:scale-105 w-full md:w-auto"
                   >
-                    {currentAulaId === aulas.length ? "Concluir Curso" : "Próxima Aula"}
-                    {currentAulaId !== aulas.length && (
+                    {currentAulaId === lessons.length ? "Concluir Curso" : "Próxima Aula"}
+                    {currentAulaId !== lessons.length && (
                       <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     )}
                 </Button>
