@@ -20,21 +20,17 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/aprender" element={
+          <AuthGuard>
+          <Aprender />
+          </AuthGuard>}/>
           <Route path="/" element={<Home />} />
-          <Route path="/aprender" element={<Aprender />} />
           <Route path="/simular" element={<Simular />} />
           <Route path="/praticar" element={<Arcade />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           <Route path="/login" element={<Login />} />
-          <Route 
-          path="/aprender" 
-          element={
-          <AuthGuard>
-          <Aprender />
-          </AuthGuard>
-          } 
-          />
+          
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
