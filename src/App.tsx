@@ -9,6 +9,7 @@ import Simular from "./pages/Simular";
 import Arcade from "./pages/Praticar";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import { AuthGuard } from "./components/auth/AuthGuard";
 
 const queryClient = new QueryClient();
 
