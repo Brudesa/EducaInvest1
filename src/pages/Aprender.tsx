@@ -8,49 +8,51 @@ import {
   Layers, 
   PlayCircle, 
   CheckCircle2, 
-  Loader2 // Novo ícone de carregamento
+  Loader2,
+  Timer // Novo ícone para o timer
 } from "lucide-react";
+import confetti from "canvas-confetti"; // Biblioteca de celebração
 import { Layout } from "@/components/layout/Layout";
 import { PodcastCard } from "@/components/aprender/PodcastCard";
 import { TermCard } from "@/components/aprender/TermCard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-// 1. Imports do Backend e Tipagem
+// Imports do Backend e Tipagem
 import { supabase } from "@/integrations/supabase/client"; 
 import { Aula, Termo } from "@/lib/termosData"; 
+
+const TIME_LIMIT = 30; // Tempo em segundos para liberar o XP
 
 export default function Aprender() {
   const [currentAulaId, setCurrentAulaId] = useState(1);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
-  // 2. Novos Estados para os Dados Reais
+  // Estados para os Dados Reais
   const [lessons, setLessons] = useState<Aula[]>([]);
   const [allTerms, setAllTerms] = useState<Termo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Estados da Gamificação e Trava
+  const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
+  const [canComplete, setCanComplete] = useState(false);
+  const [user, setUser] = useState<any>(null);
   
-  // 3. Buscando dados do Supabase ao carregar a página
+  // 1. Buscando dados do Supabase
   useEffect(() => {
     async function fetchData() {
       try {
         setIsLoading(true);
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(session?.user);
 
-        // A. Buscar Aulas
-        const { data: lessonsData, error: lessonsError } = await supabase
+        const { data: lessonsData } = await supabase
           .from('lessons')
           .select('*')
           .order('order_index', { ascending: true });
 
-        if (lessonsError) throw lessonsError;
+        const { data: termsData } = await supabase.from('terms').select('*');
 
-        // B. Buscar Termos
-        const { data: termsData, error: termsError } = await supabase
-          .from('terms')
-          .select('*');
-
-        if (termsError) throw termsError;
-
-        // C. Mapear Aulas (Banco -> Interface)
         const mappedLessons: Aula[] = (lessonsData || []).map((l: any) => ({
           id: l.id,
           titulo: l.title_short,
@@ -60,12 +62,9 @@ export default function Aprender() {
           descricao: l.description,
           transcricaoCompleta: l.transcript_html
         }));
-
         setLessons(mappedLessons);
 
-        // D. Mapear Termos e vincular Nível da Aula
         const mappedTerms: Termo[] = (termsData || []).map((t: any) => {
-           // Encontra a aula pai para saber se é iniciante/avançado
            const parentLesson = mappedLessons.find(l => l.id === t.lesson_id);
            return {
              id: t.id,
@@ -80,64 +79,90 @@ export default function Aprender() {
              aulaAssociadaId: t.lesson_id
            };
         });
-
         setAllTerms(mappedTerms);
-
       } catch (error) {
-        console.error("Erro crítico ao carregar dados:", error);
+        console.error("Erro ao carregar dados:", error);
       } finally {
         setIsLoading(false);
       }
     }
-
     fetchData();
   }, []);
 
-  // Lógica segura para evitar erro se o array estiver vazio durante o loading
+  // 2. Lógica do Timer (Reseta ao trocar de aula)
+  useEffect(() => {
+    setTimeLeft(TIME_LIMIT);
+    setCanComplete(false);
+
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setCanComplete(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [currentAulaId]);
+
+  // 3. Função de Conclusão com XP e Confete
+  const handleCompleteAndNext = async () => {
+    if (!canComplete || !user) return;
+
+    // Efeito de Confete
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#3b82f6', '#ffffff', '#60a5fa']
+    });
+
+    try {
+      // Salva progresso
+      await supabase.from('user_progress').upsert({
+        user_id: user.id,
+        lesson_id: currentAulaId,
+        is_completed: true
+      }, { onConflict: 'user_id, lesson_id' });
+
+      // Adiciona +100 XP
+      const { data: perfil } = await supabase.from('perfis').select('xp_total').eq('id', user.id).single();
+      await supabase.from('perfis').update({ xp_total: (perfil?.xp_total || 0) + 100 }).eq('id', user.id);
+
+    } catch (error) {
+      console.error("Erro ao salvar XP:", error);
+    }
+
+    // Avança para próxima aula
+    if (currentAulaId < lessons.length) {
+      setCurrentAulaId(prev => prev + 1);
+      window.scrollTo(0, 0);
+    }
+  };
+
   const currentAula = lessons.find(a => a.id === currentAulaId) || lessons[0];
-
-  const termosDaAula = useMemo(() => {
-    return allTerms.filter((term) => term.aulaAssociadaId === currentAulaId);
-  }, [currentAulaId, allTerms]);
-
+  const termosDaAula = useMemo(() => allTerms.filter(t => t.aulaAssociadaId === currentAulaId), [currentAulaId, allTerms]);
+  
   const modulos = [
     { titulo: "Módulo 1: O Básico Invisível", aulas: lessons.filter(a => a.nivel === "iniciante") },
     { titulo: "Módulo 2: O Mercado", aulas: lessons.filter(a => a.nivel === "intermediario") },
     { titulo: "Módulo 3: Jogo Avançado", aulas: lessons.filter(a => a.nivel === "avancado") }
   ];
 
-  const handleNext = () => {
-    if (currentAulaId < lessons.length) {
-      setCurrentAulaId(prev => prev + 1);
-      window.scrollTo(0, 0); 
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentAulaId > 1) {
-      setCurrentAulaId(prev => prev - 1);
-      window.scrollTo(0, 0);
-    }
-  };
-
   const scrollbarClass = "lg:overflow-y-auto lg:[&::-webkit-scrollbar]:w-1.5 lg:[&::-webkit-scrollbar-track]:bg-transparent lg:[&::-webkit-scrollbar-thumb]:bg-slate-700/50 lg:[&::-webkit-scrollbar-thumb]:rounded-full hover:lg:[&::-webkit-scrollbar-thumb]:bg-slate-600 transition-colors";
 
-  // 4. Tela de Carregamento
-  if (isLoading) {
+  if (isLoading || !currentAula) {
     return (
       <Layout>
         <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-4 text-primary animate-pulse">
-            <Loader2 className="w-10 h-10 animate-spin" />
-            <p className="text-sm font-medium">Carregando conteúdo...</p>
-          </div>
+          <Loader2 className="w-10 h-10 animate-spin text-primary" />
         </div>
       </Layout>
     );
   }
-
-  // Se carregou mas não tem aulas (erro ou banco vazio)
-  if (!currentAula) return null;
 
   return (
     <Layout>
@@ -150,7 +175,6 @@ export default function Aprender() {
           isMobileMenuOpen ? "h-auto" : "h-auto" 
         )}>
           <div className="p-4 lg:p-6">
-            
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="w-full flex items-center justify-between lg:justify-start gap-2 mb-2 lg:mb-6 text-primary sticky top-0 bg-slate-900/90 backdrop-blur-xl py-2 z-10 -mx-2 px-2 rounded-lg lg:cursor-default"
@@ -175,7 +199,6 @@ export default function Aprender() {
                     {modulo.aulas.map((aula) => {
                       const isActive = currentAulaId === aula.id;
                       const isCompleted = currentAulaId > aula.id;
-                      
                       return (
                         <button
                           key={aula.id}
@@ -190,15 +213,14 @@ export default function Aprender() {
                               : "text-muted-foreground hover:bg-white/5 hover:text-white border border-transparent"
                           )}
                         >
-                            {isActive ? (
-                              <PlayCircle className="w-3.5 h-3.5 shrink-0 animate-pulse" />
-                            ) : isCompleted ? (
-                              <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-500" />
-                            ) : (
-                              <div className="w-3.5 h-3.5 rounded-full border-2 border-muted-foreground/30 shrink-0" />
-                            )}
-                            
-                            <span className="line-clamp-1">{aula.id}. {aula.titulo}</span>
+                          {isActive ? (
+                            <PlayCircle className="w-3.5 h-3.5 shrink-0 animate-pulse" />
+                          ) : isCompleted ? (
+                            <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-500" />
+                          ) : (
+                            <div className="w-3.5 h-3.5 rounded-full border-2 border-muted-foreground/30 shrink-0" />
+                          )}
+                          <span className="line-clamp-1">{aula.id}. {aula.titulo}</span>
                         </button>
                       );
                     })}
@@ -210,11 +232,7 @@ export default function Aprender() {
         </aside>
 
         {/* --- COLUNA 2: CONTEÚDO DA AULA --- */}
-        <main className={cn(
-          "flex-1 relative bg-slate-950/30",
-          "lg:h-full lg:overflow-y-auto",
-          scrollbarClass
-        )}>
+        <main className={cn("flex-1 relative bg-slate-950/30 lg:h-full lg:overflow-y-auto", scrollbarClass)}>
           <div className="p-4 md:p-10 max-w-5xl mx-auto space-y-8 pb-32">
               
               <motion.div
@@ -228,7 +246,6 @@ export default function Aprender() {
                     <span className="w-1 h-1 rounded-full bg-white/20" />
                     <span className="text-primary">{currentAula.nivel}</span>
                  </div>
-                 
                  <h1 className="font-display text-2xl md:text-4xl font-bold text-white mb-2 leading-tight">
                    {currentAula.tituloCompleto}
                  </h1>
@@ -239,8 +256,7 @@ export default function Aprender() {
               <div className="flex items-center gap-4 py-2">
                 <div className="h-px bg-white/10 flex-1" />
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                  <Layers className="w-3 h-3" />
-                  Conceitos da Aula
+                  <Layers className="w-3 h-3" /> Conceitos da Aula
                 </span>
                 <div className="h-px bg-white/10 flex-1" />
               </div>
@@ -258,36 +274,49 @@ export default function Aprender() {
                     </motion.div>
                   ))
                 ) : (
-                  <div className="col-span-full p-8 border border-dashed border-white/10 rounded-xl text-center text-muted-foreground/50">
-                    <p className="text-sm">Esta aula foca na teoria e mentalidade, sem termos técnicos específicos.</p>
+                  <div className="col-span-full p-8 border border-dashed border-white/10 rounded-xl text-center text-muted-foreground/50 text-sm">
+                    Esta aula foca na teoria e mentalidade, sem termos técnicos específicos.
                   </div>
                 )}
               </div>
 
+              {/* Navegação Dupla com Botão de XP Travado */}
               <div className="pt-10 border-t border-white/10 flex flex-col-reverse gap-4 md:flex-row justify-between items-center">
-                
                 <Button
                   variant="ghost"
-                  size="lg"
-                  onClick={handlePrev}
+                  onClick={() => setCurrentAulaId(prev => prev - 1)}
                   disabled={currentAulaId === 1}
-                  className="text-muted-foreground hover:text-white hover:bg-white/5 rounded-full px-6 w-full md:w-auto"
+                  className="text-muted-foreground hover:text-white rounded-full px-6 w-full md:w-auto"
                 >
-                  <ChevronLeft className="w-4 h-4 mr-2" />
-                  Aula Anterior
+                  <ChevronLeft className="w-4 h-4 mr-2" /> Aula Anterior
                 </Button>
 
-                <Button 
+                <div className="flex flex-col items-center gap-2 w-full md:w-auto">
+                  <Button 
                     size="lg"
-                    onClick={handleNext} 
-                    disabled={currentAulaId === lessons.length}
-                    className="group bg-white text-slate-900 hover:bg-white/90 font-bold rounded-full px-8 py-6 text-base shadow-lg shadow-white/5 transition-all hover:scale-105 w-full md:w-auto"
-                  >
-                    {currentAulaId === lessons.length ? "Concluir Curso" : "Próxima Aula"}
-                    {currentAulaId !== lessons.length && (
-                      <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    onClick={handleCompleteAndNext} 
+                    disabled={!canComplete}
+                    className={cn(
+                      "group font-bold rounded-full px-8 py-6 text-base transition-all w-full md:w-auto",
+                      canComplete 
+                        ? "bg-white text-slate-900 hover:scale-105" 
+                        : "bg-white/5 text-white/20 border border-white/5 cursor-not-allowed"
                     )}
-                </Button>
+                  >
+                    {!canComplete && <Timer className="w-4 h-4 mr-2 animate-pulse" />}
+                    {canComplete 
+                      ? (currentAulaId === lessons.length ? "Concluir Curso" : "Concluir e Ganhar +100 XP") 
+                      : `Aguarde ${timeLeft}s para liberar`}
+                    {canComplete && currentAulaId !== lessons.length && (
+                      <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1" />
+                    )}
+                  </Button>
+                  {!canComplete && (
+                    <p className="text-[10px] text-muted-foreground/50 uppercase tracking-widest animate-pulse">
+                      Estude o conteúdo para coletar seus pontos
+                    </p>
+                  )}
+                </div>
               </div>
 
               <footer className="text-center text-[10px] text-muted-foreground/30 pt-8">
@@ -295,7 +324,6 @@ export default function Aprender() {
               </footer>
           </div>
         </main>
-
       </div>
     </Layout>
   );
