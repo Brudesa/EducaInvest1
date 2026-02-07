@@ -85,8 +85,8 @@ export default function Aprender() {
         user_id: user.id,
         lesson_id: newId,
         updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id,lesson_id' }).catch(err => {
-        console.error("Erro ao salvar aula atual:", err);
+      }, { onConflict: 'user_id,lesson_id' }).then(({ error }) => {
+        if (error) console.error("Erro ao salvar aula atual:", error);
       });
     }
   };
