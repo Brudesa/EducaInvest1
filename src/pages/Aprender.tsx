@@ -9,7 +9,8 @@ import {
   PlayCircle, 
   CheckCircle2, 
   Loader2,
-  Timer // Novo ícone para o timer
+  Timer,
+  Lock // Importar o cadeado
 } from "lucide-react";
 import confetti from "canvas-confetti"; // Biblioteca de celebração
 import { Layout } from "@/components/layout/Layout";
@@ -33,6 +34,7 @@ export default function Aprender() {
   // Estados para os Dados Reais
   const [lessons, setLessons] = useState<Aula[]>([]);
   const [allTerms, setAllTerms] = useState<Termo[]>([]);
+  const [completedLessonIds, setCompletedLessonIds] = useState<number[]>([]); // Novo Estado para aulas feitas
   const [isLoading, setIsLoading] = useState(true);
 
   // Estados da Gamificação e Trava
@@ -48,12 +50,26 @@ export default function Aprender() {
         const { data: { session } } = await supabase.auth.getSession();
         setUser(session?.user);
 
+        // Busca Aulas
         const { data: lessonsData } = await supabase
           .from('lessons')
           .select('*')
           .order('order_index', { ascending: true });
 
+        // Busca Termos
         const { data: termsData } = await supabase.from('terms').select('*');
+
+        // NOVA BUSCA: Aulas Completadas para definir o bloqueio
+        if (session?.user) {
+            const { data: progressData } = await supabase
+                .from('user_progress')
+                .select('lesson_id')
+                .eq('user_id', session.user.id)
+                .eq('is_completed', true);
+            
+            const ids = progressData?.map(p => p.lesson_id) || [];
+            setCompletedLessonIds(ids);
+        }
 
         const mappedLessons: Aula[] = (lessonsData || []).map((l: any) => ({
           id: l.id,
@@ -147,6 +163,9 @@ export default function Aprender() {
 
       if (progressError) throw progressError;
 
+      // ATUALIZAÇÃO LOCAL: Libera a próxima aula no menu instantaneamente
+      setCompletedLessonIds(prev => [...prev, currentAulaId]);
+
       // Adiciona XP Dinâmico ao Perfil
       const { data: perfil } = await supabase.from('perfis').select('xp_total').eq('id', user.id).single();
       const newTotal = (perfil?.xp_total || 0) + xpAmount;
@@ -177,6 +196,11 @@ export default function Aprender() {
 
   const termosDaAula = useMemo(() => allTerms.filter(t => t.aulaAssociadaId === currentAulaId), [currentAulaId, allTerms]);
   
+  // --- LÓGICA DE BLOQUEIO DO MENU ---
+  // Descobre qual a maior aula que o usuário completou. Ex: se completou a 2, maxCompletedId = 2.
+  // A próxima liberada é a 3 (maxCompletedId + 1). Qualquer ID acima disso é travado.
+  const maxCompletedId = completedLessonIds.length > 0 ? Math.max(...completedLessonIds) : 0;
+
   const modulos = [
     { titulo: "Módulo 1: O Básico Invisível", aulas: lessons.filter(a => a.nivel === "iniciante") },
     { titulo: "Módulo 2: O Mercado", aulas: lessons.filter(a => a.nivel === "intermediario") },
@@ -229,28 +253,40 @@ export default function Aprender() {
                   <div className="space-y-1">
                     {modulo.aulas.map((aula) => {
                       const isActive = currentAulaId === aula.id;
-                      const isCompleted = currentAulaId > aula.id;
+                      const isCompleted = completedLessonIds.includes(aula.id);
+                      // TRAVA: Se o ID da aula for maior que (última feita + 1), bloqueia.
+                      const isLocked = aula.id > (maxCompletedId + 1);
+
                       return (
                         <button
                           key={aula.id}
+                          disabled={isLocked}
                           onClick={() => {
-                            setCurrentAulaId(aula.id);
-                            setIsMobileMenuOpen(false); 
+                            if (!isLocked) {
+                                setCurrentAulaId(aula.id);
+                                setIsMobileMenuOpen(false);
+                            }
                           }}
                           className={cn(
-                            "w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium transition-all flex items-center gap-3 group",
+                            "w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium transition-all flex items-center gap-3 group relative",
                             isActive 
                               ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_10px_rgba(var(--primary-rgb),0.1)]" 
-                              : "text-muted-foreground hover:bg-white/5 hover:text-white border border-transparent"
+                              : isLocked 
+                                ? "opacity-40 cursor-not-allowed bg-transparent text-muted-foreground" // Estilo para Travado
+                                : "text-muted-foreground hover:bg-white/5 hover:text-white border border-transparent"
                           )}
                         >
-                          {isActive ? (
+                          {/* Ícones de Estado */}
+                          {isLocked ? (
+                             <Lock className="w-3.5 h-3.5 shrink-0 text-slate-500" />
+                          ) : isActive ? (
                             <PlayCircle className="w-3.5 h-3.5 shrink-0 animate-pulse" />
                           ) : isCompleted ? (
                             <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-500" />
                           ) : (
                             <div className="w-3.5 h-3.5 rounded-full border-2 border-muted-foreground/30 shrink-0" />
                           )}
+                          
                           <span className="line-clamp-1">{aula.id}. {aula.titulo}</span>
                         </button>
                       );
