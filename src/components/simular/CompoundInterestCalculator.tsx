@@ -79,17 +79,22 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
     };
   }, [initialValue, monthlyInvestment, annualRate, years]);
 
+  // Função de formatação padronizada para 2 casas decimais
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(value);
   };
 
+  // Função para o display do número nos inputs (sem o símbolo R$)
   const formatNumberDisplay = (value: number) => {
-    return value.toLocaleString('pt-BR');
+    return value.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: number) => void) => {
@@ -149,7 +154,6 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
             })}
           </div>
 
-          {/* INPUT DA TAXA */}
           <div className="relative group">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-muted-foreground">
               {rateType === 'CUSTOM' ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
@@ -181,7 +185,7 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
                 <span className="text-sm font-bold text-slate-300">Investimento Inicial</span>
              </div>
              
-             <div className="relative w-36">
+             <div className="relative w-40">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-semibold text-sm pointer-events-none">
                   R$
                 </span>
@@ -211,7 +215,7 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
                 <span className="text-sm font-bold text-slate-300">Aporte Mensal</span>
              </div>
              
-             <div className="relative w-36">
+             <div className="relative w-40">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-semibold text-sm pointer-events-none">
                   R$
                 </span>
@@ -248,7 +252,6 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
                   onChange={(e) => setYears(Number(e.target.value))}
                   className="h-10 pl-3 pr-12 text-right font-medium bg-primary/5 border-primary/20 text-primary rounded-lg focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
                 />
-                {/* LÓGICA DE CONCORDÂNCIA AQUI */}
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 mt-[2px] text-primary/70 font-medium text-xs pointer-events-none uppercase tracking-wide">
                   {years === 1 ? "ano" : "anos"}
                 </span>
@@ -326,7 +329,14 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
                 fontSize={12} 
                 tickLine={false} 
                 axisLine={false}
-                tickFormatter={(value) => `R$${(value / 1000).toFixed(0)}k`} 
+                width={100}
+                tickFormatter={(value) => 
+                  new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                    minimumFractionDigits: 0,
+                  }).format(value)
+                } 
               />
               <RechartsTooltip 
                 contentStyle={{ 
