@@ -88,14 +88,11 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
     }).format(value);
   };
 
-  // Função auxiliar para formatar número com pontos (milhares)
   const formatNumberDisplay = (value: number) => {
     return value.toLocaleString('pt-BR');
   };
 
-  // Função para lidar com a mudança no input (remove não-numeros e atualiza estado)
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: number) => void) => {
-    // Remove tudo que não for dígito
     const rawValue = e.target.value.replace(/\D/g, '');
     setter(Number(rawValue));
   };
@@ -111,7 +108,6 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
   return (
     <div className="grid lg:grid-cols-12 gap-8 text-foreground">
       
-      {/* CSS Hack para remover as setinhas do input number */}
       <style>{`
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { 
@@ -177,7 +173,7 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
           </div>
         </div>
 
-        {/* 2. VALOR INICIAL (Formatado e Limpo) */}
+        {/* 2. VALOR INICIAL */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
              <div className="flex items-center gap-2">
@@ -207,7 +203,7 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
           />
         </div>
 
-        {/* 3. APORTE MENSAL (Formatado e Limpo) */}
+        {/* 3. APORTE MENSAL */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
              <div className="flex items-center gap-2">
@@ -237,7 +233,7 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
           />
         </div>
 
-        {/* 4. PERÍODO (Visual Padronizado - Azul e Regular) */}
+        {/* 4. PERÍODO (Com ajuste de alinhamento óptico) */}
         <div className="space-y-4">
            <div className="flex justify-between items-center">
              <div className="flex items-center gap-2">
@@ -252,7 +248,8 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
                   onChange={(e) => setYears(Number(e.target.value))}
                   className="h-10 pl-3 pr-12 text-right font-medium bg-primary/5 border-primary/20 text-primary rounded-lg focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-primary/70 font-medium text-xs pointer-events-none uppercase tracking-wide">
+                {/* AJUSTE AQUI: mt-[-1px] para subir o texto levemente e alinhar visualmente */}
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 mt-[-1px] text-primary/70 font-medium text-xs pointer-events-none uppercase tracking-wide">
                   anos
                 </span>
              </div>
