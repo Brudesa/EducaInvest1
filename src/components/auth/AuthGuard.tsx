@@ -35,7 +35,7 @@ export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
     return (
       <div className="relative min-h-screen overflow-hidden">
         {/* O conteúdo fica visível mas borrado e bloqueado */}
-        <div className="filter blur-md pointer-events-none select-none opacity-50">
+        <div className="filter blur-sm pointer-events-none select-none opacity-60">
           {children}
         </div>
         
