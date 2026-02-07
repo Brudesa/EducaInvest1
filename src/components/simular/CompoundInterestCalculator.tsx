@@ -17,7 +17,7 @@ import {
   Calendar,
   Lock,
   Unlock,
-  Clock // Ícone novo para o tempo
+  Clock 
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -88,6 +88,18 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
     }).format(value);
   };
 
+  // Função auxiliar para formatar número com pontos (milhares)
+  const formatNumberDisplay = (value: number) => {
+    return value.toLocaleString('pt-BR');
+  };
+
+  // Função para lidar com a mudança no input (remove não-numeros e atualiza estado)
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: number) => void) => {
+    // Remove tudo que não for dígito
+    const rawValue = e.target.value.replace(/\D/g, '');
+    setter(Number(rawValue));
+  };
+
   const rateOptions = [
     { id: 'SELIC', label: 'SELIC', value: rates.selic, color: 'bg-primary' },
     { id: 'CDI', label: 'CDI', value: rates.cdi, color: 'bg-indigo-500' },
@@ -154,18 +166,18 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
               }}
               readOnly={rateType !== 'CUSTOM'}
               className={cn(
-                "pl-14 h-14 text-lg font-bold bg-slate-950/50 border-white/10 rounded-xl transition-all",
+                "pl-14 h-14 text-lg font-medium bg-slate-950/50 border-white/10 rounded-xl transition-all",
                 "focus-visible:ring-offset-0 focus-visible:ring-1",
                 rateType === 'CUSTOM' 
                   ? "border-primary/50 focus-visible:ring-primary text-white" 
                   : "opacity-80 cursor-not-allowed text-muted-foreground bg-slate-900/30 border-transparent focus-visible:ring-0"
               )}
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">% ao ano</span>
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">% ao ano</span>
           </div>
         </div>
 
-        {/* 2. VALOR INICIAL (Agora com Input Editável) */}
+        {/* 2. VALOR INICIAL (Formatado e Limpo) */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
              <div className="flex items-center gap-2">
@@ -173,16 +185,15 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
                 <span className="text-sm font-bold text-slate-300">Investimento Inicial</span>
              </div>
              
-             {/* Input Customizado Estilo "Badge" */}
-             <div className="relative w-32">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-bold text-xs pointer-events-none">
+             <div className="relative w-36">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-semibold text-sm pointer-events-none">
                   R$
                 </span>
                 <Input 
-                  type="number"
-                  value={initialValue}
-                  onChange={(e) => setInitialValue(Number(e.target.value))}
-                  className="h-8 pl-8 pr-2 text-right font-mono font-bold bg-primary/10 border-primary/20 text-primary rounded focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
+                  type="text"
+                  value={formatNumberDisplay(initialValue)}
+                  onChange={(e) => handleInputChange(e, setInitialValue)}
+                  className="h-10 pl-9 pr-3 text-right font-medium bg-primary/5 border-primary/20 text-primary rounded-lg focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary placeholder:text-primary/30"
                 />
              </div>
           </div>
@@ -196,7 +207,7 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
           />
         </div>
 
-        {/* 3. APORTE MENSAL (Agora com Input Editável) */}
+        {/* 3. APORTE MENSAL (Formatado e Limpo) */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
              <div className="flex items-center gap-2">
@@ -204,16 +215,15 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
                 <span className="text-sm font-bold text-slate-300">Aporte Mensal</span>
              </div>
              
-             {/* Input Customizado Estilo "Badge" */}
-             <div className="relative w-28">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-bold text-xs pointer-events-none">
+             <div className="relative w-36">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-semibold text-sm pointer-events-none">
                   R$
                 </span>
                 <Input 
-                  type="number"
-                  value={monthlyInvestment}
-                  onChange={(e) => setMonthlyInvestment(Number(e.target.value))}
-                  className="h-8 pl-8 pr-2 text-right font-mono font-bold bg-primary/10 border-primary/20 text-primary rounded focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
+                  type="text"
+                  value={formatNumberDisplay(monthlyInvestment)}
+                  onChange={(e) => handleInputChange(e, setMonthlyInvestment)}
+                  className="h-10 pl-9 pr-3 text-right font-medium bg-primary/5 border-primary/20 text-primary rounded-lg focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary placeholder:text-primary/30"
                 />
              </div>
           </div>
@@ -227,7 +237,7 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
           />
         </div>
 
-        {/* 4. PERÍODO (Padronizado para Azul e Editável) */}
+        {/* 4. PERÍODO (Visual Padronizado - Azul e Regular) */}
         <div className="space-y-4">
            <div className="flex justify-between items-center">
              <div className="flex items-center gap-2">
@@ -235,15 +245,14 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
                 <span className="text-sm font-bold text-slate-300">Tempo de Investimento</span>
              </div>
              
-             {/* Input Padronizado com cor Azul (Primary) */}
-             <div className="relative w-24">
+             <div className="relative w-32">
                 <Input 
                   type="number"
                   value={years}
                   onChange={(e) => setYears(Number(e.target.value))}
-                  className="h-8 pl-2 pr-10 text-right font-bold bg-primary/10 border-primary/20 text-primary rounded focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
+                  className="h-10 pl-3 pr-12 text-right font-medium bg-primary/5 border-primary/20 text-primary rounded-lg focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-primary font-bold text-xs pointer-events-none">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-primary/70 font-medium text-xs pointer-events-none uppercase tracking-wide">
                   anos
                 </span>
              </div>
