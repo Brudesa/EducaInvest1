@@ -16,7 +16,8 @@ import {
   DollarSign, 
   Calendar,
   Lock,
-  Unlock
+  Unlock,
+  Clock // Ícone novo para o tempo
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -127,7 +128,7 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
                   key={option.id}
                   onClick={() => setRateType(option.id as any)}
                   className={cn(
-                    "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border cursor-pointer", // cursor-pointer adicionado
+                    "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border cursor-pointer", 
                     isActive 
                       ? "bg-primary text-white border-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.4)] scale-105" 
                       : "bg-slate-800/50 text-slate-400 border-white/10 hover:border-white/30 hover:text-white"
@@ -154,7 +155,6 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
               readOnly={rateType !== 'CUSTOM'}
               className={cn(
                 "pl-14 h-14 text-lg font-bold bg-slate-950/50 border-white/10 rounded-xl transition-all",
-                // Removemos o outline padrão para não dar conflito visual
                 "focus-visible:ring-offset-0 focus-visible:ring-1",
                 rateType === 'CUSTOM' 
                   ? "border-primary/50 focus-visible:ring-primary text-white" 
@@ -165,16 +165,26 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
           </div>
         </div>
 
-        {/* 2. VALOR INICIAL */}
+        {/* 2. VALOR INICIAL (Agora com Input Editável) */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
              <div className="flex items-center gap-2">
                 <DollarSign className="w-4 h-4 text-emerald-400" />
                 <span className="text-sm font-bold text-slate-300">Investimento Inicial</span>
              </div>
-             <span className="text-primary font-mono font-bold bg-primary/10 px-2 py-1 rounded border border-primary/20">
-                {formatCurrency(initialValue)}
-             </span>
+             
+             {/* Input Customizado Estilo "Badge" */}
+             <div className="relative w-32">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-bold text-xs pointer-events-none">
+                  R$
+                </span>
+                <Input 
+                  type="number"
+                  value={initialValue}
+                  onChange={(e) => setInitialValue(Number(e.target.value))}
+                  className="h-8 pl-8 pr-2 text-right font-mono font-bold bg-primary/10 border-primary/20 text-primary rounded focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
+                />
+             </div>
           </div>
           <Slider
             value={[initialValue]}
@@ -186,16 +196,26 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
           />
         </div>
 
-        {/* 3. APORTE MENSAL */}
+        {/* 3. APORTE MENSAL (Agora com Input Editável) */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
              <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-blue-400" />
                 <span className="text-sm font-bold text-slate-300">Aporte Mensal</span>
              </div>
-             <span className="text-primary font-mono font-bold bg-primary/10 px-2 py-1 rounded border border-primary/20">
-                {formatCurrency(monthlyInvestment)}
-             </span>
+             
+             {/* Input Customizado Estilo "Badge" */}
+             <div className="relative w-28">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-bold text-xs pointer-events-none">
+                  R$
+                </span>
+                <Input 
+                  type="number"
+                  value={monthlyInvestment}
+                  onChange={(e) => setMonthlyInvestment(Number(e.target.value))}
+                  className="h-8 pl-8 pr-2 text-right font-mono font-bold bg-primary/10 border-primary/20 text-primary rounded focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
+                />
+             </div>
           </div>
           <Slider
             value={[monthlyInvestment]}
@@ -207,16 +227,26 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
           />
         </div>
 
-        {/* 4. PERÍODO (ANOS) */}
+        {/* 4. PERÍODO (Padronizado para Azul e Editável) */}
         <div className="space-y-4">
            <div className="flex justify-between items-center">
              <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-amber-400" />
+                <Clock className="w-4 h-4 text-amber-400" />
                 <span className="text-sm font-bold text-slate-300">Tempo de Investimento</span>
              </div>
-             <span className="text-white font-bold bg-white/10 px-2 py-1 rounded border border-white/10">
-                {years} anos
-             </span>
+             
+             {/* Input Padronizado com cor Azul (Primary) */}
+             <div className="relative w-24">
+                <Input 
+                  type="number"
+                  value={years}
+                  onChange={(e) => setYears(Number(e.target.value))}
+                  className="h-8 pl-2 pr-10 text-right font-bold bg-primary/10 border-primary/20 text-primary rounded focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-primary font-bold text-xs pointer-events-none">
+                  anos
+                </span>
+             </div>
           </div>
           <Slider
             value={[years]}
