@@ -155,8 +155,9 @@ export function PodcastCard({ aula, termos = [] }: PodcastCardProps) {
           pattern,
           (match) =>
             `<button
-              class="term-link text-primary hover:text-primary/80 font-semibold underline decoration-dotted underline-offset-2 cursor-pointer transition-colors"
+              class="term-link inline-flex items-center justify-center px-2 py-0.5 mx-0.5 rounded-md text-base font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-400 hover:text-slate-900 cursor-pointer transition-all duration-300 transform hover:scale-105 shadow-[0_0_10px_rgba(16,185,129,0.1)]"
               data-term-id="${termo.id}"
+              title="Clique para ver a explicação"
             >
               ${match}
             </button>`
@@ -385,8 +386,8 @@ export function PodcastCard({ aula, termos = [] }: PodcastCardProps) {
 
                     <div
                       className={cn(
-                        "prose prose-invert prose-p:text-slate-300 prose-p:leading-8 prose-headings:text-white prose-strong:text-white prose-li:text-slate-300 max-w-none font-light",
-                        "[&_.term-link]:inline [&_.term-link]:transition-all"
+                        "prose prose-invert prose-p:text-slate-200 prose-p:leading-loose prose-headings:text-primary prose-strong:text-white prose-li:text-slate-200 max-w-none text-lg tracking-wide space-y-8",
+                        "[&_.term-link]:inline-flex [&_.term-link]:items-center [&_.term-link]:gap-1 [&_.term-link]:mx-1 [&_.term-link]:transform [&_.term-link]:transition-all"
                       )}
                       dangerouslySetInnerHTML={{ __html: processTranscript(aula.transcricaoCompleta) }}
                     />
