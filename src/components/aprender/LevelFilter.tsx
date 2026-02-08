@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
-export type Level = "iniciante" | "intermediario" | "avancado";
+export type Level = "fundamentos" | "pratica" | "alta_performance" | "especialista-fii" | "especialista-acao" | "especialista-rf";
 
 interface LevelFilterProps {
   selectedLevel: Level | null;
@@ -9,9 +9,12 @@ interface LevelFilterProps {
 }
 
 const levels = [
-  { id: "iniciante" as Level, label: "Iniciante"},
-  { id: "intermediario" as Level, label: "Intermediário"},
-  { id: "avancado" as Level, label: "Avançado"},
+  { id: "fundamentos" as Level, label: "Fundamentos" },
+  { id: "pratica" as Level, label: "Prática" },
+  { id: "alta_performance" as Level, label: "Alta Performance" },
+  { id: "especialista-fii" as Level, label: "FIIs" },
+  { id: "especialista-acao" as Level, label: "Ações" },
+  { id: "especialista-rf" as Level, label: "Renda Fixa" },
 ];
 
 export function LevelFilter({ selectedLevel, onLevelChange }: LevelFilterProps) {

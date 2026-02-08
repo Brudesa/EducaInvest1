@@ -4,7 +4,7 @@ import { Category } from "../components/aprender/CategoryFilter";
 // --- TIPAGEM DA AULA ---
 export interface Aula {
   id: number;
-  titulo: string;         
+  titulo: string;
   tituloCompleto: string;
   nivel: Level;
   duracao: string;

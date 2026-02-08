@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  Volume2, 
+import {
+  ChevronDown,
+  ChevronUp,
+  Volume2,
   Lightbulb,
-  Percent,       
-  TrendingUp,    
-  Landmark,      
-  BarChart3,     
-  ShieldCheck,   
-  Zap,           
+  Percent,
+  TrendingUp,
+  Landmark,
+  BarChart3,
+  ShieldCheck,
+  Zap,
   Brain,
   Coins,
   Target
@@ -45,13 +45,13 @@ export function TermCard({ term, hideLevel }: TermCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const Icon = getTermIcon(term);
 
-  const borderColor = 
-    term.nivelId === 'iniciante' ? 'hover:border-emerald-500/40 hover:shadow-emerald-500/10' :
-    term.nivelId === 'intermediario' ? 'hover:border-amber-500/40 hover:shadow-amber-500/10' :
-    'hover:border-rose-500/40 hover:shadow-rose-500/10';
+  const borderColor =
+    term.nivelId === 'fundamentos' ? 'hover:border-emerald-500/40 hover:shadow-emerald-500/10' :
+      term.nivelId === 'pratica' ? 'hover:border-amber-500/40 hover:shadow-amber-500/10' :
+        'hover:border-rose-500/40 hover:shadow-rose-500/10';
 
   return (
-    <div 
+    <div
       className={cn(
         "group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-300 cursor-pointer h-full",
         "bg-gradient-to-b from-slate-800/50 to-slate-900/80",
@@ -66,29 +66,29 @@ export function TermCard({ term, hideLevel }: TermCardProps) {
         <div className="shrink-0 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 p-2.5 text-primary ring-1 ring-primary/20 group-hover:ring-primary/50 transition-all shadow-[0_0_15px_rgba(var(--primary-rgb),0.15)]">
           <Icon className="h-5 w-5" />
         </div>
-        
+
         <div className="space-y-1.5 flex-1">
           <div className="flex items-center justify-between gap-2">
             <h3 className="font-display text-base font-bold leading-tight text-white group-hover:text-primary transition-colors">
               {term.nome}
             </h3>
-            
+
             {!hideLevel && (
               <span className={cn(
                 "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border",
-                term.nivelId === 'iniciante' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
-                term.nivelId === 'intermediario' ? "bg-amber-500/10 text-amber-400 border-amber-500/20" :
-                "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                term.nivelId === 'fundamentos' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                  term.nivelId === 'pratica' ? "bg-amber-500/10 text-amber-400 border-amber-500/20" :
+                    "bg-rose-500/10 text-rose-400 border-rose-500/20"
               )}>
                 {term.nivelId}
               </span>
             )}
           </div>
-          
+
           {term.sigla && (
-             <p className="text-xs font-bold text-primary/80 tracking-wider uppercase">{term.sigla}</p>
+            <p className="text-xs font-bold text-primary/80 tracking-wider uppercase">{term.sigla}</p>
           )}
-          
+
           <p className="text-sm text-muted-foreground line-clamp-2 font-medium leading-relaxed group-hover:text-slate-300 transition-colors">
             {term.explicacaoSimplificada}
           </p>
@@ -105,12 +105,12 @@ export function TermCard({ term, hideLevel }: TermCardProps) {
           >
             <div className="p-5 space-y-4 text-sm relative z-10">
               <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
-                 <h4 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary mb-2">
-                    <Lightbulb className="w-3.5 h-3.5" /> Explicação Técnica
-                 </h4>
-                 <p className="text-slate-300 leading-relaxed">{term.explicacaoCompleta}</p>
+                <h4 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary mb-2">
+                  <Lightbulb className="w-3.5 h-3.5" /> Explicação Técnica
+                </h4>
+                <p className="text-slate-300 leading-relaxed">{term.explicacaoCompleta}</p>
               </div>
-              
+
               {term.exemplo && (
                 <div className="rounded-xl bg-emerald-500/5 p-4 border border-emerald-500/10">
                   <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1">
@@ -121,31 +121,31 @@ export function TermCard({ term, hideLevel }: TermCardProps) {
               )}
 
               {term.dicaComoComecar && (
-                 <div className="rounded-xl bg-amber-500/5 p-4 border border-amber-500/10">
+                <div className="rounded-xl bg-amber-500/5 p-4 border border-amber-500/10">
                   <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">
                     <Zap className="w-3.5 h-3.5" /> Dica de Ouro
                   </span>
                   <p className="text-slate-300">{term.dicaComoComecar}</p>
-                 </div>
+                </div>
               )}
-              
+
               {term.audioUrl && (
-                 <div className="flex justify-end pt-2">
-                   <Button variant="secondary" size="sm" className="h-8 text-xs gap-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/5">
-                     <Volume2 className="w-3 h-3" /> Ouvir explicação
-                   </Button>
-                 </div>
+                <div className="flex justify-end pt-2">
+                  <Button variant="secondary" size="sm" className="h-8 text-xs gap-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/5">
+                    <Volume2 className="w-3 h-3" /> Ouvir explicação
+                  </Button>
+                </div>
               )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div 
+      <div
         className={cn(
           "mt-auto flex items-center justify-center gap-2 py-3 text-xs font-bold uppercase tracking-wider transition-all border-t relative z-10",
-          isExpanded 
-            ? "bg-primary/10 text-primary border-primary/20" 
+          isExpanded
+            ? "bg-primary/10 text-primary border-primary/20"
             : "bg-slate-950/30 text-muted-foreground border-white/5 group-hover:text-white group-hover:bg-slate-900/80"
         )}
       >
