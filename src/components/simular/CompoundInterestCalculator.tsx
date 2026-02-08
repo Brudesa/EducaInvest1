@@ -1,28 +1,28 @@
 import { useState, useEffect, useMemo } from "react";
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip as RechartsTooltip, 
-  ResponsiveContainer, 
-  Legend 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  Legend
 } from "recharts";
-import { 
-  Calculator, 
-  TrendingUp, 
-  Percent, 
-  DollarSign, 
+import {
+  Calculator,
+  TrendingUp,
+  Percent,
+  DollarSign,
   Calendar,
   Lock,
   Unlock,
-  Clock 
+  Clock
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
-import { MarketRates } from "@/pages/Simular"; 
+import { MarketRates } from "@/pages/Simular";
 
 interface CalculatorProps {
   rates: MarketRates;
@@ -43,9 +43,10 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
   }, [rateType, rates]);
 
   const results = useMemo(() => {
-    const monthlyRate = annualRate / 100 / 12;
+    // Converte taxa anual para mensal (Juros Compostos Reais: (1 + taxa)^(1/12) - 1)
+    const monthlyRate = Math.pow(1 + annualRate / 100, 1 / 12) - 1;
     const months = years * 12;
-    
+
     let totalAmount = initialValue;
     let totalInvested = initialValue;
     const chartData = [];
@@ -59,7 +60,7 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
     for (let i = 1; i <= months; i++) {
       totalAmount = totalAmount * (1 + monthlyRate) + monthlyInvestment;
       totalInvested += monthlyInvestment;
-      
+
       if (i % 12 === 0) {
         chartData.push({
           year: i / 12,
@@ -112,7 +113,7 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
 
   return (
     <div className="grid lg:grid-cols-12 gap-8 text-foreground">
-      
+
       <style>{`
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { 
@@ -126,11 +127,11 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
 
       {/* --- COLUNA ESQUERDA: CONTROLES --- */}
       <div className="lg:col-span-5 space-y-8">
-        
+
         <div className="space-y-4">
           <div className="flex items-center gap-2 mb-2">
-             <Percent className="w-4 h-4 text-primary" />
-             <span className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Taxa Anual de Rentabilidade</span>
+            <Percent className="w-4 h-4 text-primary" />
+            <span className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Taxa Anual de Rentabilidade</span>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -141,9 +142,9 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
                   key={option.id}
                   onClick={() => setRateType(option.id as any)}
                   className={cn(
-                    "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border cursor-pointer", 
-                    isActive 
-                      ? "bg-primary text-white border-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.4)] scale-105" 
+                    "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border cursor-pointer",
+                    isActive
+                      ? "bg-primary text-white border-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.4)] scale-105"
                       : "bg-slate-800/50 text-slate-400 border-white/10 hover:border-white/30 hover:text-white"
                   )}
                 >
@@ -168,8 +169,8 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
               className={cn(
                 "pl-14 h-14 text-lg font-medium bg-slate-950/50 border-white/10 rounded-xl transition-all",
                 "focus-visible:ring-offset-0 focus-visible:ring-1",
-                rateType === 'CUSTOM' 
-                  ? "border-primary/50 focus-visible:ring-primary text-white" 
+                rateType === 'CUSTOM'
+                  ? "border-primary/50 focus-visible:ring-primary text-white"
                   : "opacity-80 cursor-not-allowed text-muted-foreground bg-slate-900/30 border-transparent focus-visible:ring-0"
               )}
             />
@@ -180,22 +181,22 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
         {/* 2. VALOR INICIAL */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-             <div className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-emerald-400" />
-                <span className="text-sm font-bold text-slate-300">Investimento Inicial</span>
-             </div>
-             
-             <div className="relative w-40">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-semibold text-sm pointer-events-none">
-                  R$
-                </span>
-                <Input 
-                  type="text"
-                  value={formatNumberDisplay(initialValue)}
-                  onChange={(e) => handleInputChange(e, setInitialValue)}
-                  className="h-10 pl-9 pr-3 text-right font-medium bg-primary/5 border-primary/20 text-primary rounded-lg focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary placeholder:text-primary/30"
-                />
-             </div>
+            <div className="flex items-center gap-2">
+              <DollarSign className="w-4 h-4 text-emerald-400" />
+              <span className="text-sm font-bold text-slate-300">Investimento Inicial</span>
+            </div>
+
+            <div className="relative w-40">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-semibold text-sm pointer-events-none">
+                R$
+              </span>
+              <Input
+                type="text"
+                value={formatNumberDisplay(initialValue)}
+                onChange={(e) => handleInputChange(e, setInitialValue)}
+                className="h-10 pl-9 pr-3 text-right font-medium bg-primary/5 border-primary/20 text-primary rounded-lg focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary placeholder:text-primary/30"
+              />
+            </div>
           </div>
           <Slider
             value={[initialValue]}
@@ -210,22 +211,22 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
         {/* 3. APORTE MENSAL */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-             <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-blue-400" />
-                <span className="text-sm font-bold text-slate-300">Aporte Mensal</span>
-             </div>
-             
-             <div className="relative w-40">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-semibold text-sm pointer-events-none">
-                  R$
-                </span>
-                <Input 
-                  type="text"
-                  value={formatNumberDisplay(monthlyInvestment)}
-                  onChange={(e) => handleInputChange(e, setMonthlyInvestment)}
-                  className="h-10 pl-9 pr-3 text-right font-medium bg-primary/5 border-primary/20 text-primary rounded-lg focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary placeholder:text-primary/30"
-                />
-             </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-blue-400" />
+              <span className="text-sm font-bold text-slate-300">Aporte Mensal</span>
+            </div>
+
+            <div className="relative w-40">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary font-semibold text-sm pointer-events-none">
+                R$
+              </span>
+              <Input
+                type="text"
+                value={formatNumberDisplay(monthlyInvestment)}
+                onChange={(e) => handleInputChange(e, setMonthlyInvestment)}
+                className="h-10 pl-9 pr-3 text-right font-medium bg-primary/5 border-primary/20 text-primary rounded-lg focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary placeholder:text-primary/30"
+              />
+            </div>
           </div>
           <Slider
             value={[monthlyInvestment]}
@@ -239,23 +240,23 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
 
         {/* 4. PERÍODO */}
         <div className="space-y-4">
-           <div className="flex justify-between items-center">
-             <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-amber-400" />
-                <span className="text-sm font-bold text-slate-300">Tempo de Investimento</span>
-             </div>
-             
-             <div className="relative w-32">
-                <Input 
-                  type="number"
-                  value={years}
-                  onChange={(e) => setYears(Number(e.target.value))}
-                  className="h-10 pl-3 pr-12 text-right font-medium bg-primary/5 border-primary/20 text-primary rounded-lg focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 mt-[2px] text-primary/70 font-medium text-xs pointer-events-none uppercase tracking-wide">
-                  {years === 1 ? "ano" : "anos"}
-                </span>
-             </div>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-amber-400" />
+              <span className="text-sm font-bold text-slate-300">Tempo de Investimento</span>
+            </div>
+
+            <div className="relative w-32">
+              <Input
+                type="number"
+                value={years}
+                onChange={(e) => setYears(Number(e.target.value))}
+                className="h-10 pl-3 pr-12 text-right font-medium bg-primary/5 border-primary/20 text-primary rounded-lg focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 mt-[2px] text-primary/70 font-medium text-xs pointer-events-none uppercase tracking-wide">
+                {years === 1 ? "ano" : "anos"}
+              </span>
+            </div>
           </div>
           <Slider
             value={[years]}
@@ -273,7 +274,7 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-slate-800/40 border border-white/5 p-5 rounded-2xl flex flex-col justify-between">
             <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
-               <Calculator className="w-3 h-3" /> Total Investido
+              <Calculator className="w-3 h-3" /> Total Investido
             </p>
             <p className="text-lg md:text-xl font-bold text-slate-200">
               {formatCurrency(results.invested)}
@@ -282,7 +283,7 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
 
           <div className="bg-emerald-500/5 border border-emerald-500/10 p-5 rounded-2xl flex flex-col justify-between">
             <p className="text-[10px] text-emerald-400/80 font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
-               <TrendingUp className="w-3 h-3" /> Juros Ganhos
+              <TrendingUp className="w-3 h-3" /> Juros Ganhos
             </p>
             <p className="text-lg md:text-xl font-bold text-emerald-400">
               +{formatCurrency(results.interest)}
@@ -290,15 +291,15 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
           </div>
 
           <div className="md:col-span-1 bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 p-5 rounded-2xl relative overflow-hidden group">
-             <div className="absolute inset-0 bg-primary/20 blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
-             <div className="relative z-10">
-                <p className="text-[10px] text-primary-foreground/80 font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
-                   Total Acumulado
-                </p>
-                <p className="text-xl md:text-2xl font-bold text-white">
-                  {formatCurrency(results.total)}
-                </p>
-             </div>
+            <div className="absolute inset-0 bg-primary/20 blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
+            <div className="relative z-10">
+              <p className="text-[10px] text-primary-foreground/80 font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                Total Acumulado
+              </p>
+              <p className="text-xl md:text-2xl font-bold text-white">
+                {formatCurrency(results.total)}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -307,41 +308,41 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
             <AreaChart data={results.chartData}>
               <defs>
                 <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.1} />
+                  <stop offset="95%" stopColor="#94a3b8" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-              <XAxis 
-                dataKey="year" 
-                stroke="#64748b" 
-                fontSize={12} 
-                tickLine={false} 
-                axisLine={false} 
+              <XAxis
+                dataKey="year"
+                stroke="#64748b"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
                 tickFormatter={(value) => `${value}a`}
               />
-              <YAxis 
-                stroke="#64748b" 
-                fontSize={12} 
-                tickLine={false} 
+              <YAxis
+                stroke="#64748b"
+                fontSize={12}
+                tickLine={false}
                 axisLine={false}
                 width={100}
-                tickFormatter={(value) => 
+                tickFormatter={(value) =>
                   new Intl.NumberFormat("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                     minimumFractionDigits: 0,
                   }).format(value)
-                } 
+                }
               />
-              <RechartsTooltip 
-                contentStyle={{ 
-                  backgroundColor: '#020617', 
-                  borderColor: '#1e293b', 
+              <RechartsTooltip
+                contentStyle={{
+                  backgroundColor: '#020617',
+                  borderColor: '#1e293b',
                   borderRadius: '12px',
                   boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
                 }}
@@ -350,30 +351,30 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
                 labelFormatter={(label) => `Ano ${label}`}
               />
               <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
-              <Area 
-                type="monotone" 
-                dataKey="Juros Compostos" 
-                stroke="#3b82f6" 
+              <Area
+                type="monotone"
+                dataKey="Juros Compostos"
+                stroke="#3b82f6"
                 strokeWidth={3}
-                fillOpacity={1} 
-                fill="url(#colorTotal)" 
+                fillOpacity={1}
+                fill="url(#colorTotal)"
                 name="Total Acumulado"
               />
-              <Area 
-                type="monotone" 
-                dataKey="Sem Juros" 
-                stroke="#94a3b8" 
+              <Area
+                type="monotone"
+                dataKey="Sem Juros"
+                stroke="#94a3b8"
                 strokeWidth={2}
                 strokeDasharray="5 5"
-                fill="url(#colorInvested)" 
+                fill="url(#colorInvested)"
                 name="Total Investido"
               />
             </AreaChart>
           </ResponsiveContainer>
         </div>
-        
+
         <p className="text-xs text-center text-muted-foreground/60 italic">
-           *Valores estimados. Rentabilidade passada não garante rentabilidade futura.
+          *Valores estimados. Rentabilidade passada não garante rentabilidade futura.
         </p>
 
       </div>
