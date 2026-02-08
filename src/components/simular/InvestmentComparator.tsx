@@ -134,7 +134,7 @@ export function InvestmentComparator({ rates }: ComparatorProps) {
           <Slider
             value={[amount]}
             min={100}
-            max={500000}
+            max={100000}
             step={100}
             onValueChange={(v) => setAmount(v[0])}
             className="py-2 cursor-pointer"
