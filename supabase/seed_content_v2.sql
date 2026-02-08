@@ -631,22 +631,22 @@ INSERT INTO lessons (title_short, title_full, level, duration, description, tran
 INSERT INTO terms (acronym, name, explanation_simple, explanation_full, category, lesson_id, example, tip) VALUES
 -- MÓDULO 1
 -- AULA 1: MATRIX
-('ATIVOS', 'Ativos', 'Tudo que coloca dinheiro no seu bolso.', 'Bens ou direitos que geram renda passiva ou valorização ao longo do tempo. É a chave para a riqueza.', 'fundamentos', 1, 'Imóveis alugados, Ações que pagam dividendos, Títulos Públicos.', 'Foque em adquirir ativos antes de passivos.'),
-('PASSIVOS', 'Passivos', 'Tudo que tira dinheiro do seu bolso.', 'Bens que geram despesas de manutenção, impostos ou desvalorização. Não são investimentos.', 'fundamentos', 1, 'Carro de uso pessoal, Casa de praia que não aluga, Dívidas de cartão.', 'Reduza seus passivos para sobrar dinheiro para ativos.'),
+('ATIVOS', 'Ativos', 'Tudo que coloca dinheiro no seu bolso.', 'Bens ou direitos que geram renda passiva ou valorização ao longo do tempo. É a chave para a riqueza.', 'conceitos', 1, 'Imóveis alugados, Ações que pagam dividendos, Títulos Públicos.', 'Foque em adquirir ativos antes de passivos.'),
+('PASSIVOS', 'Passivos', 'Tudo que tira dinheiro do seu bolso.', 'Bens que geram despesas de manutenção, impostos ou desvalorização. Não são investimentos.', 'conceitos', 1, 'Carro de uso pessoal, Casa de praia que não aluga, Dívidas de cartão.', 'Reduza seus passivos para sobrar dinheiro para ativos.'),
 
 -- AULA 2: INFLAÇÃO
-('IPCA', 'Índice Nacional de Preços ao Consumidor Amplo', 'A inflação oficial do Brasil.', 'Mede a variação de preços de uma cesta de produtos e serviços consumidos pelas famílias. Corrói o poder de compra.', 'economia', 2, 'Se o IPCA é 10%, seu dinheiro compra 10% menos coisas.', 'Busque investimentos IPCA+ para se proteger.'),
+('IPCA', 'Índice Nacional de Preços ao Consumidor Amplo', 'A inflação oficial do Brasil.', 'Mede a variação de preços de uma cesta de produtos e serviços consumidos pelas famílias. Corrói o poder de compra.', 'indicadores', 2, 'Se o IPCA é 10%, seu dinheiro compra 10% menos coisas.', 'Busque investimentos IPCA+ para se proteger.'),
 ('RENT REAL', 'Rentabilidade Real', 'O quanto você ganhou acima da inflação.', 'É o retorno do seu investimento subtraído da inflação do período. É o único ganho que te deixa mais rico.', 'indicadores', 2, 'Rendimento de 10% com inflação de 6% gera ganho real de 4%.', 'Sempre calcule o ganho real, não o nominal.'),
 
 -- AULA 3: RESERVA (Aqui entram os pedidos do usuário)
-('SELIC', 'Taxa Selic', 'A taxa básica de juros da economia.', 'Definida pelo Banco Central. É a referência para todos os juros do país. Quando sobe, a Renda Fixa rende mais.', 'economia', 3, 'O Tesouro Selic rende, aproximadamente, o valor da taxa Selic.', 'Ótima para Reserva de Emergência.'),
-('TESOURO', 'Tesouro Direto', 'Plataforma para emprestar dinheiro ao Governo.', 'O investimento mais seguro do país (Risco Soberano). Você compra títulos da dívida pública.', 'seguranca', 3, 'Tesouro Selic, Tesouro IPCA+, Tesouro Prefixado.', 'Ideal para começar a investir com pouco dinheiro.'),
-('LIQUIDEZ', 'Liquidez', 'A velocidade para transformar investimento em dinheiro.', 'A facilidade com que você consegue resgatar seu dinheiro sem perda de valor. Liquidez diária cai na conta no mesmo dia.', 'fundamentos', 3, 'A Poupança e o Tesouro Selic têm alta liquidez. Um Imóvel tem baixa liquidez.', 'Para Reserva de Emergência, exija Liquidez Diária.'),
+('SELIC', 'Taxa Selic', 'A taxa básica de juros da economia.', 'Definida pelo Banco Central. É a referência para todos os juros do país. Quando sobe, a Renda Fixa rende mais.', 'indicadores', 3, 'O Tesouro Selic rende, aproximadamente, o valor da taxa Selic.', 'Ótima para Reserva de Emergência.'),
+('TESOURO', 'Tesouro Direto', 'Plataforma para emprestar dinheiro ao Governo.', 'O investimento mais seguro do país (Risco Soberano). Você compra títulos da dívida pública.', 'renda_fixa', 3, 'Tesouro Selic, Tesouro IPCA+, Tesouro Prefixado.', 'Ideal para começar a investir com pouco dinheiro.'),
+('LIQUIDEZ', 'Liquidez', 'A velocidade para transformar investimento em dinheiro.', 'A facilidade com que você consegue resgatar seu dinheiro sem perda de valor. Liquidez diária cai na conta no mesmo dia.', 'conceitos', 3, 'A Poupança e o Tesouro Selic têm alta liquidez. Um Imóvel tem baixa liquidez.', 'Para Reserva de Emergência, exija Liquidez Diária.'),
 ('CDB', 'Certificado de Depósito Bancário', 'Empréstimo para o banco.', 'Você empresta dinheiro para o banco e ele te devolve com juros. É garantido pelo FGC.', 'renda_fixa', 3, 'CDB do Nubank, CDB do Banco Inter.', 'CDBs de bancos menores costumam pagar mais.'),
 
 -- AULA 4: REGRA DO JOGO (RENDA FIXA)
-('CDI', 'Certificado de Depósito Interbancário', 'A taxa que os bancos usam entre si.', 'Muitos investimentos de Renda Fixa rendem uma % do CDI. Ele anda sempre muito próximo da Selic.', 'economia', 4, 'Um CDB 100% do CDI rende praticamente a mesma coisa que a Selic.', NULL),
-('FGC', 'Fundo Garantidor de Créditos', 'O seguro dos investimentos.', 'Garante até R$ 250 mil por CPF por instituição financeira em caso de falência do banco.', 'seguranca', 4, 'Se o banco quebrar, o FGC devolve seu dinheiro investido em CDB, LCI ou LCA.', 'Tesouro Direto não tem FGC, pois é do Governo.'),
+('CDI', 'Certificado de Depósito Interbancário', 'A taxa que os bancos usam entre si.', 'Muitos investimentos de Renda Fixa rendem uma % do CDI. Ele anda sempre muito próximo da Selic.', 'indicadores', 4, 'Um CDB 100% do CDI rende praticamente a mesma coisa que a Selic.', NULL),
+('FGC', 'Fundo Garantidor de Créditos', 'O seguro dos investimentos.', 'Garante até R$ 250 mil por CPF por instituição financeira em caso de falência do banco.', 'renda_fixa', 4, 'Se o banco quebrar, o FGC devolve seu dinheiro investido em CDB, LCI ou LCA.', 'Tesouro Direto não tem FGC, pois é do Governo.'),
 ('LCI/LCA', 'Letras de Crédito (Imobiliário/Agro)', 'Investimentos isentos de Imposto de Renda.', 'Títulos emitidos por bancos para financiar imóveis ou agronegócio. Pessoa física não paga IR sobre o lucro.', 'renda_fixa', 4, 'LCI 90% do CDI equivale a um CDB de 110% do CDI (com IR).', 'Compare sempre com a taxa equivalente do CDB.'),
 
 -- AULA 5: RISCO E RETORNO
@@ -658,7 +658,7 @@ INSERT INTO terms (acronym, name, explanation_simple, explanation_full, category
 
 -- MÓDULO 3
 -- AULA 7: JUROS COMPOSTOS
-('JUROS COMP', 'Juros Compostos', 'Lucro sobre lucro.', 'Quando os juros ganhos também passam a render juros no mês seguinte. É exponencial.', 'fundamentos', 7, 'Investir R$ 100 hoje vira R$ 110. No mês seguinte, rende sobre R$ 110.', 'O tempo é o fator mais importante.'),
+('JUROS COMP', 'Juros Compostos', 'Lucro sobre lucro.', 'Quando os juros ganhos também passam a render juros no mês seguinte. É exponencial.', 'conceitos', 7, 'Investir R$ 100 hoje vira R$ 110. No mês seguinte, rende sobre R$ 110.', 'O tempo é o fator mais importante.'),
 
 -- AULA 8: TAXAS
 ('TAXA ADM', 'Taxa de Administração', 'O salário do gestor do fundo.', 'Valor cobrado anualmente por Fundos de Investimento para gerir seu dinheiro. Deduzido automaticamente.', 'taxas', 8, 'Fundo com taxa de 2% a.a. precisa render muito para valer a pena.', 'Evite taxas acima de 1% para Renda Fixa.'),
@@ -684,8 +684,8 @@ INSERT INTO terms (acronym, name, explanation_simple, explanation_full, category
 ('SMALL CAP', 'Small Cap', 'Empresa pequena com potencial.', 'Empresas menores na bolsa. Podem crescer muito ou quebrar. Maior risco e volatilidade.', 'renda_variavel', 13, 'Empresas de tecnologia menores, varejo em expansão.', 'Use como "pimenta" na carteira.'),
 
 -- AULA 14: SETORES
-('PERENES', 'Setores Perenes', 'Setores à prova de crise.', 'Empresas que vendem serviços essenciais (energia, água, bancos, seguros). Lucros previsíveis.', 'especialista-acao', 14, 'Taesa (Energia), Sanepar (Água).', 'Ideais para quem busca dividendos constantes.'),
-('CICLICOS', 'Setores Cíclicos', 'Dependem da economia.', 'Varejo, construção, turismo. Sobem muito quando o PIB cresce, caem muito na crise.', 'especialista-acao', 14, 'Magazine Luiza (Varejo), CVC (Turismo).', 'Exigem timing: comprar na baixa do ciclo.'),
+('PERENES', 'Setores Perenes', 'Setores à prova de crise.', 'Empresas que vendem serviços essenciais (energia, água, bancos, seguros). Lucros previsíveis.', 'renda_variavel', 14, 'Taesa (Energia), Sanepar (Água).', 'Ideais para quem busca dividendos constantes.'),
+('CICLICOS', 'Setores Cíclicos', 'Dependem da economia.', 'Varejo, construção, turismo. Sobem muito quando o PIB cresce, caem muito na crise.', 'renda_variavel', 14, 'Magazine Luiza (Varejo), CVC (Turismo).', 'Exigem timing: comprar na baixa do ciclo.'),
 
 -- AULA 15: MARCAÇÃO A MERCADO
 ('PREFIXADO', 'Prefixado', 'Taxa combinada na hora.', 'Você sabe exatamente quanto vai receber no vencimento se segurar até o fim.', 'renda_fixa', 15, 'Tesouro Prefixado 12% a.a.', 'Se vender antes, sofre marcação a mercado.'),
