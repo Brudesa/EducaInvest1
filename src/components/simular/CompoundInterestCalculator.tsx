@@ -99,7 +99,7 @@ export function CompoundInterestCalculator({ rates }: CalculatorProps) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: number) => void) => {
     const rawValue = e.target.value.replace(/\D/g, '');
-    setter(Number(rawValue));
+    setter(Number(rawValue) / 100);
   };
 
   const rateOptions = [
