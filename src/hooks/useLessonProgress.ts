@@ -20,9 +20,12 @@ export function useLessonProgress(
         return saved ? parseInt(saved, 10) : 1;
     });
 
+    // Admin check
+    const isAdmin = localStorage.getItem('educainvest_admin') === 'true' || user?.email === 'admin@educainvest.com';
+
     // Timer state
-    const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
-    const [canComplete, setCanComplete] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(isAdmin ? 0 : TIME_LIMIT);
+    const [canComplete, setCanComplete] = useState(isAdmin);
 
     // Computed current lesson object
     // Mapped Lesson structure to match what UI expects from the DB mapping in the original file
@@ -30,6 +33,12 @@ export function useLessonProgress(
     const currentAula = lessons.find(a => a.id === currentAulaId) || lessons[0];
 
     useEffect(() => {
+        if (isAdmin) {
+            setTimeLeft(0);
+            setCanComplete(true);
+            return;
+        }
+
         setTimeLeft(TIME_LIMIT);
         setCanComplete(false);
 
@@ -45,7 +54,7 @@ export function useLessonProgress(
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [currentAulaId]);
+    }, [currentAulaId, isAdmin]);
 
     const handleLessonChange = (newId: number) => {
         setCurrentAulaId(newId);
