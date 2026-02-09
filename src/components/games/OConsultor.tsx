@@ -55,7 +55,10 @@ export const OConsultor = ({ onBack }: Props) => {
         setLastAnswerCorrect(isCorrect);
         if (isCorrect) setScore(s => s + 1);
 
-        setShowFeedback(true);
+        // Small delay to ensure exit animation sees the updated direction
+        setTimeout(() => {
+            setShowFeedback(true);
+        }, 10);
     };
 
     const nextQuestion = () => {
@@ -150,6 +153,8 @@ export const OConsultor = ({ onBack }: Props) => {
                                 opacity: 0,
                                 rotate: direction === 'left' ? -20 : 20,
                                 x: direction === 'left' ? -300 : 300,
+                                backgroundColor: direction === 'left' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+                                borderColor: direction === 'left' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(16, 185, 129, 0.5)',
                                 transition: { duration: 0.4, ease: "easeIn" }
                             }}
                             className="w-full bg-slate-900 border border-white/10 rounded-3xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col items-center text-center min-h-[350px] justify-center relative overflow-hidden"
