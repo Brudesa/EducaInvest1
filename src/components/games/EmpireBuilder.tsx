@@ -153,14 +153,14 @@ export const EmpireBuilder = ({ onBack }: Props) => {
                             <span className="text-muted-foreground text-sm uppercase font-bold mb-1">Renda Passiva</span>
                             <div className="flex items-center gap-2 text-emerald-400">
                                 <TrendingUp className="w-5 h-5" />
-                                <span className="text-2xl font-bold font-mono">+R$ {passiveIncome}/s</span>
+                                <span className="text-2xl font-bold font-mono">+ED$ {passiveIncome}/s</span>
                             </div>
                         </div>
                         <div className="bg-slate-800/50 border border-white/10 p-4 rounded-xl flex flex-col items-center">
                             <span className="text-muted-foreground text-sm uppercase font-bold mb-1">Renda Ativa</span>
                             <div className="flex items-center gap-2 text-amber-400">
                                 <Zap className="w-5 h-5" />
-                                <span className="text-2xl font-bold font-mono">+R$ {clickValue}/clique</span>
+                                <span className="text-2xl font-bold font-mono">+ED$ {clickValue}/clique</span>
                             </div>
                         </div>
                     </div>
@@ -168,7 +168,7 @@ export const EmpireBuilder = ({ onBack }: Props) => {
                     {/* Clicker Area */}
                     <div className="flex-1 flex flex-col items-center justify-center min-h-[300px] relative">
                         <div className="text-4xl md:text-5xl font-mono font-bold text-white mb-8">
-                            R$ {Math.floor(balance).toLocaleString()}
+                            ED$ {Math.floor(balance).toLocaleString()}
                         </div>
 
                         <motion.button
@@ -179,7 +179,7 @@ export const EmpireBuilder = ({ onBack }: Props) => {
                         >
                             <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                             <Briefcase className="w-16 h-16 text-white" />
-                            <span className="font-bold text-white text-lg">TRABALHAR</span>
+                            <span className="font-bold text-white text-lg uppercase tracking-wider">Trabalhar</span>
                         </motion.button>
 
                         {/* Floating text container */}
@@ -199,7 +199,7 @@ export const EmpireBuilder = ({ onBack }: Props) => {
                                             marginTop: click.y
                                         }}
                                     >
-                                        +R${click.val}
+                                        +ED${click.val}
                                     </motion.div>
                                 ))}
                             </AnimatePresence>
@@ -208,7 +208,12 @@ export const EmpireBuilder = ({ onBack }: Props) => {
                 </div>
 
                 {/* Shop Sidebar */}
-                <div className="bg-slate-900/50 border-l border-white/10 overflow-y-auto max-h-[600px] rounded-xl scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+                <div className="bg-slate-900/50 border-l border-white/10 overflow-y-auto max-h-[600px] rounded-xl 
+                    [&::-webkit-scrollbar]:w-2
+                    [&::-webkit-scrollbar-track]:bg-transparent
+                    [&::-webkit-scrollbar-thumb]:bg-white/10
+                    [&::-webkit-scrollbar-thumb]:rounded-full
+                    hover:[&::-webkit-scrollbar-thumb]:bg-white/20">
                     <div className="p-4 border-b border-white/10 sticky top-0 bg-slate-900/90 backdrop-blur z-10 flex items-center justify-between">
                         <h3 className="font-bold text-white flex items-center gap-2">
                             <Building className="w-4 h-4" /> Loja de Investimentos
