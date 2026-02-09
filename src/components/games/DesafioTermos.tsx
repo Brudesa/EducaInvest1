@@ -5,7 +5,7 @@ import { ArrowLeft, Clock, RefreshCw, CheckCircle2, XCircle, HelpCircle } from "
 import { gameService, GameQuestion } from "@/services/gameService";
 import { formatNumber, saveXP } from "@/lib/utils";
 import { GameHelp } from "./GameHelp";
-import { useSound } from "@/hooks/useSound";
+
 
 interface Props {
     onBack: () => void;
@@ -25,7 +25,7 @@ interface GameItem {
 }
 
 export const DesafioTermos = ({ onBack }: Props) => {
-    const { play } = useSound();
+
     const [items, setItems] = useState<{ terms: GameItem[], defs: GameItem[] }>({ terms: [], defs: [] });
     const [selectedTerm, setSelectedTerm] = useState<string | null>(null);
     const [selectedDef, setSelectedDef] = useState<string | null>(null);
@@ -90,7 +90,7 @@ export const DesafioTermos = ({ onBack }: Props) => {
 
             if (termId === defId) {
                 // Match!
-                play('success'); // or 'pop'
+
                 setMatchedIds(prev => [...prev, termId]);
                 setScore(s => s + 10 + Math.floor(timeLeft / 2));
                 setSelectedTerm(null);
@@ -98,12 +98,12 @@ export const DesafioTermos = ({ onBack }: Props) => {
 
                 // Check win condition
                 if (matchedIds.length + 1 === items.terms.length) {
-                    play('fanfare');
+
                     setIsPlaying(false);
                 }
             } else {
                 // Mismatch
-                play('error');
+
                 // Vibrate
                 if (navigator.vibrate) navigator.vibrate(200);
 
