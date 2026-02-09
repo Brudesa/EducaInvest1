@@ -133,6 +133,10 @@ export default function Aprender() {
       return tmp.textContent || tmp.innerText || "";
     };
 
+    const escapeRegExp = (string: string) => {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    };
+
     const cleanTranscript = stripHtml(currentAula.transcricaoCompleta || "").toLowerCase();
 
     return allTerms.filter(term => {
