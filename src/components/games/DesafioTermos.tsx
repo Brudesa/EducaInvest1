@@ -38,7 +38,6 @@ export const DesafioTermos = ({ onBack }: Props) => {
     const scoreRef = useRef(0);
     const xpSavedRef = useRef(false);
 
-    // Sync refs
     useEffect(() => {
         scoreRef.current = score;
     }, [score]);
@@ -182,7 +181,7 @@ export const DesafioTermos = ({ onBack }: Props) => {
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" onClick={onBack} size="sm" className="gap-2 text-white/70 hover:text-white hover:bg-white/10">
+                    <Button variant="ghost" onClick={onBack} size="sm" className="gap-2 text-white/70 hover:text-white hover:bg-white/10" aria-label="Sair do jogo">
                         <ArrowLeft className="w-4 h-4" /> Sair
                     </Button>
                     <GameHelp>

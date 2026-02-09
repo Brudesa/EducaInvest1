@@ -171,7 +171,7 @@ export const OConsultor = ({ onBack }: Props) => {
         <div className="flex flex-col h-full min-h-[500px] max-w-md mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
-                <Button variant="ghost" onClick={handleExit} size="sm" className="gap-2 text-white/70 hover:text-white hover:bg-white/10">
+                <Button variant="ghost" onClick={handleExit} size="sm" className="gap-2 text-white/70 hover:text-white hover:bg-white/10" aria-label="Sair do jogo">
                     <ArrowLeft className="w-4 h-4" /> Sair
                 </Button>
                 <GameHelp>
@@ -280,6 +280,7 @@ export const OConsultor = ({ onBack }: Props) => {
             className="bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white h-20 rounded-2xl text-lg flex-col gap-1 transition-all"
             onClick={() => handleSwipe('left')}
             disabled={showFeedback}
+            aria-label={`Opção Esquerda: ${leftLabel}`}
         >
             <ThumbsDown className="w-6 h-6" />
             <span className="text-[10px] uppercase font-black">{leftLabel}</span>
@@ -290,6 +291,7 @@ export const OConsultor = ({ onBack }: Props) => {
             className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white h-20 rounded-2xl text-lg flex-col gap-1 transition-all"
             onClick={() => handleSwipe('right')}
             disabled={showFeedback}
+            aria-label={`Opção Direita: ${rightLabel}`}
         >
             <ThumbsUp className="w-6 h-6" />
             <span className="text-[10px] uppercase font-black">{rightLabel}</span>

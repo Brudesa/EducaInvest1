@@ -160,7 +160,7 @@ export const EmpireBuilder = ({ onBack }: Props) => {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" onClick={onBack} size="sm" className="gap-2 text-white hover:text-primary hover:bg-white/10">
+                    <Button variant="ghost" onClick={onBack} size="sm" className="gap-2 text-white hover:text-primary hover:bg-white/10" aria-label="Sair do jogo">
                         <ArrowLeft className="w-4 h-4" /> Sair
                     </Button>
                     <GameHelp>
@@ -223,7 +223,6 @@ export const EmpireBuilder = ({ onBack }: Props) => {
                             <span className="font-bold text-white text-xl uppercase tracking-wider">Trabalhar</span>
                         </motion.button>
 
-                        {/* Floating text container */}
                         <div className="absolute inset-0 pointer-events-none overflow-hidden">
                             <AnimatePresence>
                                 {clicks.map(click => (
@@ -265,6 +264,7 @@ export const EmpireBuilder = ({ onBack }: Props) => {
 };
 
 // Helper Component for Shop Columns
+// Moved outside to prevent re-creation on every render
 const ShopColumn = ({ title, icon, items, ownedItems, balance, onBuy, getCost, isPassive }: any) => {
     return (
         <div className="relative bg-slate-900/50 border border-white/10 overflow-y-auto max-h-[600px] rounded-xl flex flex-col
@@ -289,7 +289,6 @@ const ShopColumn = ({ title, icon, items, ownedItems, balance, onBuy, getCost, i
                     const cost = getCost(item, count);
                     const canAfford = balance >= cost;
 
-                    // Visual accents
                     const accentClass = isPassive ? 'border-emerald-500/20 hover:border-emerald-500/50' : 'border-amber-500/20 hover:border-amber-500/50';
                     const glowClass = isPassive ? 'group-hover:bg-emerald-500/5' : 'group-hover:bg-amber-500/5';
                     const textAccent = isPassive ? 'text-emerald-400' : 'text-amber-400';
@@ -299,6 +298,7 @@ const ShopColumn = ({ title, icon, items, ownedItems, balance, onBuy, getCost, i
                             key={item.id}
                             onClick={() => onBuy(item)}
                             disabled={!canAfford}
+                            aria-label={`Comprar ${item.name} por ${formatNumber(cost)} moedas`}
                             className={`
                                 w-full text-left p-4 rounded-xl border transition-all relative group overflow-hidden
                                 ${canAfford
@@ -307,7 +307,6 @@ const ShopColumn = ({ title, icon, items, ownedItems, balance, onBuy, getCost, i
                                 }
                             `}
                         >
-                            {/* Type indicator bubble */}
                             <div className={`absolute -right-5 -top-5 w-16 h-16 blur-2xl opacity-10 transition-opacity group-hover:opacity-30 ${isPassive ? 'bg-emerald-500' : 'bg-amber-500'}`} />
 
                             <div className="flex justify-between items-start mb-2 relative z-10">
@@ -339,7 +338,6 @@ const ShopColumn = ({ title, icon, items, ownedItems, balance, onBuy, getCost, i
                                 </div>
                             </div>
 
-                            {/* Next level preview */}
                             <div className={`mt-2 py-1 px-2 rounded-md text-[10px] font-medium text-center relative z-10 transition-colors ${count > 0 ? (isPassive ? 'bg-emerald-500/10 text-emerald-300' : 'bg-amber-500/10 text-amber-300') : 'text-muted-foreground/50'}`}>
                                 {count > 0
                                     ? `Próximo: +${formatNumber(item.base_income * (count + 1))} total`
