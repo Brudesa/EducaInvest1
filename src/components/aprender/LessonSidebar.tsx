@@ -10,6 +10,7 @@ interface LessonSidebarProps {
     currentAulaId: number;
     completedLessonIds: number[];
     handleLessonChange: (id: number) => void;
+    isAdmin?: boolean;
 }
 
 export function LessonSidebar({
@@ -18,7 +19,8 @@ export function LessonSidebar({
     lessons,
     currentAulaId,
     completedLessonIds,
-    handleLessonChange
+    handleLessonChange,
+    isAdmin = false
 }: LessonSidebarProps) {
 
     const scrollbarClass = "lg:overflow-y-auto lg:[&::-webkit-scrollbar]:w-1.5 lg:[&::-webkit-scrollbar-track]:bg-transparent lg:[&::-webkit-scrollbar-thumb]:bg-slate-700/50 lg:[&::-webkit-scrollbar-thumb]:rounded-full hover:lg:[&::-webkit-scrollbar-thumb]:bg-slate-600 transition-colors";
@@ -74,7 +76,7 @@ export function LessonSidebar({
                                 {modulo.aulas.map((aula) => {
                                     const isActive = currentAulaId === aula.id;
                                     const isCompleted = completedLessonIds.includes(aula.id);
-                                    const isLocked = aula.id > (maxCompletedId + 1);
+                                    const isLocked = !isAdmin && aula.id > (maxCompletedId + 1);
 
                                     const buttonContent = (
                                         <button
@@ -144,7 +146,7 @@ export function LessonSidebar({
                                         {trilha.aulas.map((aula) => {
                                             const isActive = currentAulaId === aula.id;
                                             // Locked if base course not complete OR if individual sequence logic applies
-                                            const isLocked = !isBaseCourseComplete || (aula.id > (maxCompletedId + 1));
+                                            const isLocked = !isAdmin && (!isBaseCourseComplete || (aula.id > (maxCompletedId + 1)));
 
                                             return (
                                                 <button

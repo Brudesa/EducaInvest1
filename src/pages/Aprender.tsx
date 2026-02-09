@@ -24,8 +24,12 @@ export default function Aprender() {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
 
+  // Admin detection (memoized or calculated once)
+  const isAdmin = useMemo(() => {
+    return localStorage.getItem('educainvest_admin') === 'true' || user?.email === 'brunogd964@gmail.com';
+  }, [user]);
+
   // Use custom hook for progress logic
-  // We pass empty array initially if loading, but hook handles finding current lesson
   const {
     currentAulaId,
     currentAula,
@@ -35,7 +39,7 @@ export default function Aprender() {
     handleCompleteAndNext,
     TIME_LIMIT,
     xpAmount
-  } = useLessonProgress(lessons, user, completedLessonIds, setCompletedLessonIds);
+  } = useLessonProgress(lessons, user, completedLessonIds, setCompletedLessonIds, isAdmin);
 
   // ========== 1. FETCHING DATA FROM SUPABASE ==========
   useEffect(() => {
@@ -169,6 +173,7 @@ export default function Aprender() {
             currentAulaId={currentAulaId}
             completedLessonIds={completedLessonIds}
             handleLessonChange={handleLessonChange}
+            isAdmin={isAdmin}
           />
 
           <LessonContent
@@ -182,6 +187,7 @@ export default function Aprender() {
             timeLimit={TIME_LIMIT}
             handleCompleteAndNext={handleCompleteAndNext}
             xpAmount={xpAmount}
+            isAdmin={isAdmin}
           />
 
         </div>

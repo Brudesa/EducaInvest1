@@ -17,6 +17,7 @@ interface LessonContentProps {
     timeLimit: number;
     handleCompleteAndNext: () => void;
     xpAmount: number;
+    isAdmin?: boolean;
 }
 
 const ProgressBar = ({ timeLeft, total }: { timeLeft: number; total: number }) => {
@@ -44,7 +45,8 @@ export function LessonContent({
     timeLeft,
     timeLimit,
     handleCompleteAndNext,
-    xpAmount
+    xpAmount,
+    isAdmin = false
 }: LessonContentProps) {
 
     const scrollbarClass = "lg:overflow-y-auto lg:[&::-webkit-scrollbar]:w-1.5 lg:[&::-webkit-scrollbar-track]:bg-transparent lg:[&::-webkit-scrollbar-thumb]:bg-slate-700/50 lg:[&::-webkit-scrollbar-thumb]:rounded-full hover:lg:[&::-webkit-scrollbar-thumb]:bg-slate-600 transition-colors";
@@ -59,10 +61,18 @@ export function LessonContent({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
                 >
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-medium text-muted-foreground mb-4 uppercase tracking-wider">
-                        <span>Aula {currentAula.id} de {totalLessons}</span>
-                        <span className="w-1 h-1 rounded-full bg-white/20" />
-                        <span className="text-primary">{currentAula.nivel || currentAula.level}</span>
+                    <div className="flex flex-wrap items-center gap-2 mb-4">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                            <span>Aula {currentAula.id} de {totalLessons}</span>
+                            <span className="w-1 h-1 rounded-full bg-white/20" />
+                            <span className="text-primary">{currentAula.nivel || currentAula.level}</span>
+                        </div>
+                        {isAdmin && (
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-amber-500 uppercase tracking-widest animate-pulse">
+                                <Lock className="w-3 h-3" />
+                                <span>Modo Admin Ativo (Sem Travas)</span>
+                            </div>
+                        )}
                     </div>
                     <h1 className="font-display text-2xl md:text-4xl font-bold text-white mb-2 leading-tight">
                         {currentAula.title_full || currentAula.tituloCompleto}

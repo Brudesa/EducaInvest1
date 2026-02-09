@@ -10,7 +10,8 @@ export function useLessonProgress(
     lessons: Lesson[],
     user: any,
     completedLessonIds: number[],
-    setCompletedLessonIds: Dispatch<SetStateAction<number[]>>
+    setCompletedLessonIds: Dispatch<SetStateAction<number[]>>,
+    isAdmin: boolean = false
 ) {
     const { toast } = useToast();
 
@@ -20,8 +21,6 @@ export function useLessonProgress(
         return saved ? parseInt(saved, 10) : 1;
     });
 
-    // Admin check
-    const isAdmin = localStorage.getItem('educainvest_admin') === 'true' || user?.email === 'admin@educainvest.com';
 
     // Timer state
     const [timeLeft, setTimeLeft] = useState(isAdmin ? 0 : TIME_LIMIT);
