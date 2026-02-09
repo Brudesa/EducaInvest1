@@ -142,6 +142,12 @@ export function PodcastCard({ aula, termos = [] }: PodcastCardProps) {
     if (!termos.length || !html) return html;
 
     let tempHtml = html;
+
+    // CORREÇÃO PONTUAL: Substitui "Tesouro Selic" por "Taxa Selic" para evitar botões divididos
+    // Solicitado pelo usuário para a Aula 03
+    tempHtml = tempHtml.replace(/Tesouro Selic/gi, "Taxa Selic");
+    tempHtml = tempHtml.replace(/Tesouro\s+Selic/gi, "Taxa Selic"); // Garante com múltiplos espaços
+
     const replacements: { placeholder: string; html: string }[] = [];
 
     termos.forEach((termo) => {
