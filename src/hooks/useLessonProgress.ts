@@ -84,6 +84,23 @@ export function useLessonProgress(
     };
 
     const handleCompleteAndNext = async () => {
+        // Se a aula já foi concluída, apenas avança sem dar XP
+        if (completedLessonIds.includes(currentAulaId)) {
+            if (currentAulaId < lessons.length) {
+                handleLessonChange(currentAulaId + 1);
+                toast({
+                    title: "Avançando para próxima aula",
+                    description: "Aula já concluída anteriormente.",
+                });
+            } else {
+                toast({
+                    title: "Curso Concluído",
+                    description: "Você já finalizou todas as aulas!",
+                });
+            }
+            return;
+        }
+
         if (!canComplete || !user) return;
 
         // Check if it's the last lesson of a module or the entire course

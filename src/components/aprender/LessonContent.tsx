@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Layers, ChevronLeft, ChevronRight, Timer, Info, Lock } from "lucide-react";
+import { Layers, ChevronLeft, ChevronRight, Timer, Info, Lock, CheckCircle2 } from "lucide-react";
 import { PodcastCard } from "@/components/aprender/PodcastCard";
 import { TermCard } from "@/components/aprender/TermCard";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ interface LessonContentProps {
     handleCompleteAndNext: () => void;
     xpAmount: number;
     isAdmin?: boolean;
+    isCompleted?: boolean;
 }
 
 const ProgressBar = ({ timeLeft, total }: { timeLeft: number; total: number }) => {
@@ -129,22 +130,33 @@ export function LessonContent({
                         <Button
                             size="lg"
                             onClick={handleCompleteAndNext}
-                            disabled={!canComplete}
+                            disabled={!canComplete && !isCompleted}
                             className={cn(
                                 "group font-bold rounded-full px-8 py-6 text-base transition-all w-full md:w-auto relative overflow-hidden",
-                                canComplete
+                                (canComplete || isCompleted)
                                     ? "bg-white text-slate-900 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]"
                                     : "bg-white/5 text-white/20 border border-white/5 cursor-not-allowed"
                             )}
-                            aria-label={canComplete ? `Concluir aula e ganhar ${xpAmount} XP` : `Aguarde ${timeLeft} segundos para liberar`}
+                            aria-label={isCompleted ? "Ir para próxima aula" : canComplete ? `Concluir aula e ganhar ${xpAmount} XP` : `Aguarde ${timeLeft} segundos para liberar`}
                             role="button"
-                            aria-disabled={!canComplete}
+                            aria-disabled={!canComplete && !isCompleted}
                         >
-                            {!canComplete && <Timer className="w-4 h-4 mr-2 animate-pulse" />}
-                            {canComplete
-                                ? (currentAulaId === totalLessons ? "🎉 Concluir Curso" : `Concluir e Ganhar +${xpAmount} XP`)
-                                : `Aguarde ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`}
-                            {canComplete && currentAulaId !== totalLessons && (
+                            {!canComplete && !isCompleted && <Timer className="w-4 h-4 mr-2 animate-pulse" />}
+
+                            {isCompleted ? (
+                                <>
+                                    <CheckCircle2 className="w-4 h-4 mr-2 text-emerald-500" />
+                                    {currentAulaId === totalLessons ? "Curso Concluído" : "Próxima Aula"}
+                                </>
+                            ) : canComplete ? (
+                                <>
+                                    {currentAulaId === totalLessons ? "🎉 Concluir Curso" : `Concluir e Ganhar +${xpAmount} XP`}
+                                </>
+                            ) : (
+                                `Aguarde ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`
+                            )}
+
+                            {(canComplete || isCompleted) && currentAulaId !== totalLessons && (
                                 <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                             )}
                         </Button>
