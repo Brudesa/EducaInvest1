@@ -4,12 +4,12 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { OConsultor } from "@/components/games/OConsultor";
 import { DesafioTermos } from "@/components/games/DesafioTermos";
 import { EmpireBuilder } from "@/components/games/EmpireBuilder";
 import { getTotalXP, getLevelInfo, formatNumber } from "@/lib/utils";
-import { useEffect } from "react";
 
 const games = [
   {
@@ -50,6 +50,11 @@ const games = [
 export default function Arcade() {
   const [activeGame, setActiveGame] = useState<string | null>(null);
   const [xp, setXP] = useState(0);
+  const location = useLocation();
+
+  useEffect(() => {
+    setActiveGame(null);
+  }, [location.key]);
 
   useEffect(() => {
     setXP(getTotalXP());

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Check, X, ThumbsUp, ThumbsDown, AlertTriangle, TrendingUp, HelpCircle } from "lucide-react";
@@ -25,16 +25,49 @@ export const OConsultor = ({ onBack }: Props) => {
     const [lastAnswerCorrect, setLastAnswerCorrect] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [direction, setDirection] = useState<'left' | 'right' | null>(null);
+    const [xpSaved, setXpSaved] = useState(false);
+
+    const scoreRef = useRef(0);
+    const xpSavedRef = useRef(false);
+
+    // Sync refs with state
+    useEffect(() => {
+        scoreRef.current = score;
+    }, [score]);
+
+    useEffect(() => {
+        xpSavedRef.current = xpSaved;
+    }, [xpSaved]);
 
     useEffect(() => {
         loadQuestions();
     }, []);
 
     useEffect(() => {
-        if (currentIndex >= questions.length && questions.length > 0) {
-            saveXP(score * 10);
+        if (currentIndex >= questions.length && questions.length > 0 && !xpSaved) {
+            handleSaveXP();
         }
-    }, [currentIndex, questions.length]);
+    }, [currentIndex, questions.length, xpSaved]);
+
+    const handleSaveXP = () => {
+        if (xpSaved || score === 0) return;
+        saveXP(score * 10);
+        setXpSaved(true);
+    };
+
+    const handleExit = () => {
+        handleSaveXP();
+        onBack();
+    };
+
+    // Save on unmount if not already saved
+    useEffect(() => {
+        return () => {
+            if (!xpSavedRef.current && scoreRef.current > 0) {
+                saveXP(scoreRef.current * 10);
+            }
+        };
+    }, []);
 
     const loadQuestions = async () => {
         try {
@@ -80,6 +113,7 @@ export const OConsultor = ({ onBack }: Props) => {
         setScore(0);
         setShowFeedback(false);
         setDirection(null);
+        setXpSaved(false);
         loadQuestions();
     };
 
@@ -129,23 +163,14 @@ export const OConsultor = ({ onBack }: Props) => {
 
     return (
         <div className="flex flex-col h-full min-h-[500px] max-w-md mx-auto">
-            {/* Progress Bar */}
-            <div className="w-full h-1.5 bg-white/5 rounded-full mb-6 overflow-hidden">
-                <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    className="h-full bg-primary"
-                />
-            </div>
-
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
-                <Button variant="ghost" onClick={onBack} size="sm" className="gap-2 text-white/70 hover:text-white hover:bg-white/10">
+                <Button variant="ghost" onClick={handleExit} size="sm" className="gap-2 text-white/70 hover:text-white hover:bg-white/10">
                     <ArrowLeft className="w-4 h-4" /> Sair
                 </Button>
                 <div className="flex items-center gap-3">
                     <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                        Cenário {currentIndex + 1} de {questions.length}
+                        Cenário {currentIndex + 1}
                     </div>
                     <Tooltip>
                         <TooltipTrigger asChild>

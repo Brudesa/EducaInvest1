@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock, RefreshCw, CheckCircle2, XCircle, HelpCircle } from "lucide-react";
@@ -33,6 +33,19 @@ export const DesafioTermos = ({ onBack }: Props) => {
     const [timeLeft, setTimeLeft] = useState(60);
     const [isPlaying, setIsPlaying] = useState(false);
     const [score, setScore] = useState(0);
+    const [xpSaved, setXpSaved] = useState(false);
+
+    const scoreRef = useRef(0);
+    const xpSavedRef = useRef(false);
+
+    // Sync refs
+    useEffect(() => {
+        scoreRef.current = score;
+    }, [score]);
+
+    useEffect(() => {
+        xpSavedRef.current = xpSaved;
+    }, [xpSaved]);
 
     useEffect(() => {
         loadGame();
@@ -53,10 +66,20 @@ export const DesafioTermos = ({ onBack }: Props) => {
     const isGameOver = timeLeft === 0 || matchedIds.length === items.terms.length;
 
     useEffect(() => {
-        if (!isPlaying && isGameOver && score > 0) {
+        if (!isPlaying && isGameOver && score > 0 && !xpSaved) {
             saveXP(score);
+            setXpSaved(true);
         }
-    }, [isPlaying, isGameOver]);
+    }, [isPlaying, isGameOver, score, xpSaved]);
+
+    // Save on unmount
+    useEffect(() => {
+        return () => {
+            if (!xpSavedRef.current && scoreRef.current > 0) {
+                saveXP(scoreRef.current);
+            }
+        };
+    }, []);
 
     // Check match
     useEffect(() => {
