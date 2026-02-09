@@ -111,6 +111,16 @@ export function Header() {
     };
   }, []);
 
+  // Listen for manual XP updates
+  useEffect(() => {
+    const handleXpUpdate = () => {
+      if (user) fetchPerfil(user.id);
+    };
+
+    window.addEventListener('educainvest_xp_updated', handleXpUpdate);
+    return () => window.removeEventListener('educainvest_xp_updated', handleXpUpdate);
+  }, [user]);
+
   // Busca dados iniciais de XP e Nível
   const fetchPerfil = async (userId: string) => {
     const { data } = await supabase

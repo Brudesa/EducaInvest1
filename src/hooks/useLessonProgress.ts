@@ -116,6 +116,9 @@ export function useLessonProgress(
 
             await supabase.from('perfis').update({ xp_total: newTotal }).eq('id', user.id);
 
+            // Emit manual event for real-time UI updates
+            window.dispatchEvent(new CustomEvent('educainvest_xp_updated'));
+
             toast({
                 title: `+${xpAmount} XP Conquistados!`,
                 description: isLastOfCourse ? "🎉 Parabéns! Você concluiu o curso!" : "Progresso salvo com sucesso.",

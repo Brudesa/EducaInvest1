@@ -145,6 +145,7 @@ export function LessonSidebar({
                                     <div className="space-y-1">
                                         {trilha.aulas.map((aula) => {
                                             const isActive = currentAulaId === aula.id;
+                                            const isCompleted = completedLessonIds.includes(aula.id);
                                             // Locked if base course not complete OR if individual sequence logic applies
                                             const isLocked = !isAdmin && (!isBaseCourseComplete || (aula.id > (maxCompletedId + 1)));
 
@@ -162,7 +163,15 @@ export function LessonSidebar({
                                                                 : "text-muted-foreground hover:bg-emerald-500/5 hover:text-emerald-400 border border-transparent"
                                                     )}
                                                 >
-                                                    {isLocked ? <Lock className="w-3 h-3 shrink-0" /> : <PlayCircle className="w-3 h-3 shrink-0" />}
+                                                    {isLocked ? (
+                                                        <Lock className="w-3 h-3 shrink-0" />
+                                                    ) : isActive ? (
+                                                        <PlayCircle className="w-3 h-3 shrink-0 animate-pulse" />
+                                                    ) : isCompleted ? (
+                                                        <CheckCircle2 className="w-3 h-3 shrink-0 text-emerald-500" />
+                                                    ) : (
+                                                        <div className="w-3 h-3 rounded-full border-2 border-muted-foreground/30 shrink-0" />
+                                                    )}
                                                     <span className="line-clamp-1 text-left">{aula.title_short || aula.titulo}</span>
                                                 </button>
                                             );
