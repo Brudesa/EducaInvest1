@@ -1,45 +1,60 @@
 import { motion } from "framer-motion";
 import { Lightbulb, RefreshCw } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
-const tips = [
-  {
-    title: "A regra dos 50/30/20",
-    content: "Divida sua renda: 50% para necessidades, 30% para desejos e 20% para economias e investimentos. É um ótimo ponto de partida!",
-  },
-  {
-    title: "Comece pequeno, mas comece",
-    content: "Mesmo R$ 50 por mês faz diferença. O importante é criar o hábito de investir regularmente.",
-  },
-  {
-    title: "Reserva de emergência primeiro",
-    content: "Antes de investir em renda variável, tenha de 3 a 6 meses de gastos guardados em investimentos seguros e líquidos.",
-  },
-  {
-    title: "Tempo é seu maior aliado",
-    content: "Graças aos juros compostos, quanto antes você começar, menos precisará investir para atingir seus objetivos.",
-  },
-  {
-    title: "Diversifique seus investimentos",
-    content: "Não coloque todos os ovos na mesma cesta. Distribua entre diferentes tipos de investimento para reduzir riscos.",
-  },
-];
+interface Tip {
+  id: number;
+  title: string;
+  content: string;
+}
 
 export function TipOfTheDay() {
-  const [currentTipIndex, setCurrentTipIndex] = useState(() => 
-    Math.floor(Math.random() * tips.length)
-  );
+  const [tips, setTips] = useState<Tip[]>([]);
+  const [currentTip, setCurrentTip] = useState<Tip | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const currentTip = tips[currentTipIndex];
+  useEffect(() => {
+    async function fetchTips() {
+      try {
+        const { data, error } = await supabase
+          .from('tips')
+          .select('*')
+          .order('id');
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          setTips(data);
+          // Pick a random tip initially
+          const randomIndex = Math.floor(Math.random() * data.length);
+          setCurrentTip(data[randomIndex]);
+        }
+      } catch (error) {
+        console.error("Error fetching tips:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchTips();
+  }, []);
 
   const handleNewTip = () => {
-    let newIndex;
+    if (tips.length <= 1) return;
+
+    let newTip;
     do {
-      newIndex = Math.floor(Math.random() * tips.length);
-    } while (newIndex === currentTipIndex);
-    setCurrentTipIndex(newIndex);
+      const randomIndex = Math.floor(Math.random() * tips.length);
+      newTip = tips[randomIndex];
+    } while (newTip.id === currentTip?.id);
+
+    setCurrentTip(newTip);
   };
+
+  if (isLoading) return null; // Or a skeleton
+  if (!currentTip) return null;
 
   return (
     <section className="py-16 md:py-20 bg-secondary/30">
@@ -54,7 +69,7 @@ export function TipOfTheDay() {
           <div className="bg-card rounded-2xl p-6 md:p-8 border border-border shadow-lg relative overflow-hidden">
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-warning/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-            
+
             {/* Header */}
             <div className="flex items-center justify-between mb-6 relative">
               <div className="flex items-center gap-3">
@@ -71,6 +86,7 @@ export function TipOfTheDay() {
                 size="sm"
                 onClick={handleNewTip}
                 className="text-muted-foreground hover:text-foreground"
+                disabled={tips.length <= 1}
               >
                 <RefreshCw className="w-4 h-4" />
               </Button>
@@ -78,7 +94,7 @@ export function TipOfTheDay() {
 
             {/* Content */}
             <motion.div
-              key={currentTipIndex}
+              key={currentTip.id}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3 }}
@@ -94,13 +110,13 @@ export function TipOfTheDay() {
 
             {/* Indicator dots */}
             <div className="flex justify-center gap-2 mt-6">
-              {tips.map((_, index) => (
+              {tips.map((tip) => (
                 <button
-                  key={index}
-                  onClick={() => setCurrentTipIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentTipIndex ? "bg-warning" : "bg-border"
-                  }`}
+                  key={tip.id}
+                  onClick={() => setCurrentTip(tip)}
+                  className={`w-2 h-2 rounded-full transition-colors ${currentTip.id === tip.id ? "bg-warning" : "bg-border"
+                    }`}
+                  aria-label={`Ver dica ${tip.id}`}
                 />
               ))}
             </div>

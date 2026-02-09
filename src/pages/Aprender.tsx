@@ -94,6 +94,8 @@ export default function Aprender() {
             aulaAssociadaId: t.lesson_id
           };
         });
+        // INJECTION REMOVED: Term is now in Supabase
+
         setAllTerms(mappedTerms);
 
       } catch (error: any) {
