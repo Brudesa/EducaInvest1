@@ -5,6 +5,7 @@ import { ArrowLeft, Clock, RefreshCw, CheckCircle2, XCircle, HelpCircle } from "
 import { gameService, GameQuestion } from "@/services/gameService";
 import { formatNumber, saveXP } from "@/lib/utils";
 import { GameHelp } from "./GameHelp";
+import { useSound } from "@/hooks/useSound";
 
 interface Props {
     onBack: () => void;
