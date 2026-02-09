@@ -145,14 +145,14 @@ export default function Arcade() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
-                    className="relative bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden group hover:border-primary/40 hover:shadow-[0_0_20px_rgba(var(--primary-rgb),0.1)] transition-all duration-300"
+                    className="relative bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden group hover:border-primary/40 hover:shadow-[0_0_20px_rgba(var(--primary-rgb),0.1)] transition-all duration-300 flex flex-col h-full"
                   >
-                    <div className={`h-28 bg-gradient-to-br ${game.gradient} flex items-center justify-center border-b border-white/5 relative overflow-hidden`}>
+                    <div className={`h-28 bg-gradient-to-br ${game.gradient} flex items-center justify-center border-b border-white/5 relative overflow-hidden shrink-0`}>
                       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
                       <span className="text-6xl drop-shadow-md transform group-hover:scale-110 transition-transform duration-300">{game.emoji}</span>
                     </div>
 
-                    <div className="p-6">
+                    <div className="p-6 flex-1 flex flex-col">
                       <div className="flex items-start justify-between gap-2 mb-3">
                         <h2 className="font-display text-xl font-bold text-white leading-tight">{game.title}</h2>
                         {!game.available && (
@@ -178,7 +178,7 @@ export default function Arcade() {
                         ))}
                       </div>
 
-                      <div className="flex items-center justify-between text-xs text-muted-foreground/80 mb-5 pt-4 border-t border-white/5">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground/80 mb-5 pt-4 border-t border-white/5 mt-auto">
                         <span className="flex items-center gap-1.5">
                           <Brain className="w-3.5 h-3.5" />
                           {game.difficulty}
@@ -190,8 +190,8 @@ export default function Arcade() {
 
                       <Button
                         className={`w-full gap-2 font-bold shadow-lg transition-all ${game.available
-                            ? "shadow-primary/20 hover:shadow-primary/40"
-                            : "opacity-80"
+                          ? "shadow-primary/20 hover:shadow-primary/40"
+                          : "opacity-80"
                           }`}
                         disabled={!game.available}
                         variant={game.available ? "default" : "secondary"}
