@@ -15,10 +15,10 @@ export function formatED(value: number) {
 
 export const LEVELS = [
   { min: 0, name: "Iniciante", color: "text-blue-400" },
-  { min: 101, name: "Aprendiz", color: "text-cyan-400" },
-  { min: 301, name: "Investidor", color: "text-emerald-400" },
-  { min: 601, name: "Estrategista", color: "text-amber-400" },
-  { min: 1001, name: "Mestre das Finanças", color: "text-purple-400" },
+  { min: 100, name: "Aprendiz", color: "text-cyan-400" },
+  { min: 300, name: "Investidor", color: "text-emerald-400" },
+  { min: 600, name: "Estrategista", color: "text-amber-400" },
+  { min: 1000, name: "Mestre das Finanças", color: "text-purple-400" },
 ];
 
 export function saveXP(gain: number) {
