@@ -61,7 +61,7 @@ export default function Ranking() {
         <Layout>
             <div className="min-h-screen bg-slate-950 pb-20">
                 {/* Header Section */}
-                <div className="relative py-12 px-4 bg-gradient-to-b from-primary/10 to-slate-950 overflow-hidden">
+                <div className="relative pt-12 pb-24 px-4 bg-gradient-to-b from-primary/10 to-slate-950 overflow-hidden">
                     <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-y-1/2" />
                     <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl translate-y-1/2" />
 
@@ -81,7 +81,7 @@ export default function Ranking() {
                     </div>
                 </div>
 
-                <div className="container mx-auto px-4 max-w-4xl -mt-8 relative z-20">
+                <div className="container mx-auto px-4 max-w-4xl -mt-12 relative z-20">
 
                     {/* Top 3 Podium */}
                     {topThree.length > 0 && (
