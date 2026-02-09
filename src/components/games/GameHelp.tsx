@@ -11,12 +11,12 @@ export const GameHelp = ({ children }: GameHelpProps) => {
         <Popover>
             <PopoverTrigger asChild>
                 <Button
-                    variant="ghost"
+                    variant="outline"
                     size="icon"
-                    className="w-16 h-16 rounded-full text-muted-foreground hover:text-white hover:bg-white/10 p-0 transition-all hover:scale-110"
+                    className="w-16 h-16 rounded-full bg-slate-800/80 border-2 border-white/20 text-white shadow-lg hover:bg-slate-700 hover:scale-105 transition-all"
                     aria-label="Ajuda e Instruções"
                 >
-                    <HelpCircle className="w-12 h-12" />
+                    <HelpCircle className="w-10 h-10" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent side="bottom" className="max-w-xs p-6 bg-slate-800 border-slate-700 shadow-xl">
