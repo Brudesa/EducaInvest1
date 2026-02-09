@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { TrendingUp, CheckCircle2, DollarSign, Clock, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { MarketRates } from "@/pages/Simular";
+import { MarketRates } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface ComparatorProps {
