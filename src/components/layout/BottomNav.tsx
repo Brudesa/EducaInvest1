@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, BookOpen, Calculator, Gamepad2, User } from "lucide-react";
+import { Home, BookOpen, Calculator, Gamepad2, User, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function BottomNav() {
