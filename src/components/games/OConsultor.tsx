@@ -209,7 +209,17 @@ export const OConsultor = ({ onBack }: Props) => {
                                 borderColor: direction === 'left' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(16, 185, 129, 0.5)',
                                 transition: { duration: 0.4, ease: "easeIn" }
                             }}
-                            className="w-full bg-slate-900 border border-white/10 rounded-3xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col items-center text-center min-h-[350px] justify-center relative overflow-hidden"
+                            drag="x"
+                            dragConstraints={{ left: 0, right: 0 }}
+                            onDragEnd={(_, info) => {
+                                if (info.offset.x > 100) {
+                                    handleSwipe('right');
+                                } else if (info.offset.x < -100) {
+                                    handleSwipe('left');
+                                }
+                            }}
+                            whileDrag={{ cursor: "grabbing" }}
+                            className="w-full bg-slate-900 border border-white/10 rounded-3xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col items-center text-center min-h-[350px] justify-center relative overflow-hidden cursor-grab active:cursor-grabbing touch-none"
                         >
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 

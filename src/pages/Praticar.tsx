@@ -57,6 +57,9 @@ export default function Arcade() {
   }, [location.key]);
 
   useEffect(() => {
+    if (activeGame) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     setXP(getTotalXP());
   }, [activeGame]);
 
