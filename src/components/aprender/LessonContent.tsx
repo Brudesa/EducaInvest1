@@ -47,7 +47,8 @@ export function LessonContent({
     timeLimit,
     handleCompleteAndNext,
     xpAmount,
-    isAdmin = false
+    isAdmin = false,
+    isCompleted = false
 }: LessonContentProps) {
 
     const scrollbarClass = "lg:overflow-y-auto lg:[&::-webkit-scrollbar]:w-1.5 lg:[&::-webkit-scrollbar-track]:bg-transparent lg:[&::-webkit-scrollbar-thumb]:bg-slate-700/50 lg:[&::-webkit-scrollbar-thumb]:rounded-full hover:lg:[&::-webkit-scrollbar-thumb]:bg-slate-600 transition-colors";
