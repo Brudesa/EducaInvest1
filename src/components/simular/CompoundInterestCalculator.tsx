@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
-import { MarketRates } from "@/pages/Simular";
+import { MarketRates } from "@/lib/types";
 
 interface CalculatorProps {
   rates: MarketRates;
