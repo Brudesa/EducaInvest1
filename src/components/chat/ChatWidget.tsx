@@ -72,12 +72,25 @@ export function ChatWidget() {
             // Common n8n webhook response is often just the JSON data returned by the last node.
             // Assuming the last node returns a JSON with a field 'text' or 'output'.
             // Expecting { output: "answer text" } or { text: "answer text" } or { message: "answer text" }
+            // Handle potential double-serialization (n8n sometimes returns JSON as a string)
+            let parsedData = data;
+            if (typeof data === 'string') {
+                try {
+                    const potentialJson = JSON.parse(data);
+                    if (typeof potentialJson === 'object' && potentialJson !== null) {
+                        parsedData = potentialJson;
+                    }
+                } catch (e) {
+                    // It's just a regular string, keep as is
+                }
+            }
+
             // Robust parsing to avoid "Objects are not valid as a React child" error
             let botResponseText = '';
 
             // Handle Array response (common in n8n for OpenAI nodes)
-            if (Array.isArray(data) && data.length > 0) {
-                const firstItem = data[0];
+            if (Array.isArray(parsedData) && parsedData.length > 0) {
+                const firstItem = parsedData[0];
                 // Check for OpenAI specific structure
                 if (firstItem.content && Array.isArray(firstItem.content) && firstItem.content[0]?.text) {
                     botResponseText = firstItem.content[0].text;
@@ -85,22 +98,22 @@ export function ChatWidget() {
                 else if (firstItem.output) botResponseText = firstItem.output;
                 else if (firstItem.text) botResponseText = firstItem.text;
                 else {
-                    botResponseText = JSON.stringify(data, null, 2);
+                    botResponseText = JSON.stringify(parsedData, null, 2);
                 }
             }
             // Handle Object response
-            else if (typeof data === 'object') {
-                if (typeof data.output === 'string') botResponseText = data.output;
-                else if (typeof data.text === 'string') botResponseText = data.text;
-                else if (typeof data.message === 'string') botResponseText = data.message;
-                else if (typeof data.answer === 'string') botResponseText = data.answer;
+            else if (typeof parsedData === 'object') {
+                if (typeof parsedData.output === 'string') botResponseText = parsedData.output;
+                else if (typeof parsedData.text === 'string') botResponseText = parsedData.text;
+                else if (typeof parsedData.message === 'string') botResponseText = parsedData.message;
+                else if (typeof parsedData.answer === 'string') botResponseText = parsedData.answer;
                 else {
-                    botResponseText = JSON.stringify(data, null, 2);
+                    botResponseText = JSON.stringify(parsedData, null, 2);
                 }
             }
             // Handle String response
-            else if (typeof data === 'string') {
-                botResponseText = data;
+            else if (typeof parsedData === 'string') {
+                botResponseText = parsedData;
             }
 
             // Final fallback
