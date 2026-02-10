@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { UserProfile, UserProgress } from "@/lib/types";
 import { gameService } from "@/services/gameService";
 import { useToast } from "@/hooks/use-toast";

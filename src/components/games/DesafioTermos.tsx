@@ -54,7 +54,7 @@ export const DesafioTermos = ({ onBack, user }: Props) => {
     }, []);
 
     useEffect(() => {
-        let timer: NodeJS.Timeout;
+        let timer: any;
         if (isPlaying && timeLeft > 0) {
             timer = setInterval(() => {
                 setTimeLeft(prev => prev - 1);

@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { OConsultor } from "@/components/games/OConsultor";
 import { DesafioTermos } from "@/components/games/DesafioTermos";
 import { EmpireBuilder } from "@/components/games/EmpireBuilder";
-import { getTotalXP, getLevelInfo, formatNumber } from "@/lib/utils";
+import { getLevelInfo, formatNumber } from "@/lib/utils";
 
 const games = [
   {
@@ -65,8 +65,28 @@ export default function Arcade() {
     if (activeGame) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    setXP(getTotalXP());
-  }, [activeGame]);
+
+    // Fetch XP from DB if user is logged in
+    const fetchXP = async () => {
+      if (user) {
+        const { data } = await supabase
+          .from('perfis')
+          .select('xp_total')
+          .eq('id', user.id)
+          .single();
+        if (data) setXP(data.xp_total || 0);
+      } else {
+        setXP(0);
+      }
+    };
+
+    fetchXP();
+
+    // Listen for XP updates
+    const handleUpdate = () => fetchXP();
+    window.addEventListener('educainvest_xp_updated', handleUpdate);
+    return () => window.removeEventListener('educainvest_xp_updated', handleUpdate);
+  }, [activeGame, user]);
 
   const { name: levelName, nextLevel } = getLevelInfo(xp);
   const xpToNext = nextLevel ? nextLevel.min - xp : 0;
