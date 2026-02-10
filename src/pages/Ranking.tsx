@@ -23,7 +23,7 @@ export default function Ranking() {
 
             const { data, error } = await supabase
                 .from('perfis')
-                .select('*')
+                .select('*, full_name:nome_completo, avatar_url:url_avatar')
                 .order('xp_total', { ascending: false })
                 .limit(50);
 
