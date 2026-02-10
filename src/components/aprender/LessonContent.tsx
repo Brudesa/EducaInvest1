@@ -74,60 +74,94 @@ export function LessonContent({
         )}>
             <div className="p-4 md:p-10 max-w-5xl mx-auto space-y-8 pb-32 min-h-full flex flex-col justify-center">
 
-                {/* ========== INTRO OVERLAY (Enrichment) ========== */}
+                {/* ========== SOFT GLASS INTRO OVERLAY ========== */}
                 {showIntro && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="fixed inset-0 z-[60] bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center"
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[60] bg-slate-950/40 backdrop-blur-md flex flex-col items-center justify-center p-4 md:p-6"
                     >
                         <motion.div
-                            initial={{ scale: 0.9, y: 20 }}
-                            animate={{ scale: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                            className="max-w-2xl w-full space-y-8"
+                            initial={{ scale: 0.95, y: 30, opacity: 0 }}
+                            animate={{ scale: 1, y: 0, opacity: 1 }}
+                            transition={{
+                                type: "spring",
+                                damping: 25,
+                                stiffness: 200,
+                                delay: 0.1
+                            }}
+                            className="max-w-2xl w-full bg-slate-900/80 backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 md:p-12 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] relative overflow-hidden group"
                         >
-                            <div className="space-y-4">
-                                <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-bold uppercase tracking-widest mb-4">
-                                    Módulo {currentAulaId}
-                                </span>
-                                <h1 className="text-4xl md:text-6xl font-display font-bold text-white leading-tight">
-                                    {currentAula.title_full || currentAula.tituloCompleto}
-                                </h1>
-                                <p className="text-xl text-slate-300 max-w-xl mx-auto leading-relaxed">
-                                    {currentAula.description || currentAula.descricao}
-                                </p>
-                            </div>
+                            {/* Decorative background elements */}
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] -mr-32 -mt-32 rounded-full" />
+                            <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 blur-[100px] -ml-32 -mb-32 rounded-full" />
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-2">
-                                    <Clock className="w-6 h-6 text-blue-400" />
-                                    <span className="text-sm text-slate-400 uppercase tracking-wider font-bold">Tempo</span>
-                                    <span className="text-xl font-bold text-white">{currentAula.duration || currentAula.duracao || "5 min"}</span>
+                            <div className="relative space-y-8 text-center">
+                                <div className="space-y-4">
+                                    <motion.span
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.3 }}
+                                        className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest"
+                                    >
+                                        Módulo {currentAulaId}
+                                    </motion.span>
+                                    <motion.h1
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.4 }}
+                                        className="text-3xl md:text-5xl font-display font-bold text-white leading-tight"
+                                    >
+                                        {currentAula.title_full || currentAula.tituloCompleto}
+                                    </motion.h1>
+                                    <motion.p
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.5 }}
+                                        className="text-lg text-slate-400 max-w-xl mx-auto leading-relaxed"
+                                    >
+                                        {currentAula.description || currentAula.descricao}
+                                    </motion.p>
                                 </div>
-                                <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-2">
-                                    <Layers className="w-6 h-6 text-purple-400" />
-                                    <span className="text-sm text-slate-400 uppercase tracking-wider font-bold">Nível</span>
-                                    <span className="text-xl font-bold text-white capitalize">{currentAula.level || currentAula.nivel}</span>
-                                </div>
-                                <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center gap-2">
-                                    <Trophy className="w-6 h-6 text-amber-400" />
-                                    <span className="text-sm text-slate-400 uppercase tracking-wider font-bold">Recompensa</span>
-                                    <span className="text-xl font-bold text-white">+{xpAmount} XP</span>
-                                </div>
-                            </div>
 
-                            <Button
-                                size="lg"
-                                onClick={() => {
-                                    setShowIntro(false);
-                                    startLesson();
-                                }}
-                                className="w-full md:w-auto px-12 h-16 text-lg font-bold rounded-full bg-primary hover:bg-primary/90 shadow-[0_0_40px_rgba(37,99,235,0.3)] hover:scale-105 transition-all"
-                            >
-                                <Play className="w-6 h-6 mr-2 fill-current" />
-                                Começar Aula
-                            </Button>
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 0.6 }}
+                                    className="grid grid-cols-3 gap-3 md:gap-4"
+                                >
+                                    {[
+                                        { icon: Clock, color: "text-blue-400", label: "Tempo", value: currentAula.duration || currentAula.duracao || "5 min" },
+                                        { icon: Layers, color: "text-purple-400", label: "Nível", value: currentAula.level || currentAula.nivel },
+                                        { icon: Trophy, color: "text-amber-400", label: "Prêmio", value: `+${xpAmount} XP` }
+                                    ].map((stat, i) => (
+                                        <div key={i} className="bg-white/5 border border-white/5 rounded-2xl p-3 md:p-4 flex flex-col items-center gap-1.5 transition-colors hover:bg-white/10">
+                                            <stat.icon className={cn("w-5 h-5", stat.color)} />
+                                            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">{stat.label}</span>
+                                            <span className="text-sm md:text-base font-bold text-white capitalize truncate w-full">{stat.value}</span>
+                                        </div>
+                                    ))}
+                                </motion.div>
+
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.7 }}
+                                >
+                                    <Button
+                                        size="lg"
+                                        onClick={() => {
+                                            setShowIntro(false);
+                                            startLesson();
+                                        }}
+                                        className="w-full md:w-auto px-12 h-16 text-lg font-bold rounded-full bg-primary hover:bg-primary/90 shadow-[0_20px_40px_rgba(37,99,235,0.2)] hover:shadow-[0_20px_40px_rgba(37,99,235,0.4)] hover:scale-105 transition-all active:scale-95"
+                                    >
+                                        <Play className="w-6 h-6 mr-2 fill-current" />
+                                        Começar Aula
+                                    </Button>
+                                </motion.div>
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}
