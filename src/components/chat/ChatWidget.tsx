@@ -67,7 +67,6 @@ export function ChatWidget() {
             }
 
             const data = await response.json();
-            console.log("🔍 Resposta N8N RAW:", data); // Debug log
 
             // Expecting { output: "answer text" } or similar from n8n. Adjust as needed.
             // If n8n returns simple text, handle that. If JSON object, access field.
