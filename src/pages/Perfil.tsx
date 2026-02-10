@@ -12,7 +12,11 @@ import {
     CheckCircle2,
     RefreshCw,
     AlertCircle,
-    Gamepad2
+    Gamepad2,
+    Coins,
+    TrendingUp,
+    Briefcase,
+    Building
 } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,6 +42,12 @@ export default function Perfil() {
     const [history, setHistory] = useState<any[]>([]);
     const { toast } = useToast();
     const [isResetting, setIsResetting] = useState(false);
+    const [empireData, setEmpireData] = useState({
+        balance: 0,
+        ownedItems: {} as Record<number, number>,
+        totalItemsCount: 0,
+        uniqueItemTypes: 0
+    });
 
     useEffect(() => {
         fetchProfileData();
@@ -99,6 +109,26 @@ export default function Perfil() {
                         };
                     });
                     setHistory(historyWithTitles);
+                }
+
+                // 4. Empire Builder Local Data
+                const empireSave = localStorage.getItem('empireSave');
+                if (empireSave) {
+                    try {
+                        const parsed = JSON.parse(empireSave);
+                        const items = parsed.ownedItems || {};
+                        const totalCount = Object.values(items).reduce((a: number, b: any) => a + (Number(b) || 0), 0);
+                        const uniqueCount = Object.keys(items).length;
+
+                        setEmpireData({
+                            balance: parsed.balance || 0,
+                            ownedItems: items,
+                            totalItemsCount: totalCount,
+                            uniqueItemTypes: uniqueCount
+                        });
+                    } catch (e) {
+                        console.error("Erro ao carregar save do Empire Builder:", e);
+                    }
                 }
 
             }
@@ -226,6 +256,11 @@ export default function Perfil() {
         { id: 2, title: "Constante", desc: "3 dias de ofensiva", icon: Flame, color: "text-orange-500", bg: "bg-orange-500/10", unlocked: stats.streak >= 3 },
         { id: 3, title: "Dedicado", desc: "Concluiu 5 aulas", icon: BookOpen, color: "text-blue-400", bg: "bg-blue-400/10", unlocked: stats.completedLessons >= 5 },
         { id: 4, title: "Investidor", desc: "Atingiu Nível Investidor", icon: Trophy, color: "text-emerald-400", bg: "bg-emerald-400/10", unlocked: ['Investidor', 'Analista', 'Mestre'].includes(perfil?.current_level || '') },
+        // Empire Builder Achievements
+        { id: 5, title: "Primeiro Milhão", desc: "Saldo de R$ 1.000.000 no simulator", icon: Coins, color: "text-yellow-500", bg: "bg-yellow-500/10", unlocked: empireData.balance >= 1000000 },
+        { id: 6, title: "Grande Investidor", desc: "Saldo de R$ 10.000.000 no simulator", icon: TrendingUp, color: "text-purple-400", bg: "bg-purple-500/10", unlocked: empireData.balance >= 10000000 },
+        { id: 7, title: "Colecionador", desc: "5 tipos de investimentos diferentes", icon: Briefcase, color: "text-cyan-400", bg: "bg-cyan-400/10", unlocked: empireData.uniqueItemTypes >= 5 },
+        { id: 8, title: "Magnata", desc: "Possui 20+ ativos no simulador", icon: Building, color: "text-rose-400", bg: "bg-rose-400/10", unlocked: empireData.totalItemsCount >= 20 },
     ];
 
     if (loading) {
@@ -345,7 +380,7 @@ export default function Perfil() {
                         <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                             <Medal className="w-5 h-5 text-amber-400" /> Conquistas
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {achievements.map((ach) => (
                                 <motion.div
                                     key={ach.id}
