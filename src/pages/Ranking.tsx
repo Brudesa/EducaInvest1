@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Layout } from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Trophy, Medal, Crown, Shield } from "lucide-react";
 import { UserProfile } from "@/lib/types";
 
@@ -168,8 +169,29 @@ export default function Ranking() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
-                        className="bg-slate-900/50 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm"
+                        className="bg-slate-900/50 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm relative"
                     >
+                        {/* Guest Overlay */}
+                        {!currentUser && !loading && (
+                            <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/60 backdrop-blur-sm p-6 text-center">
+                                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-4 border border-primary/20">
+                                    <Shield className="w-8 h-8 text-primary" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-2">
+                                    Ranking da Comunidade
+                                </h3>
+                                <p className="text-slate-300 mb-6 max-w-sm">
+                                    Entre para ver sua posição e conferir o ranking completo dos investidores.
+                                </p>
+                                <Button
+                                    onClick={() => window.location.href = '/login'}
+                                    size="lg"
+                                    className="font-bold px-8 shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
+                                >
+                                    Entrar para Competição
+                                </Button>
+                            </div>
+                        )}
                         {restOfUsers.map((user, index) => (
                             <div
                                 key={user.id}

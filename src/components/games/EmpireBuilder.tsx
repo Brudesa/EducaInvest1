@@ -71,8 +71,9 @@ export const EmpireBuilder = ({ onBack, user }: Props) => {
             if (passiveIncome > 0) {
                 setBalance(b => {
                     const newBalance = b + passiveIncome;
-                    // Check for XP milestones (every 10k)
-                    const milestones = Math.floor(newBalance / 10000) - Math.floor(lastXpAwardedBalance.current / 10000);
+                    // Check for XP milestones (every 500k instead of 10k to balance)
+                    const MILESTONE = 500000;
+                    const milestones = Math.floor(newBalance / MILESTONE) - Math.floor(lastXpAwardedBalance.current / MILESTONE);
                     if (milestones > 0) {
                         const xpAmount = milestones;
                         saveXP(xpAmount);
