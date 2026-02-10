@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 
 interface Props {
     onBack: () => void;
+    user?: any;
 }
 
 interface QuestionContent {
@@ -21,7 +22,7 @@ interface QuestionContent {
     rightLabel?: string;
 }
 
-export const OConsultor = ({ onBack }: Props) => {
+export const OConsultor = ({ onBack, user }: Props) => {
     const { toast } = useToast();
 
 
@@ -58,7 +59,17 @@ export const OConsultor = ({ onBack }: Props) => {
 
     const handleSaveXP = () => {
         if (xpSaved || score === 0) return;
-        saveXP(score * 10);
+
+        const xpAmount = score * 10;
+
+        // Save Local (visual fallback)
+        saveXP(xpAmount);
+
+        // Save Server (REAL)
+        if (user) {
+            gameService.addUserXP(user.id, xpAmount);
+        }
+
         setXpSaved(true);
     };
 

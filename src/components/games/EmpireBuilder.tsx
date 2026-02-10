@@ -10,9 +10,10 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface Props {
     onBack: () => void;
+    user?: any;
 }
 
-export const EmpireBuilder = ({ onBack }: Props) => {
+export const EmpireBuilder = ({ onBack, user }: Props) => {
     const { toast } = useToast();
 
     const [balance, setBalance] = useState(0);
@@ -73,7 +74,12 @@ export const EmpireBuilder = ({ onBack }: Props) => {
                     // Check for XP milestones (every 10k)
                     const milestones = Math.floor(newBalance / 10000) - Math.floor(lastXpAwardedBalance.current / 10000);
                     if (milestones > 0) {
-                        saveXP(milestones);
+                        const xpAmount = milestones;
+                        saveXP(xpAmount);
+                        if (user) {
+                            gameService.addUserXP(user.id, xpAmount);
+                        }
+
                         lastXpAwardedBalance.current = newBalance;
                     }
                     return newBalance;

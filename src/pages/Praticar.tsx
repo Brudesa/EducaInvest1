@@ -110,9 +110,9 @@ export default function Arcade() {
               animate={{ opacity: 1, scale: 1 }}
               className="bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-2xl min-h-[600px]"
             >
-              {activeGame === 'consultor' && <OConsultor onBack={() => setActiveGame(null)} />}
-              {activeGame === 'termos' && <DesafioTermos onBack={() => setActiveGame(null)} />}
-              {activeGame === 'empire' && <EmpireBuilder onBack={() => setActiveGame(null)} />}
+              {activeGame === 'consultor' && <OConsultor onBack={() => setActiveGame(null)} user={user} />}
+              {activeGame === 'termos' && <DesafioTermos onBack={() => setActiveGame(null)} user={user} />}
+              {activeGame === 'empire' && <EmpireBuilder onBack={() => setActiveGame(null)} user={user} />}
             </motion.div>
           ) : (
             <>

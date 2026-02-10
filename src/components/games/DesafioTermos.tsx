@@ -9,6 +9,7 @@ import { GameHelp } from "./GameHelp";
 
 interface Props {
     onBack: () => void;
+    user?: any;
 }
 
 
@@ -24,7 +25,7 @@ interface GameItem {
     type: 'term' | 'def';
 }
 
-export const DesafioTermos = ({ onBack }: Props) => {
+export const DesafioTermos = ({ onBack, user }: Props) => {
 
     const [items, setItems] = useState<{ terms: GameItem[], defs: GameItem[] }>({ terms: [], defs: [] });
     const [selectedTerm, setSelectedTerm] = useState<string | null>(null);
@@ -68,7 +69,14 @@ export const DesafioTermos = ({ onBack }: Props) => {
 
     useEffect(() => {
         if (!isPlaying && isGameOver && score > 0 && !xpSaved) {
+            // Save Local
             saveXP(score);
+
+            // Save Server (REAL)
+            if (user) {
+                gameService.addUserXP(user.id, score);
+            }
+
             setXpSaved(true);
         }
     }, [isPlaying, isGameOver, score, xpSaved]);
