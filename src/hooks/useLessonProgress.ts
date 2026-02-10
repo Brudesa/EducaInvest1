@@ -24,11 +24,8 @@ export function useLessonProgress(
     // Timer and state
     const [timeLeft, setTimeLeft] = useState(isAdmin ? 0 : TIME_LIMIT);
     const [canComplete, setCanComplete] = useState(isAdmin);
-    const [isStarted, setIsStarted] = useState(false);
 
     // Computed current lesson object
-    // Mapped Lesson structure to match what UI expects from the DB mapping in the original file
-    // ideally we should standardize, but for now we keep compatibility
     const currentAula = lessons.find(a => a.id === currentAulaId) || lessons[0];
 
     useEffect(() => {
@@ -40,11 +37,10 @@ export function useLessonProgress(
 
         setTimeLeft(TIME_LIMIT);
         setCanComplete(false);
-        setIsStarted(false); // Reset on lesson change
     }, [currentAulaId, isAdmin]);
 
     useEffect(() => {
-        if (isAdmin || !isStarted) return;
+        if (isAdmin) return;
 
         const interval = setInterval(() => {
             setTimeLeft((prev) => {
@@ -58,11 +54,7 @@ export function useLessonProgress(
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [isStarted, isAdmin]);
-
-    const startLesson = () => {
-        setIsStarted(true);
-    };
+    }, [currentAulaId, isAdmin]); // Starts on lesson change or admin change
 
     const handleLessonChange = (newId: number) => {
         setCurrentAulaId(newId);
@@ -161,8 +153,6 @@ export function useLessonProgress(
         currentAula,
         timeLeft,
         canComplete,
-        isStarted,
-        startLesson,
         handleLessonChange,
         handleCompleteAndNext,
         TIME_LIMIT,

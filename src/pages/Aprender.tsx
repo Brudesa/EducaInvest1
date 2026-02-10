@@ -44,8 +44,6 @@ export default function Aprender() {
     currentAula,
     timeLeft,
     canComplete,
-    isStarted,
-    startLesson,
     handleLessonChange,
     handleCompleteAndNext,
     TIME_LIMIT,
@@ -277,8 +275,6 @@ export default function Aprender() {
               handleLessonChange={handleLessonChange}
               currentAulaId={currentAulaId}
               canComplete={canComplete}
-              isStarted={isStarted}
-              startLesson={startLesson}
               timeLeft={timeLeft}
               timeLimit={TIME_LIMIT}
               handleCompleteAndNext={handleCompleteAndNext}
