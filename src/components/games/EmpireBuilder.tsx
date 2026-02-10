@@ -335,7 +335,7 @@ const ShopColumn = ({ title, icon, items, ownedItems, balance, onBuy, getCost, i
                                 </span>
                             </div>
 
-                            <p className="text-xs text-muted-foreground mb-3 line-clamp-2 leading-relaxed relative z-10 h-8">
+                            <p className="text-xs text-muted-foreground mb-3 leading-relaxed relative z-10">
                                 {item.description}
                             </p>
 
