@@ -168,11 +168,11 @@ export function ChatWidget() {
                 <AnimatePresence>
                     {isOpen && (
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            initial={{ opacity: 0, scale: 0.9, y: 20, transformOrigin: "bottom right" }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
                             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed inset-0 z-[60] w-full h-full md:relative md:inset-auto md:w-[400px] md:h-[500px] md:max-h-[70vh] bg-slate-900/95 backdrop-blur-xl md:border border-white/10 md:rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+                            className="fixed inset-0 z-[60] w-full h-full md:relative md:inset-auto md:w-[450px] md:h-[600px] md:max-h-[85vh] bg-slate-900/95 backdrop-blur-xl md:border border-white/10 md:rounded-[24px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] flex flex-col overflow-hidden"
                         >
                             {/* Header */}
                             <div className="p-4 border-b border-white/10 bg-gradient-to-r from-primary/20 to-transparent flex items-center justify-between">
@@ -292,21 +292,23 @@ export function ChatWidget() {
                 </AnimatePresence>
 
                 {/* Floating Button */}
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setIsOpen(!isOpen)}
-                    className={cn(
-                        "h-14 w-14 rounded-full shadow-[0_0_30px_rgba(37,99,235,0.5)] flex items-center justify-center transition-all duration-300 z-50",
-                        isOpen ? "bg-slate-800 text-slate-300" : "bg-gradient-to-tr from-primary to-blue-600 text-white"
+                <AnimatePresence>
+                    {!isOpen && (
+                        <motion.button
+                            initial={{ opacity: 0, scale: 0.8, rotate: -20 }}
+                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                            exit={{ opacity: 0, scale: 0.8, rotate: 20 }}
+                            whileHover={{ scale: 1.1, rotate: 5 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => setIsOpen(true)}
+                            className={cn(
+                                "h-14 w-14 md:h-16 md:w-16 rounded-full shadow-[0_0_40px_rgba(37,99,235,0.4)] flex items-center justify-center transition-all duration-300 z-50 bg-gradient-to-tr from-primary to-blue-600 text-white border border-white/20"
+                            )}
+                        >
+                            <MessageCircle className="w-7 h-7 md:w-8 md:h-8 fill-current" />
+                        </motion.button>
                     )}
-                >
-                    {isOpen ? (
-                        <X className="w-6 h-6" />
-                    ) : (
-                        <MessageCircle className="w-7 h-7 fill-current" />
-                    )}
-                </motion.button>
+                </AnimatePresence>
             </div>
         </div>
     );
