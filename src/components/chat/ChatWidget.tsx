@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
     id: string;
@@ -229,7 +230,13 @@ export function ChatWidget() {
                                                     ? "bg-primary text-primary-foreground rounded-tr-sm"
                                                     : "bg-white/10 text-slate-200 rounded-tl-sm border border-white/5"
                                             )}>
-                                                <p className="whitespace-pre-wrap">{msg.content}</p>
+                                                {msg.role === 'user' ? (
+                                                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                                                ) : (
+                                                    <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-slate-800 prose-pre:border prose-pre:border-white/10">
+                                                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                                    </div>
+                                                )}
                                             </div>
                                         </motion.div>
                                     ))}
