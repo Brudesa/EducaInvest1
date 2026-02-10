@@ -25,12 +25,21 @@ interface GameItem {
     type: 'term' | 'def';
 }
 
+const MATCH_STYLES = [
+    { bg: "bg-emerald-500/10", border: "border-emerald-500/30", text: "text-emerald-400", glow: "shadow-[0_0_20px_rgba(16,185,129,0.2)]" },
+    { bg: "bg-teal-500/10", border: "border-teal-500/30", text: "text-teal-400", glow: "shadow-[0_0_20px_rgba(20,184,166,0.2)]" },
+    { bg: "bg-cyan-500/10", border: "border-cyan-500/30", text: "text-cyan-400", glow: "shadow-[0_0_20px_rgba(6,182,212,0.2)]" },
+    { bg: "bg-lime-500/10", border: "border-lime-500/30", text: "text-lime-400", glow: "shadow-[0_0_20px_rgba(132,204,22,0.2)]" },
+    { bg: "bg-green-500/10", border: "border-green-500/30", text: "text-green-400", glow: "shadow-[0_0_20px_rgba(34,197,94,0.2)]" },
+];
+
 export const DesafioTermos = ({ onBack, user }: Props) => {
 
     const [items, setItems] = useState<{ terms: GameItem[], defs: GameItem[] }>({ terms: [], defs: [] });
     const [selectedTerm, setSelectedTerm] = useState<string | null>(null);
     const [selectedDef, setSelectedDef] = useState<string | null>(null);
     const [matchedIds, setMatchedIds] = useState<number[]>([]);
+    const [matchedColors, setMatchedColors] = useState<Record<number, number>>({});
     const [mismatchPairs, setMismatchPairs] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [timeLeft, setTimeLeft] = useState(60);
@@ -78,13 +87,6 @@ export const DesafioTermos = ({ onBack, user }: Props) => {
         }
     }, [isPlaying, isGameOver, score, xpSaved]);
 
-    // Save on unmount removed as handled by game termination logic or server-side if needed
-    useEffect(() => {
-        return () => {
-            // No-op for now to avoid side effects
-        };
-    }, []);
-
     // Check match
     useEffect(() => {
         if (selectedTerm && selectedDef) {
@@ -93,7 +95,8 @@ export const DesafioTermos = ({ onBack, user }: Props) => {
 
             if (termId === defId) {
                 // Match!
-
+                const colorIndex = matchedIds.length % MATCH_STYLES.length;
+                setMatchedColors(prev => ({ ...prev, [termId]: colorIndex }));
                 setMatchedIds(prev => [...prev, termId]);
                 setScore(s => s + 10 + Math.floor(timeLeft / 2));
                 setSelectedTerm(null);
@@ -154,6 +157,7 @@ export const DesafioTermos = ({ onBack, user }: Props) => {
 
             setItems({ terms, defs });
             setMatchedIds([]);
+            setMatchedColors({});
             setScore(0);
             setTimeLeft(60);
             setIsPlaying(true);
@@ -245,14 +249,16 @@ export const DesafioTermos = ({ onBack, user }: Props) => {
                         const isMatched = matchedIds.includes(def.originalId);
                         const isSelected = selectedDef === def.id;
                         const isMismatch = mismatchPairs.includes(def.id);
+                        const colorIndex = matchedColors[def.originalId];
+                        const matchStyle = isMatched && colorIndex !== undefined ? MATCH_STYLES[colorIndex] : null;
 
                         return (
                             <motion.button
                                 key={def.id}
                                 className={cn(
                                     "p-5 rounded-2xl text-sm md:text-base font-medium text-left transition-all relative border min-h-[90px] flex items-center group backdrop-blur-md overflow-hidden",
-                                    isMatched
-                                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500/40 cursor-default"
+                                    isMatched && matchStyle
+                                        ? `${matchStyle.bg} ${matchStyle.border} ${matchStyle.text} ${matchStyle.glow} cursor-default`
                                         : isMismatch
                                             ? "bg-red-500/20 border-red-500/50 text-red-400 shadow-[0_0_20px_rgba(239,68,68,0.2)]"
                                             : isSelected
@@ -283,8 +289,9 @@ export const DesafioTermos = ({ onBack, user }: Props) => {
                                             animate={{ scale: 1, opacity: 1 }}
                                             className="absolute right-4 top-1/2 -translate-y-1/2"
                                         >
-                                            <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
-                                                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                                            <div className={cn("w-6 h-6 rounded-full flex items-center justify-center border",
+                                                matchStyle ? `bg-white/10 ${matchStyle.border.replace('border-', 'border-')}` : "bg-emerald-500/20 border-emerald-500/30")}>
+                                                <CheckCircle2 className={cn("w-4 h-4", matchStyle ? matchStyle.text : "text-emerald-400")} />
                                             </div>
                                         </motion.div>
                                     )}
@@ -304,14 +311,16 @@ export const DesafioTermos = ({ onBack, user }: Props) => {
                         const isMatched = matchedIds.includes(term.originalId);
                         const isSelected = selectedTerm === term.id;
                         const isMismatch = mismatchPairs.includes(term.id);
+                        const colorIndex = matchedColors[term.originalId];
+                        const matchStyle = isMatched && colorIndex !== undefined ? MATCH_STYLES[colorIndex] : null;
 
                         return (
                             <motion.button
                                 key={term.id}
                                 className={cn(
                                     "p-5 rounded-2xl text-base md:text-lg font-bold text-center transition-all relative border min-h-[90px] flex items-center justify-center backdrop-blur-md overflow-hidden",
-                                    isMatched
-                                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500/40 cursor-default"
+                                    isMatched && matchStyle
+                                        ? `${matchStyle.bg} ${matchStyle.border} ${matchStyle.text} ${matchStyle.glow} cursor-default`
                                         : isMismatch
                                             ? "bg-red-500/20 border-red-500/50 text-red-400 shadow-[0_0_20px_rgba(239,68,68,0.2)]"
                                             : isSelected
@@ -342,7 +351,7 @@ export const DesafioTermos = ({ onBack, user }: Props) => {
                                             animate={{ scale: 1, opacity: 1, rotate: 0 }}
                                             className="absolute right-4 top-1/2 -translate-y-1/2"
                                         >
-                                            <CheckCircle2 className="w-5 h-5 text-emerald-400/60" />
+                                            <CheckCircle2 className={cn("w-5 h-5", matchStyle ? matchStyle.text : "text-emerald-400/60")} />
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
