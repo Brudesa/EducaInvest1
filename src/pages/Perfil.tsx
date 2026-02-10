@@ -16,7 +16,9 @@ import {
     Coins,
     TrendingUp,
     Briefcase,
-    Building
+    Building,
+    Globe,
+    Crown
 } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
@@ -283,7 +285,9 @@ export default function Perfil() {
         { id: 5, title: "Primeiro Milhão", desc: "Saldo de R$ 1.000.000 no simulator", icon: Coins, color: "text-yellow-500", bg: "bg-yellow-500/10", unlocked: empireData.balance >= 1000000 },
         { id: 6, title: "Grande Investidor", desc: "Saldo de R$ 10.000.000 no simulator", icon: TrendingUp, color: "text-purple-400", bg: "bg-purple-500/10", unlocked: empireData.balance >= 10000000 },
         { id: 7, title: "Colecionador", desc: "5 tipos de investimentos diferentes", icon: Briefcase, color: "text-cyan-400", bg: "bg-cyan-400/10", unlocked: empireData.uniqueItemTypes >= 5 },
-        { id: 8, title: "Magnata", desc: "Possui 20+ ativos no simulador", icon: Building, color: "text-rose-400", bg: "bg-rose-400/10", unlocked: empireData.totalItemsCount >= 20 },
+        { id: 8, title: "Magnata", desc: "Possui 50+ ativos no simulador", icon: Building, color: "text-rose-400", bg: "bg-rose-400/10", unlocked: empireData.totalItemsCount >= 50 },
+        { id: 13, title: "Bilionário", desc: "Saldo de R$ 1.000.000.000", icon: Crown, color: "text-amber-300", bg: "bg-amber-300/10", unlocked: empireData.balance >= 1000000000 },
+        { id: 14, title: "Capitalista Global", desc: "Possui todos os 15 passivos", icon: Globe, color: "text-sky-400", bg: "bg-sky-400/10", unlocked: empireData.uniqueItemTypes >= 15 },
         // O Consultor Achievements
         { id: 9, title: "Olho Clínico", desc: "Streak de 10 acertos seguidos", icon: Target, color: "text-orange-400", bg: "bg-orange-400/10", unlocked: consultorStats.bestStreak >= 10 },
         { id: 10, title: "Analista Sênior", desc: "50 cenários analisados", icon: TrendingUp, color: "text-blue-500", bg: "bg-blue-500/10", unlocked: consultorStats.totalAnalyzed >= 50 },

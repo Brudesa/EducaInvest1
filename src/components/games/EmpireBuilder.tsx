@@ -138,7 +138,7 @@ export const EmpireBuilder = ({ onBack, user }: Props) => {
     };
 
     const getCost = (item: EmpireItem, count: number) => {
-        return Math.floor(item.base_cost * Math.pow(1.15, count));
+        return Math.floor(item.base_cost * Math.pow(1.12, count));
     };
 
     const buyItem = (item: EmpireItem) => {
