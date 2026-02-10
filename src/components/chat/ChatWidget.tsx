@@ -75,18 +75,38 @@ export function ChatWidget() {
             // Robust parsing to avoid "Objects are not valid as a React child" error
             let botResponseText = '';
 
-            // Prioritize specific fields if they exist and are strings
-            if (typeof data.output === 'string') botResponseText = data.output;
-            else if (typeof data.text === 'string') botResponseText = data.text;
-            else if (typeof data.message === 'string') botResponseText = data.message;
-            else if (typeof data.answer === 'string') botResponseText = data.answer;
+            // Handle Array response (common in n8n for OpenAI nodes)
+            if (Array.isArray(data) && data.length > 0) {
+                const firstItem = data[0];
+                // Check for OpenAI specific structure
+                if (firstItem.content && Array.isArray(firstItem.content) && firstItem.content[0]?.text) {
+                    botResponseText = firstItem.content[0].text;
+                }
+                else if (firstItem.output) botResponseText = firstItem.output;
+                else if (firstItem.text) botResponseText = firstItem.text;
+                else {
+                    botResponseText = JSON.stringify(data, null, 2);
+                }
+            }
+            // Handle Object response
+            else if (typeof data === 'object') {
+                if (typeof data.output === 'string') botResponseText = data.output;
+                else if (typeof data.text === 'string') botResponseText = data.text;
+                else if (typeof data.message === 'string') botResponseText = data.message;
+                else if (typeof data.answer === 'string') botResponseText = data.answer;
+                else {
+                    botResponseText = JSON.stringify(data, null, 2);
+                }
+            }
+            // Handle String response
+            else if (typeof data === 'string') {
+                botResponseText = data;
+            }
 
-            // If still empty, handle objects/arrays/other types safety
-            else {
-                const content = data.output || data.text || data.message || data.answer || data;
-                botResponseText = typeof content === 'string'
-                    ? content
-                    : JSON.stringify(content, null, 2); // Pretty print for objects
+            // Final fallback
+            if (!botResponseText) {
+                botResponseText = "Recebi uma resposta vazia ou irreconhecível.";
+                console.warn("Unrecognized n8n response format:", data);
             }
 
             const botMessage: Message = {
