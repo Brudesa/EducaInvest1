@@ -144,11 +144,11 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
             <motion.div
-              className="bg-gradient-hero p-2 rounded-xl"
+              className="bg-gradient-hero p-0.5 rounded-xl overflow-hidden"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Coins className="w-6 h-6 text-primary-foreground" />
+              <img src="/logo.jpg" alt="EducaInvest Logo" className="w-8 h-8 object-cover rounded-lg" />
             </motion.div>
             <span className="font-display font-bold text-xl text-foreground">
               Educa<span className="text-gradient-hero">Invest</span>

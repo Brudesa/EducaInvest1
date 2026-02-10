@@ -193,6 +193,19 @@ export default function Ranking() {
                             </div>
                         )}
 
+                        {/* Empty State for Logged In Users with no competitors below top 3 */}
+                        {currentUser && restOfUsers.length === 0 && (
+                            <div className="text-center py-12 px-4">
+                                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Trophy className="w-8 h-8 text-yellow-500/50" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-2">Ranking em Construção!</h3>
+                                <p className="text-slate-400 max-w-sm mx-auto">
+                                    Você está entre os pioneiros! Em breve novos competidores chegarão para desafiar sua posição.
+                                </p>
+                            </div>
+                        )}
+
                         {/* Real List or Dummy List for Guests */}
                         {(currentUser ? restOfUsers : (users.length > 0 ? restOfUsers : Array(10).fill(null))).map((user, index) => (
                             <div
