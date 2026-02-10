@@ -147,7 +147,7 @@ export function Header() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <img src="/logo.jpg" alt="EducaInvest Logo" className="w-8 h-8 object-cover rounded-lg" />
+              <img src="/logo.png" alt="EducaInvest Logo" className="w-8 h-8 object-cover rounded-lg" />
             </motion.div>
             <span className="font-display font-bold text-xl text-foreground">
               Educa<span className="text-gradient-hero">Invest</span>

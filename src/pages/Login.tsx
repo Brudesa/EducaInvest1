@@ -80,7 +80,7 @@ export default function Login() {
       >
         <Link to="/" className="flex items-center gap-3 group transition-transform hover:scale-105">
           <div className="bg-gradient-hero p-0.5 rounded-xl overflow-hidden">
-            <img src="/logo.jpg" alt="EducaInvest Logo" className="w-10 h-10 object-cover rounded-lg" />
+            <img src="/logo.png" alt="EducaInvest Logo" className="w-10 h-10 object-cover rounded-lg" />
           </div>
           <span className="font-display font-bold text-2xl text-white">
             Educa<span className="text-gradient-hero">Invest</span>
