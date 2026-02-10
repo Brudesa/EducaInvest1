@@ -89,22 +89,31 @@ export function ChatWidget() {
             // Robust parsing to avoid "Objects are not valid as a React child" error
             let botResponseText = '';
 
-            // Handle Array response (common in n8n for OpenAI nodes)
+            // Helper function to extract text from OpenAI-like message structure
+            const extractTextFromOpenAIMessage = (item: any) => {
+                if (item?.content && Array.isArray(item.content) && item.content[0]?.text) {
+                    return item.content[0].text;
+                }
+                if (item?.text) return item.text;
+                if (item?.output) return item.output;
+                return null;
+            };
+
+            // 1. Handle if the root is an Array
             if (Array.isArray(parsedData) && parsedData.length > 0) {
-                const firstItem = parsedData[0];
-                // Check for OpenAI specific structure
-                if (firstItem.content && Array.isArray(firstItem.content) && firstItem.content[0]?.text) {
-                    botResponseText = firstItem.content[0].text;
-                }
-                else if (firstItem.output) botResponseText = firstItem.output;
-                else if (firstItem.text) botResponseText = firstItem.text;
-                else {
-                    botResponseText = JSON.stringify(parsedData, null, 2);
-                }
+                botResponseText = extractTextFromOpenAIMessage(parsedData[0]) || JSON.stringify(parsedData, null, 2);
             }
-            // Handle Object response
-            else if (typeof parsedData === 'object') {
-                if (typeof parsedData.output === 'string') botResponseText = parsedData.output;
+            // 2. Handle if the root is an Object
+            else if (typeof parsedData === 'object' && parsedData !== null) {
+                // Case A: 'output' field is an Array (match user screenshot)
+                if (Array.isArray(parsedData.output) && parsedData.output.length > 0) {
+                    botResponseText = extractTextFromOpenAIMessage(parsedData.output[0]) || JSON.stringify(parsedData.output, null, 2);
+                }
+                // Case B: 'output' field is a String
+                else if (typeof parsedData.output === 'string') {
+                    botResponseText = parsedData.output;
+                }
+                // Case C: Other fields
                 else if (typeof parsedData.text === 'string') botResponseText = parsedData.text;
                 else if (typeof parsedData.message === 'string') botResponseText = parsedData.message;
                 else if (typeof parsedData.answer === 'string') botResponseText = parsedData.answer;
@@ -112,7 +121,7 @@ export function ChatWidget() {
                     botResponseText = JSON.stringify(parsedData, null, 2);
                 }
             }
-            // Handle String response
+            // 3. Handle String response
             else if (typeof parsedData === 'string') {
                 botResponseText = parsedData;
             }
