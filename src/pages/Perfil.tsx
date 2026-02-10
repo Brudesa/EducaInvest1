@@ -108,35 +108,55 @@ export default function Perfil() {
         }
     };
 
-    const handleResetProgress = async () => {
+    const handleResetXP = async () => {
         if (!user) return;
+        const confirmed = window.confirm("Tem certeza que deseja zerar seu XP e Nível? Suas aulas concluídas serão mantidas.");
+        if (!confirmed) return;
 
-        const confirmed = window.confirm("Tem certeza que deseja resetar todo o seu progresso? Esta ação é irreversível e zerará seu XP e nível.");
+        setIsResetting(true);
+        try {
+            const result = await gameService.resetXP(user.id);
+            if (result?.success) {
+                toast({ title: "XP Resetado", description: "Seu XP e nível foram zerados." });
+                fetchProfileData();
+            } else throw new Error();
+        } catch (error) {
+            toast({ title: "Erro", description: "Falha ao resetar XP.", variant: "destructive" });
+        } finally { setIsResetting(false); }
+    };
 
+    const handleResetLessons = async () => {
+        if (!user) return;
+        const confirmed = window.confirm("Tem certeza que deseja zerar seu progresso no Mapa de Aulas? Seu XP será mantido.");
+        if (!confirmed) return;
+
+        setIsResetting(true);
+        try {
+            const result = await gameService.resetLessons(user.id);
+            if (result?.success) {
+                toast({ title: "Mapa Resetado", description: "Seu progresso de aulas foi zerado." });
+                fetchProfileData();
+            } else throw new Error();
+        } catch (error) {
+            toast({ title: "Erro", description: "Falha ao resetar lições.", variant: "destructive" });
+        } finally { setIsResetting(false); }
+    };
+
+    const handleResetAll = async () => {
+        if (!user) return;
+        const confirmed = window.confirm("ATENÇÃO: Isso apagará TODO o seu progresso (XP + Aulas). Tem certeza?");
         if (!confirmed) return;
 
         setIsResetting(true);
         try {
             const result = await gameService.resetUserProgress(user.id);
             if (result?.success) {
-                toast({
-                    title: "Progresso Resetado",
-                    description: "Seu XP e conquistas foram zerados com sucesso.",
-                });
-                // Reload data
+                toast({ title: "Tudo Resetado", description: "Sua conta foi zerada com sucesso." });
                 fetchProfileData();
-            } else {
-                throw new Error("Falha ao resetar");
-            }
+            } else throw new Error();
         } catch (error) {
-            toast({
-                title: "Erro ao resetar",
-                description: "Não foi possível completar a operação. Tente novamente.",
-                variant: "destructive"
-            });
-        } finally {
-            setIsResetting(false);
-        }
+            toast({ title: "Erro", description: "Falha ao resetar tudo.", variant: "destructive" });
+        } finally { setIsResetting(false); }
     };
 
     const calculateStreak = (progress: any[]) => {
@@ -370,17 +390,37 @@ export default function Perfil() {
                                 <AlertCircle className="w-5 h-5" /> Zona de Perigo
                             </h3>
                             <p className="text-sm text-slate-400 mb-4">
-                                Deseja começar sua jornada do zero? Ao resetar, você perderá todo o seu XP acumulado, nível e histórico de aulas concluídas.
+                                Deseja recomeçar? Escolha o que você deseja zerar na sua conta.
                             </p>
-                            <Button
-                                variant="destructive"
-                                className="w-full md:w-auto gap-2"
-                                onClick={handleResetProgress}
-                                disabled={isResetting}
-                            >
-                                <RefreshCw className={`w-4 h-4 ${isResetting ? 'animate-spin' : ''}`} />
-                                {isResetting ? "Resetando..." : "Resetar todo o meu progresso"}
-                            </Button>
+                            <div className="flex flex-col md:flex-row gap-3">
+                                <Button
+                                    variant="outline"
+                                    className="flex-1 gap-2 border-red-500/30 text-red-400 hover:bg-red-500/10"
+                                    onClick={handleResetXP}
+                                    disabled={isResetting}
+                                >
+                                    <Star className="w-4 h-4" />
+                                    Zerar apenas XP
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    className="flex-1 gap-2 border-red-500/30 text-red-400 hover:bg-red-500/10"
+                                    onClick={handleResetLessons}
+                                    disabled={isResetting}
+                                >
+                                    <BookOpen className="w-4 h-4" />
+                                    Zerar apenas Aulas
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    className="flex-1 gap-2"
+                                    onClick={handleResetAll}
+                                    disabled={isResetting}
+                                >
+                                    <RefreshCw className={`w-4 h-4 ${isResetting ? 'animate-spin' : ''}`} />
+                                    Zerar Tudo
+                                </Button>
+                            </div>
                         </div>
                     </section>
 

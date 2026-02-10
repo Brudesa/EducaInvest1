@@ -78,12 +78,10 @@ export const gameService = {
         }
     },
 
-    async resetUserProgress(userId: string) {
-        if (!userId) return;
-
+    async resetXP(userId: string) {
+        if (!userId) return { success: false };
         try {
-            // 1. Reset Profile XP and Level
-            const { error: profileError } = await supabase
+            const { error } = await supabase
                 .from('perfis')
                 .update({
                     xp_total: 0,
@@ -91,18 +89,41 @@ export const gameService = {
                 })
                 .eq('id', userId);
 
-            if (profileError) throw profileError;
+            if (error) throw error;
+            window.dispatchEvent(new CustomEvent('educainvest_xp_updated'));
+            return { success: true };
+        } catch (error) {
+            console.error("Error resetting XP:", error);
+            return { success: false, error };
+        }
+    },
 
-            // 2. Clear Lesson Progress
-            const { error: progressError } = await supabase
+    async resetLessons(userId: string) {
+        if (!userId) return { success: false };
+        try {
+            const { error } = await supabase
                 .from('user_progress')
                 .delete()
                 .eq('user_id', userId);
 
-            if (progressError) throw progressError;
+            if (error) throw error;
+            return { success: true };
+        } catch (error) {
+            console.error("Error resetting lessons:", error);
+            return { success: false, error };
+        }
+    },
 
-            // 3. Notify UI
-            window.dispatchEvent(new CustomEvent('educainvest_xp_updated'));
+    async resetUserProgress(userId: string) {
+        if (!userId) return { success: false };
+
+        try {
+            const xpResult = await this.resetXP(userId);
+            if (!xpResult.success) throw xpResult.error;
+
+            const lessonsResult = await this.resetLessons(userId);
+            if (!lessonsResult.success) throw lessonsResult.error;
+
             return { success: true };
         } catch (error) {
             console.error("Error resetting user progress:", error);
