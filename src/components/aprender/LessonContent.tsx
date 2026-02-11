@@ -70,7 +70,7 @@ export function LessonContent({
                         <div className="flex flex-col gap-1 min-w-0">
                             <h2 className="text-sm font-medium text-slate-400 truncate flex items-center gap-2">
                                 <Layers className="w-3.5 h-3.5" />
-                                Módulo {currentAula.moduloId} • {currentAula.nivel?.toUpperCase()}
+                                Módulo {(currentAula as any).modulo_id || 1} • {currentAula.nivel?.toUpperCase()}
                             </h2>
                             <h1 className="text-base font-bold text-white truncate">
                                 {currentAula.titulo}
@@ -84,7 +84,7 @@ export function LessonContent({
 
                     <div className="flex items-center gap-2 flex-1 justify-end">
                         <Button
-                            variant="glossy"
+                            variant="default"
                             size="sm"
                             onClick={handleCompleteAndNext}
                             disabled={!finalCanComplete}
@@ -130,13 +130,13 @@ export function LessonContent({
             <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-8 pb-32">
                 {/* Podcast Card - Agora com Ref e Callbacks */}
                 <PodcastCard
-                    aula={currentAula}
-                    termos={termosDaAula}
+                    aula={currentAula as any}
+                    termos={termosDaAula as any[]}
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {termosDaAula.map((termo) => (
-                        <TermCard key={termo.id} termo={termo} />
+                        <TermCard key={termo.id} term={termo as any} />
                     ))}
                 </div>
 
