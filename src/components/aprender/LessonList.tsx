@@ -36,7 +36,7 @@ export function LessonList({ lessons, completedLessonIds, onSelectLesson, user }
                     <button
                         onClick={() => setActiveTab('journey')}
                         className={cn(
-                            "flex items-center gap-2 py-2.5 px-6 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+                            "flex items-center gap-2 py-2.5 px-8 rounded-xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap",
                             activeTab === 'journey'
                                 ? "bg-primary text-primary-foreground shadow-xl scale-105"
                                 : "text-slate-400 hover:text-white"
@@ -48,7 +48,7 @@ export function LessonList({ lessons, completedLessonIds, onSelectLesson, user }
                     <button
                         onClick={() => setActiveTab('specializations')}
                         className={cn(
-                            "flex items-center gap-2 py-2.5 px-6 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+                            "flex items-center gap-2 py-2.5 px-8 rounded-xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap",
                             activeTab === 'specializations'
                                 ? "bg-emerald-600 text-white shadow-xl scale-105"
                                 : "text-slate-400 hover:text-white"
