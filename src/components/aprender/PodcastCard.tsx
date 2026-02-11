@@ -169,7 +169,6 @@ export const PodcastCard = forwardRef<PodcastCardHandle, PodcastCardProps>(({ au
     if (!audio) return;
 
     const newTime = value[0];
-    console.log("Handle Value Commit:", newTime);
     isSeekingRef.current = true; // Garante o lock até o evento 'seeked'
 
     audio.currentTime = newTime;
@@ -469,6 +468,10 @@ export const PodcastCard = forwardRef<PodcastCardHandle, PodcastCardProps>(({ au
                     step={0.1}
                     onValueChange={handleValueChange}
                     onValueCommit={handleValueCommit}
+                    onPointerDown={() => {
+                      isSeekingRef.current = true;
+                      setIsSeeking(true);
+                    }}
                     className="cursor-pointer"
                   />
                   <div className="flex justify-between text-xs text-slate-400 font-mono">
