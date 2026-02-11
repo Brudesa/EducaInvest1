@@ -1,4 +1,5 @@
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -18,7 +19,21 @@ export function useLessonProgress(
 
 
     // State for current lesson
-    const [currentAulaId, setCurrentAulaId] = useState(1);
+    const [searchParams] = useSearchParams();
+    const urlAulaId = searchParams.get('aulaId');
+
+    // State for current lesson
+    const [currentAulaId, setCurrentAulaId] = useState(urlAulaId ? parseInt(urlAulaId) : 1);
+
+    // Sincroniza o estado se o parâmetro da URL mudar
+    useEffect(() => {
+        if (urlAulaId) {
+            const parsed = parseInt(urlAulaId);
+            if (!isNaN(parsed) && parsed !== currentAulaId) {
+                setCurrentAulaId(parsed);
+            }
+        }
+    }, [urlAulaId]);
 
 
     // Timer and state

@@ -141,7 +141,7 @@ export function DashboardUser({ user, perfil }: { user: any; perfil: any; progre
 
               {nextLesson ? (
                 <Button
-                  onClick={() => navigate('/aprender')}
+                  onClick={() => navigate(`/aprender?aulaId=${nextLesson.id}`)}
                   className="rounded-full bg-primary hover:bg-primary/90 text-white font-bold px-8 py-6 shadow-lg shadow-primary/20 transition-all hover:scale-105 hover:shadow-primary/30 group/btn"
                 >
                   Continuar Jornada
