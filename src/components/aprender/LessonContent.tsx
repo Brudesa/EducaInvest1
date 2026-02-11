@@ -70,8 +70,8 @@ export function LessonContent({
     termosDaAula,
     handleLessonChange,
     currentAulaId,
-    canComplete,
-    timeLeft,
+    canComplete: initialCanComplete, // Rename to avoid conflict if we override logic locally
+    timeLeft: initialTimeLeft,       // Same here
     timeLimit,
     handleCompleteAndNext,
     xpAmount,
@@ -81,135 +81,166 @@ export function LessonContent({
 
     const scrollbarClass = "lg:overflow-y-auto lg:[&::-webkit-scrollbar]:w-1.5 lg:[&::-webkit-scrollbar-track]:bg-transparent lg:[&::-webkit-scrollbar-thumb]:bg-slate-700/50 lg:[&::-webkit-scrollbar-thumb]:rounded-full hover:lg:[&::-webkit-scrollbar-thumb]:bg-slate-600 transition-colors";
 
+    // Audio State
+    const [audioCurrentTime, setAudioCurrentTime] = useState(0);
+    const [audioDuration, setAudioDuration] = useState(0);
+    const podcastRef = useRef<PodcastCardHandle>(null);
+    const [localCanComplete, setLocalCanComplete] = useState(initialCanComplete);
+
+    // Sync local completion state with props
+    useEffect(() => {
+        setLocalCanComplete(initialCanComplete);
+    }, [initialCanComplete]);
+
+    const handleAudioTimeUpdate = (current: number, total: number) => {
+        setAudioCurrentTime(current);
+        // Only update duration if it changes significantly or is 0
+        if (total > 0 && Math.abs(audioDuration - total) > 1) {
+            setAudioDuration(total);
+        }
+
+        // Auto-unlock if audio is near end (e.g. last 10 seconds or 95%)
+        if (!isAdmin && !localCanComplete && total > 0) {
+            if (current >= total - 5 || (current / total) > 0.98) {
+                setLocalCanComplete(true);
+            }
+        }
+    };
+
+    const handleAudioEnded = () => {
+        setLocalCanComplete(true);
+        // Reset progress bar visually
+        setAudioCurrentTime(0);
+    };
+
+    const handleSeek = (time: number) => {
+        podcastRef.current?.seek(time);
+    };
+
+    // Use admin bypass
+    const processIsAdmin = isAdmin;
+
+    const finalCanComplete = processIsAdmin || aulaFinalizada || localCanComplete;
+
     return (
         <main className={cn(
             "flex-1 relative bg-slate-950/30 lg:h-full lg:overflow-y-auto",
             scrollbarClass
         )}>
-            <div className="p-4 md:p-10 max-w-5xl mx-auto space-y-8 pb-32 min-h-full flex flex-col justify-center">
-
-                {/* ========== CONTENT ========== */}
-                <div className="opacity-100">
-                    <motion.div
-                        key={`header-${currentAula.id}`}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4 }}
-                    >
-                        <div className="flex flex-wrap items-center gap-2 mb-4">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                                <span>Aula {currentAula.id} de {totalLessons}</span>
-                                <span className="w-1 h-1 rounded-full bg-white/20" />
-                                <span className="text-primary">{currentAula.nivel || currentAula.level}</span>
-                            </div>
-                            {isAdmin && (
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-amber-500 uppercase tracking-widest animate-pulse">
-                                    <Lock className="w-3 h-3" />
-                                    <span>Modo Admin Ativo (Sem Travas)</span>
-                                </div>
-                            )}
-                        </div>
-                        <h1 className="font-display text-2xl md:text-4xl font-bold text-white mb-2 leading-tight">
-                            {currentAula.title_full || currentAula.tituloCompleto}
-                        </h1>
-                    </motion.div>
-
-                    <PodcastCard aula={currentAula as any} termos={termosDaAula as any[]} />
-
-                    <div className="flex items-center gap-4 py-2">
-                        <div className="h-px bg-white/10 flex-1" />
-                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                            <Layers className="w-3 h-3" /> Conceitos da Aula
-                        </span>
-                        <div className="h-px bg-white/10 flex-1" />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                        {termosDaAula.length > 0 ? (
-                            termosDaAula.map((term, index) => (
-                                <motion.div
-                                    key={term.id}
-                                    id={`term-${term.id}`} // ID for scroll
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                                >
-                                    <TermCard term={term as any} hideLevel={true} />
-                                </motion.div>
-                            ))
-                        ) : (
-                            <div className="col-span-full p-8 border border-dashed border-white/10 rounded-xl text-center text-muted-foreground/50 text-sm">
-                                Esta aula foca na teoria e mentalidade, sem termos técnicos específicos.
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* ========== NAVIGATION WITH XP BUTTON AND TIMER ========== */}
-                <div className={cn(
-                    "pt-10 border-t border-white/10 flex flex-col-reverse gap-4 md:flex-row justify-between items-center transition-all duration-500 opacity-100 translate-y-0"
-                )}>
-                    <Button
-                        variant="ghost"
-                        onClick={() => handleLessonChange(currentAulaId - 1)}
-                        disabled={currentAulaId === 1}
-                        className="text-muted-foreground hover:text-white rounded-full px-6 w-full md:w-auto disabled:opacity-30"
-                        aria-label="Ir para aula anterior"
-                    >
-                        <ChevronLeft className="w-4 h-4 mr-2" /> Aula Anterior
-                    </Button>
-
-                    <div className="flex flex-col items-center gap-3 w-full md:w-auto">
-                        {!canComplete && (
-                            <ProgressBar timeLeft={timeLeft} total={timeLimit} />
-                        )}
-
+            {/* Header Fixo Mobile/Desktop */}
+            <header className="sticky top-0 z-20 bg-slate-950/80 backdrop-blur-md border-b border-white/5 px-4 py-3">
+                <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
                         <Button
-                            size="lg"
-                            onClick={handleCompleteAndNext}
-                            disabled={!canComplete && !aulaFinalizada}
-                            className={cn(
-                                "group font-bold rounded-full px-8 py-6 text-base transition-all w-full md:w-auto relative overflow-hidden",
-                                (canComplete || aulaFinalizada)
-                                    ? "bg-white text-slate-900 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]"
-                                    : "bg-white/5 text-white/20 border border-white/5 cursor-not-allowed"
-                            )}
-                            aria-label={aulaFinalizada ? "Ir para próxima aula" : canComplete ? `Concluir aula e ganhar ${xpAmount} XP` : `Aguarde ${timeLeft} segundos para liberar`}
-                            role="button"
-                            aria-disabled={!canComplete && !aulaFinalizada}
+                            variant="ghost"
+                            size="icon"
+                            className="hidden lg:flex shrink-0 w-8 h-8 rounded-full hover:bg-white/10"
+                            onClick={() => handleLessonChange(currentAulaId - 1)}
+                            disabled={currentAulaId === 1}
                         >
-                            {!canComplete && !aulaFinalizada && <Timer className="w-4 h-4 mr-2 animate-pulse" />}
-
-                            {aulaFinalizada ? (
-                                <>
-                                    <CheckCircle2 className="w-4 h-4 mr-2 text-emerald-500" />
-                                    {currentAulaId === totalLessons ? "Curso Concluído" : "Próxima Aula"}
-                                </>
-                            ) : canComplete ? (
-                                <>
-                                    {currentAulaId === totalLessons ? "🎉 Concluir Curso" : `Concluir e Ganhar +${xpAmount} XP`}
-                                </>
-                            ) : (
-                                `Aguarde ${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`
-                            )}
-
-                            {(canComplete || aulaFinalizada) && currentAulaId !== totalLessons && (
-                                <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                            )}
+                            <ChevronLeft className="w-4 h-4" />
                         </Button>
 
-                        {!canComplete && (
-                            <div className="flex items-center gap-2 text-[10px] text-muted-foreground/50 uppercase tracking-widest">
-                                <Info className="w-3 h-3" />
-                                <span>Estude o conteúdo para coletar seus pontos</span>
+                        <div className="flex flex-col gap-1 min-w-0">
+                            <h2 className="text-sm font-medium text-slate-400 truncate flex items-center gap-2">
+                                <Layers className="w-3.5 h-3.5" />
+                                Módulo {currentAula.moduloId} • {currentAula.nivel?.toUpperCase()}
+                            </h2>
+                            <h1 className="text-base font-bold text-white truncate">
+                                {currentAula.titulo}
+                            </h1>
+                        </div>
+                    </div>
+
+                    <div className="hidden md:flex items-center gap-4 flex-1 justify-center">
+                        {/* Barra de Progresso Interativa */}
+                        <div className="w-full max-w-md space-y-1">
+                            <div className="flex justify-between text-[10px] font-medium text-slate-500 uppercase tracking-wider">
+                                <span>Progresso da Aula</span>
+                                <span>{audioDuration > 0 ? Math.round((audioCurrentTime / audioDuration) * 100) : 0}%</span>
                             </div>
-                        )}
+                            <ProgressBar
+                                currentTime={audioCurrentTime}
+                                duration={audioDuration > 0 ? audioDuration : (processIsAdmin ? 100 : 100)}
+                                onSeek={handleSeek}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-1 justify-end">
+                        <Button
+                            variant="glossy"
+                            size="sm"
+                            onClick={handleCompleteAndNext}
+                            disabled={!finalCanComplete}
+                            className={cn(
+                                "gap-2 transition-all duration-500 font-bold",
+                                finalCanComplete
+                                    ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] scale-100"
+                                    : "bg-slate-800/50 text-slate-500 border-slate-700/50 grayscale opacity-80"
+                            )}
+                        >
+                            {aulaFinalizada ? (
+                                <>
+                                    <CheckCircle2 className="w-4 h-4" />
+                                    <span className="hidden sm:inline">Concluída</span>
+                                    <span className="sm:hidden">Próxima</span>
+                                </>
+                            ) : finalCanComplete ? (
+                                <>
+                                    <Trophy className="w-4 h-4 animate-pulse" />
+                                    <span className="hidden sm:inline">Finalizar Aula (+{xpAmount} XP)</span>
+                                    <span className="sm:hidden">Finalizar</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Lock className="w-3.5 h-3.5" />
+                                    <span className="hidden sm:inline">
+                                        {/* Mostra tempo restante do áudio ou mensagem */}
+                                        {audioDuration > 0 ?
+                                            `Ouça a aula (${Math.ceil(audioDuration - audioCurrentTime)}s)` :
+                                            "Aguarde..."
+                                        }
+                                    </span>
+                                </>
+                            )}
+                            <ChevronRight className={cn("w-4 h-4 ml-1", finalCanComplete && "animate-bounce-x")} />
+                        </Button>
                     </div>
                 </div>
 
-                <footer className="text-center text-[10px] text-muted-foreground/30 pt-8">
-                    <p>© 2026 EducaInvest - Educação Financeira ao Seu Alcance</p>
-                </footer>
+                {/* Mobile Progress Bar */}
+                <div className="md:hidden mt-3 pt-2 border-t border-white/5">
+                    <ProgressBar
+                        currentTime={audioCurrentTime}
+                        duration={audioDuration > 0 ? audioDuration : 100}
+                        onSeek={handleSeek}
+                    />
+                </div>
+            </header>
+
+            <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-8 pb-32">
+                {/* Podcast Card - Agora com Ref e Callbacks */}
+                <PodcastCard
+                    ref={podcastRef}
+                    aula={currentAula}
+                    termos={termosDaAula}
+                    onTimeUpdate={handleAudioTimeUpdate}
+                    onEnded={handleAudioEnded}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {termosDaAula.map((termo) => (
+                        <TermCard key={termo.id} termo={termo} />
+                    ))}
+                </div>
+
+                {termosDaAula.length === 0 && (
+                    <div className="text-center py-12 text-slate-500">
+                        <Info className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                        <p>Nenhum termo específico nesta aula.</p>
+                    </div>
+                )}
             </div>
         </main>
     );
