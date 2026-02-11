@@ -298,7 +298,7 @@ export const EmpireBuilder = ({ onBack, user }: Props) => {
 // Moved outside to prevent re-creation on every render
 const ShopColumn = ({ title, icon, items, ownedItems, balance, onBuy, getCost, isPassive }: any) => {
     return (
-        <div className="relative bg-slate-900/50 border border-white/10 overflow-y-auto max-h-[600px] rounded-xl flex flex-col
+        <div className="relative bg-slate-900/50 border border-white/10 overflow-y-auto max-h-[600px] rounded-xl flex flex-col overscroll-contain
             [&::-webkit-scrollbar]:w-2
             [&::-webkit-scrollbar-track]:bg-transparent
             [&::-webkit-scrollbar-thumb]:bg-white/10
