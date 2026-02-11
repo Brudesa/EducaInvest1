@@ -42,6 +42,7 @@ export const PodcastCard = forwardRef<PodcastCardHandle, PodcastCardProps>(({ au
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isSeeking, setIsSeeking] = useState(false);
+  const isSeekingRef = useRef(false);
   const [tempTime, setTempTime] = useState(0);
 
   // Converte duração "6" ou "2:08" para segundos (estimado) para fallback
@@ -77,7 +78,7 @@ export const PodcastCard = forwardRef<PodcastCardHandle, PodcastCardProps>(({ au
     if (!audio) return;
 
     const updateTime = () => {
-      if (!isSeeking) {
+      if (!isSeekingRef.current) {
         setCurrentTime(audio.currentTime);
       }
       if (onTimeUpdate) {
@@ -124,6 +125,7 @@ export const PodcastCard = forwardRef<PodcastCardHandle, PodcastCardProps>(({ au
   };
 
   const handleValueChange = (value: number[]) => {
+    isSeekingRef.current = true;
     setIsSeeking(true);
     setTempTime(value[0]);
     setCurrentTime(value[0]);
@@ -136,7 +138,13 @@ export const PodcastCard = forwardRef<PodcastCardHandle, PodcastCardProps>(({ au
     const newTime = value[0];
     audio.currentTime = newTime;
     setCurrentTime(newTime);
-    setIsSeeking(false);
+
+    // Pequeno delay para evitar que o evento timeupdate do áudio 
+    // sobrescreva o estado logo após o seek
+    setTimeout(() => {
+      isSeekingRef.current = false;
+      setIsSeeking(false);
+    }, 50);
   };
 
   const handleVolumeChange = (value: number[]) => {
