@@ -139,6 +139,7 @@ export default function Aprender() {
     const cleanTranscript = stripHtml(currentAula.transcricaoCompleta || "").toLowerCase();
 
     return allTerms.filter(term => {
+      if (!term || !term.nome) return false;
       // Check if term appears in CLEAN text (no HTML tags)
       const name = term.nome?.toLowerCase();
       const acronym = term.sigla?.toLowerCase();
