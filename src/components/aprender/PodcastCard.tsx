@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Headphones,
@@ -41,9 +41,18 @@ export const PodcastCard = forwardRef<PodcastCardHandle, PodcastCardProps>(({ au
   const [playbackRate, setPlaybackRate] = useState(1);
 
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [isSeeking, setIsSeeking] = useState(false);
+  const [tempTime, setTempTime] = useState(0);
 
-  // Converte duração "6" para segundos (estimado) para fallback
-  const estimatedDuration = parseInt(aula.duracao) * 60;
+  // Converte duração "6" ou "2:08" para segundos (estimado) para fallback
+  const estimatedDuration = useMemo(() => {
+    if (!aula.duracao) return 0;
+    if (aula.duracao.includes(":")) {
+      const [mins, secs] = aula.duracao.split(":").map(Number);
+      return (mins * 60) + (secs || 0);
+    }
+    return parseInt(aula.duracao) * 60;
+  }, [aula.duracao]);
 
   useImperativeHandle(ref, () => ({
     play: () => {
@@ -68,7 +77,9 @@ export const PodcastCard = forwardRef<PodcastCardHandle, PodcastCardProps>(({ au
     if (!audio) return;
 
     const updateTime = () => {
-      setCurrentTime(audio.currentTime);
+      if (!isSeeking) {
+        setCurrentTime(audio.currentTime);
+      }
       if (onTimeUpdate) {
         onTimeUpdate(audio.currentTime, audio.duration || estimatedDuration);
       }
@@ -112,13 +123,20 @@ export const PodcastCard = forwardRef<PodcastCardHandle, PodcastCardProps>(({ au
     setIsPlaying(!isPlaying);
   };
 
-  const handleSeek = (value: number[]) => {
+  const handleValueChange = (value: number[]) => {
+    setIsSeeking(true);
+    setTempTime(value[0]);
+    setCurrentTime(value[0]);
+  };
+
+  const handleValueCommit = (value: number[]) => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const newTime = value[0];
     audio.currentTime = newTime;
     setCurrentTime(newTime);
+    setIsSeeking(false);
   };
 
   const handleVolumeChange = (value: number[]) => {
@@ -393,16 +411,17 @@ export const PodcastCard = forwardRef<PodcastCardHandle, PodcastCardProps>(({ au
               {/* --- PLAYER DE ÁUDIO --- */}
               <div className="pt-4 space-y-4">
                 {/* Barra de Progresso */}
-                <div className="space-y-2">
+                <div className="space-y-2 py-2 cursor-pointer">
                   <Slider
-                    value={[currentTime]}
+                    value={[isSeeking ? tempTime : currentTime]}
                     max={duration || estimatedDuration}
-                    step={1}
-                    onValueChange={handleSeek}
+                    step={0.1}
+                    onValueChange={handleValueChange}
+                    onValueCommit={handleValueCommit}
                     className="cursor-pointer"
                   />
                   <div className="flex justify-between text-xs text-slate-400 font-mono">
-                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(isSeeking ? tempTime : currentTime)}</span>
                     <span>{formatTime(duration || estimatedDuration)}</span>
                   </div>
                 </div>
