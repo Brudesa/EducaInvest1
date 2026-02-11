@@ -466,7 +466,7 @@ export default function Perfil() {
                                     disabled={isResetting}
                                 >
                                     <Star className="w-4 h-4" />
-                                    Zerar apenas XP
+                                    Zerar XP
                                 </Button>
                                 <Button
                                     variant="outline"
