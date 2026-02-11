@@ -1,4 +1,5 @@
-import { BookOpen, ChevronDown, Lock, PlayCircle, CheckCircle2, Layers } from "lucide-react";
+import { useState } from "react";
+import { BookOpen, ChevronDown, Lock, PlayCircle, CheckCircle2, Layers, LayoutGrid, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Lesson } from "@/lib/types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -26,7 +27,9 @@ export function LessonSidebar({
     user
 }: LessonSidebarProps & { user?: any }) {
 
-    const scrollbarClass = "lg:overflow-y-auto lg:[&::-webkit-scrollbar]:w-1.5 lg:[&::-webkit-scrollbar-track]:bg-transparent lg:[&::-webkit-scrollbar-thumb]:bg-slate-700/50 lg:[&::-webkit-scrollbar-thumb]:rounded-full hover:lg:[&::-webkit-scrollbar-thumb]:bg-slate-600 transition-colors";
+    const [activeTab, setActiveTab] = useState<'modules' | 'specializations'>('modules');
+
+    const scrollbarClass = "lg:overflow-y-auto lg:overscroll-contain lg:[&::-webkit-scrollbar]:w-1.5 lg:[&::-webkit-scrollbar-track]:bg-transparent lg:[&::-webkit-scrollbar-thumb]:bg-slate-700/50 lg:[&::-webkit-scrollbar-thumb]:rounded-full hover:lg:[&::-webkit-scrollbar-thumb]:bg-slate-600 transition-colors";
 
     const maxCompletedId = completedLessonIds.length > 0 ? Math.max(...completedLessonIds) : 0;
 
@@ -82,92 +85,117 @@ export function LessonSidebar({
                     "space-y-6 lg:block",
                     isMobileMenuOpen ? "block animate-in slide-in-from-top-2 duration-200" : "hidden"
                 )}>
-                    {modulos.map((modulo, index) => (
-                        <div key={index}>
-                            <h3 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2 px-2">
-                                {modulo.titulo}
-                            </h3>
-                            <div className="space-y-1">
-                                {modulo.aulas.map((aula) => {
-                                    const isActive = currentAulaId === aula.id;
-                                    const aulaFinalizada = completedLessonIds.includes(aula.id);
+                    {/* Tabs Switcher */}
+                    <div className="flex bg-slate-950/50 p-1 rounded-xl mb-6 border border-white/5 mx-2">
+                        <button
+                            onClick={() => setActiveTab('modules')}
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all",
+                                activeTab === 'modules'
+                                    ? "bg-primary text-primary-foreground shadow-lg"
+                                    : "text-muted-foreground hover:text-white"
+                            )}
+                        >
+                            <LayoutGrid className="w-3.5 h-3.5" />
+                            Módulos
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('specializations')}
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all",
+                                activeTab === 'specializations'
+                                    ? "bg-emerald-600 text-white shadow-lg"
+                                    : "text-muted-foreground hover:text-white"
+                            )}
+                        >
+                            <Sparkles className="w-3.5 h-3.5" />
+                            Especializações
+                        </button>
+                    </div>
 
-                                    // Freemium Logic for Sidebar
-                                    let isLocked = !isAdmin && aula.id > (maxCompletedId + 1);
-
-                                    if (!user) {
-                                        // Guest Mode: Lock everything except Lesson 1
-                                        if (aula.id === 1) isLocked = false;
-                                        else isLocked = true;
-                                    }
-
-                                    const buttonContent = (
-                                        <button
-                                            disabled={isLocked}
-                                            onClick={() => {
-                                                if (isLocked && !user) {
-                                                    window.location.href = '/login';
-                                                    return;
-                                                }
-                                                !isLocked && handleLessonChange(aula.id)
-                                            }}
-                                            className={cn(
-                                                "w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium transition-all flex items-center gap-3 group relative",
-                                                isActive
-                                                    ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_10px_rgba(59,130,246,0.1)]"
-                                                    : isLocked
-                                                        ? "opacity-40 cursor-not-allowed bg-transparent text-muted-foreground"
-                                                        : "text-muted-foreground hover:bg-white/5 hover:text-white border border-transparent"
-                                            )}
-                                            aria-label={`Aula ${aula.id}: ${aula.title_short || aula.titulo}`}
-                                            aria-current={isActive ? "page" : undefined}
-                                            aria-disabled={isLocked}
-                                        >
-                                            {/* Ícones de Estado */}
-                                            {isLocked ? (
-                                                <Lock className="w-3.5 h-3.5 shrink-0 text-slate-500" />
-                                            ) : isActive ? (
-                                                <PlayCircle className="w-3.5 h-3.5 shrink-0 animate-pulse" />
-                                            ) : aulaFinalizada ? (
-                                                <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-500" />
-                                            ) : (
-                                                <div className="w-3.5 h-3.5 rounded-full border-2 border-muted-foreground/30 shrink-0" />
-                                            )}
-
-                                            <span className="line-clamp-1">{aula.id}. {aula.title_short || aula.titulo}</span>
-                                        </button>
-                                    );
-
-                                    return isLocked ? (
-                                        <Tooltip key={aula.id}>
-                                            <TooltipTrigger asChild>
-                                                {buttonContent}
-                                            </TooltipTrigger>
-                                            <TooltipContent side="right" className="bg-slate-800 border-slate-700">
-                                                <p className="text-xs">Complete a aula anterior para desbloquear</p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    ) : (
-                                        <div key={aula.id}>{buttonContent}</div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    ))}
-
-                    {/* --- TRILHAS EXTRAS (SEMPRE VISÍVEIS, MAS BLOQUEADAS SE NECESSÁRIO) --- */}
-                    <div className="pt-6 border-t border-white/5 mt-6">
-                        <h3 className="text-[10px] font-bold uppercase tracking-wider text-emerald-500 mb-4 px-2 flex items-center gap-2">
-                            <Layers className="w-3 h-3" /> Especializações
-                        </h3>
-
+                    {activeTab === 'modules' ? (
                         <div className="space-y-6">
+                            {modulos.map((modulo, index) => (
+                                <div key={index} className="px-2">
+                                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                                        {modulo.titulo}
+                                    </h3>
+                                    <div className="space-y-1">
+                                        {modulo.aulas.map((aula) => {
+                                            const isActive = currentAulaId === aula.id;
+                                            const aulaFinalizada = completedLessonIds.includes(aula.id);
+
+                                            // Freemium Logic for Sidebar
+                                            let isLocked = !isAdmin && aula.id > (maxCompletedId + 1);
+
+                                            if (!user) {
+                                                // Guest Mode: Lock everything except Lesson 1
+                                                if (aula.id === 1) isLocked = false;
+                                                else isLocked = true;
+                                            }
+
+                                            const buttonContent = (
+                                                <button
+                                                    disabled={isLocked}
+                                                    onClick={() => {
+                                                        if (isLocked && !user) {
+                                                            window.location.href = '/login';
+                                                            return;
+                                                        }
+                                                        !isLocked && handleLessonChange(aula.id)
+                                                    }}
+                                                    className={cn(
+                                                        "w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium transition-all flex items-center gap-3 group relative",
+                                                        isActive
+                                                            ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_10px_rgba(59,130,246,0.1)]"
+                                                            : isLocked
+                                                                ? "opacity-40 cursor-not-allowed bg-transparent text-muted-foreground"
+                                                                : "text-muted-foreground hover:bg-white/5 hover:text-white border border-transparent"
+                                                    )}
+                                                    aria-label={`Aula ${aula.id}: ${aula.title_short || aula.titulo} `}
+                                                    aria-current={isActive ? "page" : undefined}
+                                                    aria-disabled={isLocked}
+                                                >
+                                                    {/* Ícones de Estado */}
+                                                    {isLocked ? (
+                                                        <Lock className="w-3.5 h-3.5 shrink-0 text-slate-500" />
+                                                    ) : isActive ? (
+                                                        <PlayCircle className="w-3.5 h-3.5 shrink-0 animate-pulse" />
+                                                    ) : aulaFinalizada ? (
+                                                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-500" />
+                                                    ) : (
+                                                        <div className="w-3.5 h-3.5 rounded-full border-2 border-muted-foreground/30 shrink-0" />
+                                                    )}
+
+                                                    <span className="line-clamp-1">{aula.id}. {aula.title_short || aula.titulo}</span>
+                                                </button>
+                                            );
+
+                                            return isLocked ? (
+                                                <Tooltip key={aula.id}>
+                                                    <TooltipTrigger asChild>
+                                                        {buttonContent}
+                                                    </TooltipTrigger>
+                                                    <TooltipContent side="right" className="bg-slate-800 border-slate-700">
+                                                        <p className="text-xs">Complete a aula anterior para desbloquear</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            ) : (
+                                                <div key={aula.id}>{buttonContent}</div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="space-y-6 px-2">
                             {trilhasExtras.map((trilha, index) => (
-                                <div key={`trilha-${index}`} className={cn(
+                                <div key={`trilha - ${index} `} className={cn(
                                     "transition-opacity duration-300",
                                     !isBaseCourseComplete && "opacity-50"
                                 )}>
-                                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70 mb-2 px-2 flex justify-between items-center">
+                                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70 mb-2 flex justify-between items-center">
                                         {trilha.titulo}
                                         {!isBaseCourseComplete && <Lock className="w-3 h-3 text-muted-foreground" />}
                                     </h4>
@@ -208,15 +236,13 @@ export function LessonSidebar({
                                     </div>
                                 </div>
                             ))}
-                        </div>
-                        {!isBaseCourseComplete && (
-                            <div className="mt-4 px-2">
+                            {!isBaseCourseComplete && (
                                 <p className="text-[10px] text-muted-foreground text-center bg-white/5 p-2 rounded-lg border border-white/5">
-                                    Complete os módulos anteriores para desbloquear as especializações.
+                                    Complete os módulos anteriores para desbloquear.
                                 </p>
-                            </div>
-                        )}
-                    </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </aside>

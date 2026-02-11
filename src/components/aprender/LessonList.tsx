@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, Lock, Play, ChevronRight, Clock } from "lucide-react";
+import { CheckCircle2, Lock, Play, ChevronRight, Clock, LayoutGrid, Sparkles } from "lucide-react";
 import { Lesson } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -11,22 +12,59 @@ interface LessonListProps {
 }
 
 export function LessonList({ lessons, completedLessonIds, onSelectLesson, user }: LessonListProps) {
+    const [activeTab, setActiveTab] = useState<'journey' | 'specializations'>('journey');
+
+    const modulesLessons = lessons.filter(l => ['fundamentos', 'pratica', 'alta_performance'].includes(l.nivel || l.level));
+    const specializationLessons = lessons.filter(l => !['fundamentos', 'pratica', 'alta_performance'].includes(l.nivel || l.level));
+
+    const isBaseCourseComplete = modulesLessons.every(l => completedLessonIds.includes(l.id));
+
     return (
-        <div className="container mx-auto px-4 py-8 md:py-12 max-w-3xl">
-            <div className="text-left mb-10 space-y-2">
-                <h1 className="text-3xl md:text-4xl font-display font-bold text-white">
-                    Trilha de Aprendizado
-                </h1>
-                <p className="text-muted-foreground text-lg">
-                    Siga o caminho para dominar suas finanças.
-                </p>
+        <div className="container mx-auto px-4 py-8 md:py-12 max-w-3xl overscroll-contain">
+            <div className="text-left mb-10 space-y-4">
+                <div className="space-y-2">
+                    <h1 className="text-3xl md:text-4xl font-display font-bold text-white">
+                        Trilha de Aprendizado
+                    </h1>
+                    <p className="text-muted-foreground text-lg">
+                        Siga o caminho para dominar suas finanças.
+                    </p>
+                </div>
+
+                {/* Tabs Switcher */}
+                <div className="flex bg-slate-900/40 p-1.5 rounded-2xl border border-white/5 w-fit">
+                    <button
+                        onClick={() => setActiveTab('journey')}
+                        className={cn(
+                            "flex items-center gap-2 py-2.5 px-6 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+                            activeTab === 'journey'
+                                ? "bg-primary text-primary-foreground shadow-xl scale-105"
+                                : "text-slate-400 hover:text-white"
+                        )}
+                    >
+                        <LayoutGrid className="w-4 h-4" />
+                        Trilha Principal
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('specializations')}
+                        className={cn(
+                            "flex items-center gap-2 py-2.5 px-6 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+                            activeTab === 'specializations'
+                                ? "bg-emerald-600 text-white shadow-xl scale-105"
+                                : "text-slate-400 hover:text-white"
+                        )}
+                    >
+                        <Sparkles className="w-4 h-4" />
+                        Especializações
+                    </button>
+                </div>
             </div>
 
             <div className="space-y-4 relative">
                 {/* Vertical Line */}
                 <div className="absolute left-6 top-6 bottom-6 w-0.5 bg-gradient-to-b from-primary/50 via-white/10 to-transparent hidden md:block" />
 
-                {lessons.map((lesson, index) => {
+                {(activeTab === 'journey' ? modulesLessons : specializationLessons).map((lesson, index) => {
                     const isCompleted = completedLessonIds.includes(lesson.id);
 
                     // Freemium Logic:
@@ -130,8 +168,17 @@ export function LessonList({ lessons, completedLessonIds, onSelectLesson, user }
                 })}
             </div>
 
+            {activeTab === 'specializations' && !isBaseCourseComplete && (
+                <div className="mt-12 p-6 rounded-2xl bg-slate-900/40 border border-white/5 text-center">
+                    <Lock className="w-8 h-8 text-slate-600 mx-auto mb-3" />
+                    <p className="text-slate-400 text-sm">
+                        Complete as aulas da <strong>Trilha Principal</strong> para desbloquear as Especializações.
+                    </p>
+                </div>
+            )}
+
             <div className="text-center mt-12 text-sm text-muted-foreground">
-                <p>Complete as aulas para desbloquear o próximo nível.</p>
+                <p>O conhecimento é o seu melhor investimento.</p>
             </div>
         </div>
     );
