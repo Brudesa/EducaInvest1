@@ -101,14 +101,30 @@ export const PodcastCard = forwardRef<PodcastCardHandle, PodcastCardProps>(({ au
       if (onEnded) onEnded();
     };
 
+    const handleSeeking = () => {
+      isSeekingRef.current = true;
+    };
+
+    const handleSeeked = () => {
+      // Pequeno delay após o áudio confirmar que chegou para garantir consistência visual
+      setTimeout(() => {
+        isSeekingRef.current = false;
+        setIsSeeking(false);
+      }, 50);
+    };
+
     audio.addEventListener("timeupdate", updateTime);
     audio.addEventListener("loadedmetadata", updateDuration);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("seeking", handleSeeking);
+    audio.addEventListener("seeked", handleSeeked);
 
     return () => {
       audio.removeEventListener("timeupdate", updateTime);
       audio.removeEventListener("loadedmetadata", updateDuration);
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("seeking", handleSeeking);
+      audio.removeEventListener("seeked", handleSeeked);
     };
   }, [onTimeUpdate, onEnded, estimatedDuration]);
 
@@ -136,15 +152,17 @@ export const PodcastCard = forwardRef<PodcastCardHandle, PodcastCardProps>(({ au
     if (!audio) return;
 
     const newTime = value[0];
+    isSeekingRef.current = true; // Garante o lock até o evento 'seeked'
     audio.currentTime = newTime;
     setCurrentTime(newTime);
 
-    // Pequeno delay para evitar que o evento timeupdate do áudio 
-    // sobrescreva o estado logo após o seek
+    // Safety timeout caso o evento 'seeked' demore ou não dispare
     setTimeout(() => {
-      isSeekingRef.current = false;
-      setIsSeeking(false);
-    }, 50);
+      if (isSeekingRef.current) {
+        isSeekingRef.current = false;
+        setIsSeeking(false);
+      }
+    }, 1000);
   };
 
   const handleVolumeChange = (value: number[]) => {
@@ -364,7 +382,7 @@ export const PodcastCard = forwardRef<PodcastCardHandle, PodcastCardProps>(({ au
         <audio
           ref={audioRef}
           src={`/audios/Aula-${aula.id}.mp3`}
-          preload="metadata"
+          preload="auto"
         />
 
         {/* Camada Interna para Efeito de Vidro */}
