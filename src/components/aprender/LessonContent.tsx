@@ -98,17 +98,9 @@ export function LessonContent({
         if (total > 0 && Math.abs(audioDuration - total) > 1) {
             setAudioDuration(total);
         }
-
-        // Auto-unlock if audio is near end (e.g. last 10 seconds or 95%)
-        if (!isAdmin && !localCanComplete && total > 0) {
-            if (current >= total - 5 || (current / total) > 0.98) {
-                setLocalCanComplete(true);
-            }
-        }
     };
 
     const handleAudioEnded = () => {
-        setLocalCanComplete(true);
         // Reset progress bar visually
         setAudioCurrentTime(0);
     };
@@ -120,7 +112,7 @@ export function LessonContent({
     // Use admin bypass
     const processIsAdmin = isAdmin;
 
-    const finalCanComplete = processIsAdmin || aulaFinalizada || localCanComplete;
+    const finalCanComplete = processIsAdmin || aulaFinalizada || initialCanComplete;
 
     return (
         <main className={cn(
@@ -153,18 +145,7 @@ export function LessonContent({
                     </div>
 
                     <div className="hidden md:flex items-center gap-4 flex-1 justify-center">
-                        {/* Barra de Progresso Interativa */}
-                        <div className="w-full max-w-md space-y-1">
-                            <div className="flex justify-between text-[10px] font-medium text-slate-500 uppercase tracking-wider">
-                                <span>Progresso da Aula</span>
-                                <span>{audioDuration > 0 ? Math.round((audioCurrentTime / audioDuration) * 100) : 0}%</span>
-                            </div>
-                            <ProgressBar
-                                currentTime={audioCurrentTime}
-                                duration={audioDuration > 0 ? audioDuration : (processIsAdmin ? 100 : 100)}
-                                onSeek={handleSeek}
-                            />
-                        </div>
+                        {/* Barra de Progresso removida conforme solicitado */}
                     </div>
 
                     <div className="flex items-center gap-2 flex-1 justify-end">
@@ -210,12 +191,8 @@ export function LessonContent({
                 </div>
 
                 {/* Mobile Progress Bar */}
-                <div className="md:hidden mt-3 pt-2 border-t border-white/5">
-                    <ProgressBar
-                        currentTime={audioCurrentTime}
-                        duration={audioDuration > 0 ? audioDuration : 100}
-                        onSeek={handleSeek}
-                    />
+                {/* Mobile Progress Bar removed */}
+                <div className="md:hidden mt-3 pt-2 border-t border-white/5 hidden">
                 </div>
             </header>
 
