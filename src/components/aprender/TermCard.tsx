@@ -25,6 +25,7 @@ interface TermCardProps {
 }
 
 const getTermIcon = (t: Termo) => {
+  if (!t || !t.nome) return Coins;
   const nome = t.nome.toLowerCase();
   if (nome.includes("reserva")) return ShieldCheck;
   if (nome.includes("liquidez")) return Zap;
@@ -42,6 +43,7 @@ const getTermIcon = (t: Termo) => {
 };
 
 export function TermCard({ term, hideLevel }: TermCardProps) {
+  if (!term) return null;
   const [isExpanded, setIsExpanded] = useState(false);
   const Icon = getTermIcon(term);
 
